@@ -7,51 +7,54 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path;
   
   return (
-    <nav className="border-b-2 border-black bg-background">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-8">
-            <Link to="/" className="text-xl font-bold tracking-wider hover:opacity-70 transition-opacity">
-              <span className="terminal-text">{'>'} VISIONFLOW_</span>
-            </Link>
-            
-            <div className="hidden md:flex gap-6">
-              <Link 
-                to="/" 
-                className={`terminal-text transition-opacity ${isActive('/') ? 'font-bold' : 'hover:opacity-70'}`}
-              >
-                [DASHBOARD]
-              </Link>
-              <Link 
-                to="/explorer" 
-                className={`terminal-text transition-opacity ${isActive('/explorer') ? 'font-bold' : 'hover:opacity-70'}`}
-              >
-                [EXPLORER]
-              </Link>
-              <Link 
-                to="/leaderboard" 
-                className={`terminal-text transition-opacity ${isActive('/leaderboard') ? 'font-bold' : 'hover:opacity-70'}`}
-              >
-                [LEADERBOARD]
-              </Link>
-              <Link 
-                to="/settings" 
-                className={`terminal-text transition-opacity ${isActive('/settings') ? 'font-bold' : 'hover:opacity-70'}`}
-              >
-                [SETTINGS]
-              </Link>
-            </div>
-          </div>
+    <header className="border-b border-border bg-card sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between max-w-screen-xl">
+        <div className="flex items-center gap-8">
+          <Link to="/" className="font-bold text-xl terminal-text hover:text-primary transition-colors">
+            VISIONFLOW
+          </Link>
           
-          <Button 
-            variant="outline" 
-            className="border-2 border-black hover:bg-black hover:text-background transition-all font-mono font-bold"
-          >
-            {'<'} CONNECT_WALLET {'>'}
-          </Button>
+          <nav className="hidden md:flex gap-6">
+            <Link 
+              to="/" 
+              className={`text-sm font-medium hover:text-primary transition-colors ${
+                isActive('/') ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              Dashboard
+            </Link>
+            <Link 
+              to="/explorer" 
+              className={`text-sm font-medium hover:text-primary transition-colors ${
+                isActive('/explorer') ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              Explorer
+            </Link>
+            <Link 
+              to="/leaderboard" 
+              className={`text-sm font-medium hover:text-primary transition-colors ${
+                isActive('/leaderboard') ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              Leaderboard
+            </Link>
+            <Link 
+              to="/settings" 
+              className={`text-sm font-medium hover:text-primary transition-colors ${
+                isActive('/settings') ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              Settings
+            </Link>
+          </nav>
         </div>
+
+        <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-full font-medium text-sm hover:opacity-90 transition-opacity shadow-sm">
+          Connect Wallet
+        </button>
       </div>
-    </nav>
+    </header>
   );
 };
 

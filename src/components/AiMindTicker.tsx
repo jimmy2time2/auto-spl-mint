@@ -13,17 +13,17 @@ const AiMindTicker = () => {
   ];
 
   return (
-    <div className="bg-black text-background border-y-2 border-black overflow-hidden py-2">
+    <div className="bg-secondary text-primary border-y border-border overflow-hidden py-3">
       <div className="ticker-wrapper">
-        <div className="ticker-content font-mono text-sm">
+        <div className="ticker-content font-mono text-xs tracking-wider">
           {thoughts.map((thought, index) => (
             <span key={index} className="ticker-item">
-              {'>'} {thought} <span className="mx-4">█</span>
+              {'>'} {thought} <span className="mx-6 text-primary">●</span>
             </span>
           ))}
           {thoughts.map((thought, index) => (
             <span key={`duplicate-${index}`} className="ticker-item">
-              {'>'} {thought} <span className="mx-4">█</span>
+              {'>'} {thought} <span className="mx-6 text-primary">●</span>
             </span>
           ))}
         </div>

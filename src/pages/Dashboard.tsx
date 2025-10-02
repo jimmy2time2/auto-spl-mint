@@ -31,17 +31,14 @@ const Dashboard = () => {
       <AiMindTicker />
       
       <main className="container mx-auto px-4 py-8 max-w-screen-xl">
-        {/* ASCII Header */}
-        <div className="mb-8 text-center border-2 border-black p-4 bg-card">
-          <pre className="text-xs md:text-sm font-mono">
-{`██╗   ██╗██╗███████╗██╗ ██████╗ ███╗   ██╗███████╗██╗      ██████╗ ██╗    ██╗
-██║   ██║██║██╔════╝██║██╔═══██╗████╗  ██║██╔════╝██║     ██╔═══██╗██║    ██║
-██║   ██║██║███████╗██║██║   ██║██╔██╗ ██║█████╗  ██║     ██║   ██║██║ █╗ ██║
-╚██╗ ██╔╝██║╚════██║██║██║   ██║██║╚██╗██║██╔══╝  ██║     ██║   ██║██║███╗██║
- ╚████╔╝ ██║███████║██║╚██████╔╝██║ ╚████║██║     ███████╗╚██████╔╝╚███╔███╔╝
-  ╚═══╝  ╚═╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚══════╝ ╚═════╝  ╚══╝╚══╝`}
-          </pre>
-          <p className="mt-2 terminal-text text-sm">// AUTONOMOUS_SOLANA_COIN_GENERATOR_v2.0</p>
+        {/* Modern Header */}
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            VISIONFLOW
+          </h1>
+          <p className="text-muted-foreground text-lg font-mono">
+            Autonomous Solana Coin Generator v2.0
+          </p>
         </div>
 
         {/* Next Launch Section */}
@@ -53,35 +50,35 @@ const Dashboard = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <TerminalCard title="TREASURY_WALLET">
-            <div className="space-y-2">
-              <div className="text-4xl font-bold terminal-text">1,247.83</div>
-              <div className="text-sm opacity-70 terminal-text">SOL_BALANCE</div>
-              <div className="border-t-2 border-dashed border-black pt-2 mt-4">
-                <div className="text-xs terminal-text opacity-70">WALLET_ADDRESS:</div>
-                <div className="text-xs terminal-text break-all">8x5kJ...g3jL</div>
+          <TerminalCard title="Treasury Wallet">
+            <div className="space-y-3">
+              <div className="text-5xl font-bold text-primary">1,247.83</div>
+              <div className="text-sm text-muted-foreground">SOL Balance</div>
+              <div className="border-t border-border pt-4 mt-4">
+                <div className="text-xs text-muted-foreground mb-1">Wallet Address</div>
+                <div className="text-xs font-mono break-all">8x5kJ...g3jL</div>
               </div>
             </div>
           </TerminalCard>
 
-          <TerminalCard title="LUCKY_DISTRIBUTION_7D">
-            <div className="space-y-2">
-              <div className="text-4xl font-bold terminal-text">142.50</div>
-              <div className="text-sm opacity-70 terminal-text">SOL_DISTRIBUTED</div>
-              <div className="border-t-2 border-dashed border-black pt-2 mt-4">
-                <div className="text-xs terminal-text opacity-70">LAST_INJECTION:</div>
-                <div className="text-xs terminal-text">0.5 SOL → 8x5k...3jL</div>
+          <TerminalCard title="Lucky Distribution (7D)">
+            <div className="space-y-3">
+              <div className="text-5xl font-bold text-primary">142.50</div>
+              <div className="text-sm text-muted-foreground">SOL Distributed</div>
+              <div className="border-t border-border pt-4 mt-4">
+                <div className="text-xs text-muted-foreground mb-1">Last Injection</div>
+                <div className="text-xs font-mono">0.5 SOL → 8x5k...3jL</div>
               </div>
             </div>
           </TerminalCard>
 
-          <TerminalCard title="TOTAL_TOKENS_MINTED">
-            <div className="space-y-2">
-              <div className="text-4xl font-bold terminal-text">127</div>
-              <div className="text-sm opacity-70 terminal-text">LIFETIME_TOKENS</div>
-              <div className="border-t-2 border-dashed border-black pt-2 mt-4">
-                <div className="text-xs terminal-text opacity-70">AVG_LAUNCH_INTERVAL:</div>
-                <div className="text-xs terminal-text">2h 15m</div>
+          <TerminalCard title="Total Tokens Minted">
+            <div className="space-y-3">
+              <div className="text-5xl font-bold text-primary">127</div>
+              <div className="text-sm text-muted-foreground">Lifetime Tokens</div>
+              <div className="border-t border-border pt-4 mt-4">
+                <div className="text-xs text-muted-foreground mb-1">Avg Launch Interval</div>
+                <div className="text-xs font-mono">2h 15m</div>
               </div>
             </div>
           </TerminalCard>
@@ -89,10 +86,10 @@ const Dashboard = () => {
 
         {/* Recent Tokens */}
         <div className="mb-8">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-2xl font-bold terminal-text">{'>'} RECENT_TOKENS</h2>
-            <a href="/explorer" className="terminal-text text-sm hover:opacity-70 transition-opacity">
-              [VIEW_ALL] {'>'}
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Recent Tokens</h2>
+            <a href="/explorer" className="text-sm font-medium text-primary hover:opacity-80 transition-opacity">
+              View All →
             </a>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
