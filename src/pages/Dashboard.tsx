@@ -4,6 +4,7 @@ import TerminalCard from "@/components/TerminalCard";
 import CountdownTimer from "@/components/CountdownTimer";
 import TokenCard from "@/components/TokenCard";
 import ConsoleLog from "@/components/ConsoleLog";
+import AiMindTicker from "@/components/AiMindTicker";
 
 // Mock data
 const mockTokens = [
@@ -27,6 +28,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      <AiMindTicker />
       
       <main className="container mx-auto px-4 py-8 max-w-screen-xl">
         {/* ASCII Header */}

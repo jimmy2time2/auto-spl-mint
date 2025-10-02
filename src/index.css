@@ -97,4 +97,25 @@ All colors MUST be HSL.
     50% { content: '—'; }
     75% { content: '\\'; }
   }
+
+  /* Ticker animation */
+  @keyframes ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .ticker-wrapper {
+    display: flex;
+    overflow: hidden;
+  }
+
+  .ticker-content {
+    display: flex;
+    animation: ticker-scroll 30s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker-item {
+    display: inline-block;
+  }
 }
