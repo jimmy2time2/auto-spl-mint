@@ -50,7 +50,7 @@ const Navigation = () => {
           </nav>
         </div>
 
-        <button className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold text-sm hover:opacity-90 transition-opacity">
+        <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-full font-semibold text-sm hover:opacity-90 transition-opacity">
           Connect Wallet
         </button>
       </div>

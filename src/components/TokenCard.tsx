@@ -16,24 +16,24 @@ const TokenCard = ({ id, symbol, name, price, liquidity, volume }: TokenCardProp
       <TerminalCard className="hover:shadow-xl hover:border-primary transition-all cursor-pointer group">
         <div className="space-y-6">
           <div className="flex items-baseline justify-between">
-            <h3 className="text-3xl font-bold group-hover:text-primary transition-colors">
+            <h3 className="text-5xl font-extrabold group-hover:text-primary transition-colors">
               ${symbol}
             </h3>
-            <span className="text-sm text-muted-foreground">{name}</span>
+            <span className="text-sm text-muted-foreground font-medium">{name}</span>
           </div>
           
           <div className="space-y-4">
             <div className="flex justify-between items-baseline">
-              <span className="text-sm text-muted-foreground">Price</span>
-              <span className="font-mono font-semibold text-lg">${price.toFixed(6)}</span>
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Price</span>
+              <span className="font-mono font-extrabold text-2xl">${price.toFixed(6)}</span>
             </div>
             <div className="flex justify-between items-baseline">
-              <span className="text-sm text-muted-foreground">Liquidity</span>
-              <span className="font-mono font-semibold">{liquidity.toLocaleString()} SOL</span>
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Liquidity</span>
+              <span className="font-mono font-extrabold text-2xl">{liquidity.toLocaleString()} SOL</span>
             </div>
             <div className="flex justify-between items-baseline">
-              <span className="text-sm text-muted-foreground">Volume 24h</span>
-              <span className="font-mono font-semibold">${volume.toLocaleString()}</span>
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Volume 24h</span>
+              <span className="font-mono font-extrabold text-2xl">${volume.toLocaleString()}</span>
             </div>
           </div>
         </div>

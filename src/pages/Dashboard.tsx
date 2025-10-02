@@ -32,62 +32,55 @@ const Dashboard = () => {
       
       <main className="container mx-auto px-6 py-12 max-w-7xl">
         {/* Hero Section */}
-        <div className="mb-16 text-center">
-          <h1 className="text-6xl md:text-7xl font-bold mb-4 tracking-tight">
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl md:text-6xl font-bold mb-3">
             VisionFlow
           </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Autonomous Solana coin generator powered by AI. Automated launches, liquidity pools, and transparent fee distribution.
+          <p className="text-muted-foreground text-base max-w-2xl mx-auto">
+            Autonomous Solana coin generator powered by AI
           </p>
         </div>
 
         {/* Next Launch Section */}
         <div className="mb-8">
-          <TerminalCard title="NEXT_TOKEN_LAUNCH">
-            <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
+          <TerminalCard>
+            <div className="text-center space-y-3">
+              <div className="text-7xl md:text-8xl font-extrabold">
+                <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
+              </div>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Next Token Launch</p>
+            </div>
           </TerminalCard>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <TerminalCard title="Treasury Wallet">
+          <TerminalCard>
             <div className="space-y-3">
-              <div className="text-5xl font-bold">1,247.83</div>
-              <div className="text-sm text-muted-foreground">SOL Balance</div>
-              <div className="border-t border-border pt-5 mt-5">
-                <div className="text-xs text-muted-foreground mb-2">Wallet Address</div>
-                <div className="text-xs font-mono text-foreground">8x5kJ...g3jL</div>
-              </div>
+              <div className="text-7xl md:text-8xl font-extrabold">1,247.83</div>
+              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Treasury Wallet (SOL)</div>
             </div>
           </TerminalCard>
 
-          <TerminalCard title="Lucky Distribution (7D)">
+          <TerminalCard>
             <div className="space-y-3">
-              <div className="text-5xl font-bold text-primary">142.50</div>
-              <div className="text-sm text-muted-foreground">SOL Distributed</div>
-              <div className="border-t border-border pt-5 mt-5">
-                <div className="text-xs text-muted-foreground mb-2">Last Injection</div>
-                <div className="text-xs font-mono text-foreground">0.5 SOL → 8x5k...3jL</div>
-              </div>
+              <div className="text-7xl md:text-8xl font-extrabold text-primary">142.50</div>
+              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Lucky Distribution (7D SOL)</div>
             </div>
           </TerminalCard>
 
-          <TerminalCard title="Total Tokens Minted">
+          <TerminalCard>
             <div className="space-y-3">
-              <div className="text-5xl font-bold">127</div>
-              <div className="text-sm text-muted-foreground">Lifetime Tokens</div>
-              <div className="border-t border-border pt-5 mt-5">
-                <div className="text-xs text-muted-foreground mb-2">Avg Launch Interval</div>
-                <div className="text-xs font-mono text-foreground">2h 15m</div>
-              </div>
+              <div className="text-7xl md:text-8xl font-extrabold">127</div>
+              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total Tokens Minted</div>
             </div>
           </TerminalCard>
         </div>
 
         {/* Recent Tokens */}
         <div className="mb-16">
-          <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-3xl font-bold">Recent Tokens</h2>
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Recent Tokens</h2>
             <a href="/explorer" className="text-sm font-semibold text-primary hover:opacity-80 transition-opacity">
               View All →
             </a>
@@ -103,7 +96,7 @@ const Dashboard = () => {
         <div className="bg-black text-white rounded-3xl p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-3 h-3 rounded-full bg-primary"></div>
-            <h3 className="text-sm font-mono uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-xs font-medium uppercase tracking-wide text-gray-400">
               AI System Console
             </h3>
           </div>
