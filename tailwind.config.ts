@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        pixel: ['"VT323"', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
