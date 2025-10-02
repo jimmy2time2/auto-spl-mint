@@ -8,43 +8,44 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Hybrid Terminal + Cash App Theme */
-    --background: 73 100% 85%;     /* Neon yellow-green like terminal */
-    --foreground: 0 0% 5%;         /* Black text */
+    /* Cash App Inspired Design System */
+    --background: 0 0% 98%;        /* Light gray background */
+    --foreground: 0 0% 8%;         /* Dark text */
 
     --card: 0 0% 100%;             /* White cards */
-    --card-foreground: 0 0% 5%;
+    --card-foreground: 0 0% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 5%;
+    --popover-foreground: 0 0% 8%;
 
     --primary: 142 76% 36%;        /* Cash App green #00D632 */
-    --primary-foreground: 0 0% 0%; /* Black on green */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 8%;          /* Black background */
-    --secondary-foreground: 73 100% 85%;
+    --secondary: 0 0% 96%;         /* Light gray */
+    --secondary-foreground: 0 0% 8%;
 
-    --muted: 73 50% 75%;
-    --muted-foreground: 0 0% 30%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 73 100% 50%;         /* Bright yellow-green */
-    --accent-foreground: 0 0% 5%;
+    --accent: 142 76% 36%;         /* Green accent */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 10%;            /* Dark borders */
+    --border: 0 0% 89%;            /* Light borders */
     --input: 0 0% 100%;
     --ring: 142 76% 36%;
 
-    --radius: 0.5rem;
+    --radius: 1.5rem;              /* Rounded corners */
 
+    /* Dark sections */
+    --dark-bg: 0 0% 8%;
+    --dark-text: 0 0% 100%;
+    
     /* Terminal-specific tokens */
     --terminal-glow: 142 76% 36%;
-    --terminal-dim: 142 50% 50%;
-    --error-red: 0 84% 60%;
     --success-green: 142 76% 36%;
-    --warning-orange: 30 100% 50%;
   }
 }
 
@@ -57,19 +58,16 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-sans;
   }
 
-  /* Terminal typography */
+  /* Terminal typography - used sparingly */
   .terminal-text {
-    font-family: 'VT323', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.05em;
-    font-size: 1.15em;
-    line-height: 1.2;
+    letter-spacing: 0.02em;
   }
 
   .pixel-text {
     font-family: 'VT323', monospace;
-    font-size: 1.3em;
-    line-height: 1;
+    letter-spacing: 0.05em;
   }
 
   .ascii-border {

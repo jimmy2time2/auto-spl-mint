@@ -30,20 +30,15 @@ const Dashboard = () => {
       <Navigation />
       <AiMindTicker />
       
-      <main className="container mx-auto px-4 py-8 max-w-screen-xl">
-        {/* Terminal Header */}
-        <div className="mb-8 border-2 border-black bg-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <div className="pixel-text text-primary text-6xl md:text-7xl mb-4 text-center">
-            {'<ERROR 404>'}
-          </div>
-          <div className="terminal-text text-primary text-center text-xl">
-            // AUTONOMOUS_SOLANA_COIN_GENERATOR_v2.0
-          </div>
-          <div className="flex justify-center gap-8 mt-4 terminal-text text-primary text-sm">
-            <span>{'>>>'} SYSTEM_ACTIVE</span>
-            <span>{'>>>'} TOKENS_MINTED: 127</span>
-            <span>{'>>>'} NEXT_LAUNCH: 2H_15M</span>
-          </div>
+      <main className="container mx-auto px-6 py-12 max-w-7xl">
+        {/* Hero Section */}
+        <div className="mb-16 text-center">
+          <h1 className="text-6xl md:text-7xl font-bold mb-4 tracking-tight">
+            VisionFlow
+          </h1>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Autonomous Solana coin generator powered by AI. Automated launches, liquidity pools, and transparent fee distribution.
+          </p>
         </div>
 
         {/* Next Launch Section */}
@@ -54,47 +49,47 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <TerminalCard title="TREASURY_WALLET">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          <TerminalCard title="Treasury Wallet">
             <div className="space-y-3">
-              <div className="pixel-text text-6xl font-bold text-primary">1247.83</div>
-              <div className="terminal-text text-foreground">SOL_BALANCE</div>
-              <div className="border-t-2 border-dashed border-black pt-4 mt-4">
-                <div className="terminal-text text-muted-foreground text-sm">WALLET_ADDRESS:</div>
-                <div className="terminal-text text-sm break-all">8x5kJ...g3jL</div>
+              <div className="text-5xl font-bold">1,247.83</div>
+              <div className="text-sm text-muted-foreground">SOL Balance</div>
+              <div className="border-t border-border pt-5 mt-5">
+                <div className="text-xs text-muted-foreground mb-2">Wallet Address</div>
+                <div className="text-xs font-mono text-foreground">8x5kJ...g3jL</div>
               </div>
             </div>
           </TerminalCard>
 
-          <TerminalCard title="LUCKY_DISTRIBUTION_7D">
+          <TerminalCard title="Lucky Distribution (7D)">
             <div className="space-y-3">
-              <div className="pixel-text text-6xl font-bold text-primary">142.50</div>
-              <div className="terminal-text text-foreground">SOL_DISTRIBUTED</div>
-              <div className="border-t-2 border-dashed border-black pt-4 mt-4">
-                <div className="terminal-text text-muted-foreground text-sm">LAST_INJECTION:</div>
-                <div className="terminal-text text-sm">0.5 SOL {'>'} 8x5k...3jL</div>
+              <div className="text-5xl font-bold text-primary">142.50</div>
+              <div className="text-sm text-muted-foreground">SOL Distributed</div>
+              <div className="border-t border-border pt-5 mt-5">
+                <div className="text-xs text-muted-foreground mb-2">Last Injection</div>
+                <div className="text-xs font-mono text-foreground">0.5 SOL → 8x5k...3jL</div>
               </div>
             </div>
           </TerminalCard>
 
-          <TerminalCard title="TOTAL_TOKENS_MINTED">
+          <TerminalCard title="Total Tokens Minted">
             <div className="space-y-3">
-              <div className="pixel-text text-6xl font-bold text-primary">127</div>
-              <div className="terminal-text text-foreground">LIFETIME_TOKENS</div>
-              <div className="border-t-2 border-dashed border-black pt-4 mt-4">
-                <div className="terminal-text text-muted-foreground text-sm">AVG_LAUNCH_INTERVAL:</div>
-                <div className="terminal-text text-sm">2H_15M</div>
+              <div className="text-5xl font-bold">127</div>
+              <div className="text-sm text-muted-foreground">Lifetime Tokens</div>
+              <div className="border-t border-border pt-5 mt-5">
+                <div className="text-xs text-muted-foreground mb-2">Avg Launch Interval</div>
+                <div className="text-xs font-mono text-foreground">2h 15m</div>
               </div>
             </div>
           </TerminalCard>
         </div>
 
         {/* Recent Tokens */}
-        <div className="mb-8">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="pixel-text text-3xl">{'>'} RECENT_TOKENS</h2>
-            <a href="/explorer" className="terminal-text text-primary hover:opacity-80 transition-opacity">
-              [VIEW_ALL] {'>>>'}
+        <div className="mb-16">
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-3xl font-bold">Recent Tokens</h2>
+            <a href="/explorer" className="text-sm font-semibold text-primary hover:opacity-80 transition-opacity">
+              View All →
             </a>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -105,10 +100,14 @@ const Dashboard = () => {
         </div>
 
         {/* AI Console Log */}
-        <div>
-          <TerminalCard title="AI_SYSTEM_CONSOLE">
-            <ConsoleLog logs={mockLogs} />
-          </TerminalCard>
+        <div className="bg-black text-white rounded-3xl p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-3 h-3 rounded-full bg-primary"></div>
+            <h3 className="text-sm font-mono uppercase tracking-wider text-muted-foreground">
+              AI System Console
+            </h3>
+          </div>
+          <ConsoleLog logs={mockLogs} />
         </div>
       </main>
     </div>
