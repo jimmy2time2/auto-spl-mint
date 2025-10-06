@@ -7,6 +7,7 @@
 
 import { AIMindAgent } from "@/ai/agent";
 import { CoinGovernor } from "@/ai/coinGovernor";
+import { FundMonitor } from "@/ai/fundMonitor";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface HeartbeatConfig {
@@ -18,17 +19,21 @@ export interface HeartbeatConfig {
 export class AutonomousHeartbeat {
   private agent: AIMindAgent;
   private governor: CoinGovernor;
+  private fundMonitor: FundMonitor;
   private isRunning: boolean = false;
+  private retryCount: number = 0;
+  private readonly MAX_RETRIES = 3;
   
   private config: HeartbeatConfig = {
-    minHours: 1,
-    maxHours: 6,
+    minHours: 0.5, // 30 minutes
+    maxHours: 0.5, // 30 minutes (fixed interval)
     enabled: true
   };
 
   constructor() {
     this.agent = new AIMindAgent();
     this.governor = new CoinGovernor();
+    this.fundMonitor = new FundMonitor();
   }
 
   /**
@@ -105,30 +110,60 @@ export class AutonomousHeartbeat {
   }
 
   /**
-   * Handle coin creation
+   * Handle coin creation with retry logic
    */
   private async handleCoinCreation(decision: any): Promise<void> {
     console.log('🪙 [HEARTBEAT] Creating new coin...');
 
     const params = decision.data || {};
-    const result = await this.governor.launchCoin(params);
+    
+    // Try minting with retries
+    for (let attempt = 0; attempt <= this.MAX_RETRIES; attempt++) {
+      try {
+        const result = await this.governor.launchCoin(params);
 
-    if (result.success) {
-      console.log('✅ [HEARTBEAT] Coin created:', result.tokenId);
-      
-      // Log the creation
-      await supabase.from('protocol_activity').insert([{
-        activity_type: 'autonomous_coin_creation',
-        token_id: result.tokenId,
-        description: `AI Mind created new token: ${params.name || 'Unknown'}`,
-        metadata: {
-          params,
-          distribution: result.distribution,
-          reasoning: decision.reasoning
+        if (result.success) {
+          console.log('✅ [HEARTBEAT] Coin created:', result.tokenId);
+          this.retryCount = 0; // Reset on success
+          
+          // Log the creation
+          await supabase.from('protocol_activity').insert([{
+            activity_type: 'autonomous_coin_creation',
+            token_id: result.tokenId,
+            description: `AI Mind created new token: ${params.name || 'Unknown'}`,
+            metadata: {
+              params,
+              distribution: result.distribution,
+              reasoning: decision.reasoning,
+              attempt: attempt + 1
+            }
+          }]);
+          
+          return; // Success!
+        } else {
+          throw new Error(result.error || 'Mint failed');
         }
-      }]);
-    } else {
-      console.error('❌ [HEARTBEAT] Coin creation failed:', result.error);
+      } catch (error) {
+        console.error(`❌ [HEARTBEAT] Mint attempt ${attempt + 1}/${this.MAX_RETRIES + 1} failed:`, error);
+        
+        if (attempt < this.MAX_RETRIES) {
+          const delay = Math.pow(2, attempt) * 1000; // Exponential backoff
+          console.log(`⏳ [HEARTBEAT] Retrying in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        } else {
+          console.error('❌ [HEARTBEAT] All mint attempts failed');
+          
+          // Log error
+          await supabase.from('logs').insert([{
+            action: 'MINT_FAILURE',
+            details: {
+              error: error instanceof Error ? error.message : 'Unknown',
+              attempts: this.MAX_RETRIES + 1,
+              timestamp: new Date().toISOString()
+            } as any
+          }]);
+        }
+      }
     }
   }
 

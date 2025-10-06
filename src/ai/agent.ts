@@ -7,6 +7,8 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import { MarketAnalyzer } from "./marketAnalyzer";
+import { FundMonitor } from "./fundMonitor";
 
 export interface MarketSignals {
   recentMinters: number;
@@ -26,8 +28,15 @@ export interface AIDecision {
 
 export class AIMindAgent {
   private lastAnalysisTime: Date | null = null;
-  private readonly MIN_HOURS_BETWEEN_MINTS = 12;
+  private readonly MIN_HOURS_BETWEEN_MINTS = 24; // 24 hours minimum
   private readonly MAX_HOURS_BETWEEN_MINTS = 168; // 1 week
+  private marketAnalyzer: MarketAnalyzer;
+  private fundMonitor: FundMonitor;
+
+  constructor() {
+    this.marketAnalyzer = new MarketAnalyzer();
+    this.fundMonitor = new FundMonitor();
+  }
 
   /**
    * Main analysis loop - called by scheduler
@@ -36,10 +45,26 @@ export class AIMindAgent {
     console.log('🧠 [AI MIND] Starting autonomous analysis...');
     
     try {
-      const signals = await this.gatherMarketSignals();
-      const decision = await this.makeDecision(signals);
+      // Step 1: Check wallet funds
+      const fundStatus = await this.fundMonitor.checkFunds();
       
-      await this.logDecision(decision, signals);
+      if (!fundStatus.canMint) {
+        console.warn('[AI MIND] ⚠️ Minting paused - low funds');
+        return {
+          action: 'wait',
+          confidence: 0,
+          reasoning: 'Insufficient wallet funds for minting'
+        };
+      }
+
+      // Step 2: Gather market signals (includes external data)
+      const marketMetrics = await this.marketAnalyzer.analyze();
+      const signals = await this.gatherMarketSignals();
+      
+      // Step 3: Make decision using AI + external data
+      const decision = await this.makeDecision(signals, marketMetrics);
+      
+      await this.logDecision(decision, signals, marketMetrics);
       
       this.lastAnalysisTime = new Date();
       
@@ -109,8 +134,15 @@ export class AIMindAgent {
   /**
    * Make intelligent decision based on signals
    */
-  private async makeDecision(signals: MarketSignals): Promise<AIDecision> {
+  private async makeDecision(signals: MarketSignals, marketMetrics?: any): Promise<AIDecision> {
     console.log('📊 [AI MIND] Market signals:', signals);
+    if (marketMetrics) {
+      console.log('🌐 [AI MIND] External metrics:', {
+        sentiment: marketMetrics.marketSentiment,
+        volume: marketMetrics.solanaVolume24h,
+        trends: marketMetrics.trendingHashtags?.slice(0, 3)
+      });
+    }
 
     // Call the mind-think edge function for AI-powered decision
     try {
@@ -224,7 +256,7 @@ export class AIMindAgent {
   /**
    * Log decision to database
    */
-  private async logDecision(decision: AIDecision, signals: MarketSignals) {
+  private async logDecision(decision: AIDecision, signals: MarketSignals, marketMetrics?: any) {
     try {
       await supabase.from('protocol_activity').insert([{
         activity_type: 'ai_mind_analysis',
@@ -232,6 +264,7 @@ export class AIMindAgent {
         metadata: {
           decision,
           signals,
+          marketMetrics,
           timestamp: new Date().toISOString()
         } as any
       }]);
@@ -242,9 +275,10 @@ export class AIMindAgent {
           action: decision.action,
           confidence: decision.confidence,
           reasoning: decision.reasoning,
-          signals
-        } as any
-      }]);
+        signals,
+        marketMetrics
+      } as any
+    }]);
     } catch (error) {
       console.error('[AI MIND] Error logging decision:', error);
     }
