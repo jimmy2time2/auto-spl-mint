@@ -14,7 +14,152 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      logs: {
+        Row: {
+          action: string
+          details: Json | null
+          id: string
+          timestamp: string
+          token_id: string | null
+        }
+        Insert: {
+          action: string
+          details?: Json | null
+          id?: string
+          timestamp?: string
+          token_id?: string | null
+        }
+        Update: {
+          action?: string
+          details?: Json | null
+          id?: string
+          timestamp?: string
+          token_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settings: {
+        Row: {
+          fee_split_creator: number
+          fee_split_lucky: number
+          fee_split_treasury: number
+          id: string
+          last_update: string
+          launch_freq_hours: number
+          next_launch_timestamp: string | null
+          status: string
+        }
+        Insert: {
+          fee_split_creator?: number
+          fee_split_lucky?: number
+          fee_split_treasury?: number
+          id?: string
+          last_update?: string
+          launch_freq_hours?: number
+          next_launch_timestamp?: string | null
+          status?: string
+        }
+        Update: {
+          fee_split_creator?: number
+          fee_split_lucky?: number
+          fee_split_treasury?: number
+          id?: string
+          last_update?: string
+          launch_freq_hours?: number
+          next_launch_timestamp?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      tokens: {
+        Row: {
+          bonding_curve_data: Json | null
+          created_at: string
+          holders: number
+          id: string
+          launch_timestamp: string
+          liquidity: number
+          mint_address: string | null
+          name: string
+          pool_address: string | null
+          price: number
+          supply: number
+          symbol: string
+          volume_24h: number
+        }
+        Insert: {
+          bonding_curve_data?: Json | null
+          created_at?: string
+          holders?: number
+          id?: string
+          launch_timestamp?: string
+          liquidity?: number
+          mint_address?: string | null
+          name: string
+          pool_address?: string | null
+          price?: number
+          supply: number
+          symbol: string
+          volume_24h?: number
+        }
+        Update: {
+          bonding_curve_data?: Json | null
+          created_at?: string
+          holders?: number
+          id?: string
+          launch_timestamp?: string
+          liquidity?: number
+          mint_address?: string | null
+          name?: string
+          pool_address?: string | null
+          price?: number
+          supply?: number
+          symbol?: string
+          volume_24h?: number
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          address: string
+          balance: number
+          created_at: string
+          id: string
+          last_reward_timestamp: string | null
+          reward_count: number
+          total_rewards: number
+          type: Database["public"]["Enums"]["wallet_type"]
+        }
+        Insert: {
+          address: string
+          balance?: number
+          created_at?: string
+          id?: string
+          last_reward_timestamp?: string | null
+          reward_count?: number
+          total_rewards?: number
+          type: Database["public"]["Enums"]["wallet_type"]
+        }
+        Update: {
+          address?: string
+          balance?: number
+          created_at?: string
+          id?: string
+          last_reward_timestamp?: string | null
+          reward_count?: number
+          total_rewards?: number
+          type?: Database["public"]["Enums"]["wallet_type"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +168,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      wallet_type:
+        | "treasury"
+        | "creator"
+        | "router"
+        | "lucky_distributor"
+        | "public_lucky"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +300,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      wallet_type: [
+        "treasury",
+        "creator",
+        "router",
+        "lucky_distributor",
+        "public_lucky",
+      ],
+    },
   },
 } as const
