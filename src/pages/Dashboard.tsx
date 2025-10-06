@@ -6,9 +6,8 @@ import CountdownTimer from "@/components/CountdownTimer";
 import TokenCard from "@/components/TokenCard";
 import ConsoleLog from "@/components/ConsoleLog";
 import AiMindTicker from "@/components/AiMindTicker";
-import MintTokenDialog from "@/components/MintTokenDialog";
 import { Button } from "@/components/ui/button";
-import { Plus, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
+import { Sparkles, TrendingUp, Users, Zap, Activity } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Token = Tables<"tokens">;
@@ -24,7 +23,6 @@ const Dashboard = () => {
   const [treasuryBalance, setTreasuryBalance] = useState(0);
   const [luckyDistribution, setLuckyDistribution] = useState(0);
   const [totalTokens, setTotalTokens] = useState(0);
-  const [mintDialogOpen, setMintDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Fetch settings
@@ -153,21 +151,6 @@ const Dashboard = () => {
     };
   });
 
-  const refreshData = () => {
-    // Refresh tokens and stats
-    const fetchTokens = async () => {
-      const { data } = await supabase
-        .from("tokens")
-        .select("*")
-        .order("launch_timestamp", { ascending: false })
-        .limit(3);
-      
-      if (data) {
-        setTokens(data);
-      }
-    };
-    fetchTokens();
-  };
 
   if (loading) {
     return (
@@ -206,39 +189,41 @@ const Dashboard = () => {
       
       <AiMindTicker />
       
-      <MintTokenDialog 
-        open={mintDialogOpen} 
-        onOpenChange={setMintDialogOpen}
-        onSuccess={refreshData}
-      />
-      
       <main className="container mx-auto px-6 py-12 max-w-7xl">
         {/* Hero Section */}
         <div className="mb-12 border-2 border-border p-8 bg-card">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex-1">
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-2 text-muted-foreground">AUTONOMOUS SYSTEM</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-2 text-muted-foreground">
+                <Activity className="inline w-3 h-3 mr-1 animate-pulse" />
+                AUTONOMOUS AI SYSTEM
+              </div>
               <h1 className="text-5xl md:text-7xl font-bold mb-4 leading-none">
                 VISIONFLOW
               </h1>
-              <p className="text-base md:text-lg uppercase tracking-wide font-medium mb-6">
+              <p className="text-base md:text-lg uppercase tracking-wide font-medium mb-4">
                 Solana Token Generator — Artificial Intelligence
+              </p>
+              <p className="text-sm text-muted-foreground mb-6 max-w-2xl">
+                Fully autonomous AI system that generates and launches tokens every {settings?.launch_freq_hours || 12} hours. 
+                The AI handles distribution, fee collection, whale detection, and lucky wallet selection automatically.
               </p>
               <div className="flex gap-4">
                 <Button
-                  onClick={() => setMintDialogOpen(true)}
-                  className="bg-black text-white border-2 border-black font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all h-14 px-8"
-                >
-                  <Plus className="mr-2 h-5 w-5" />
-                  MINT_NEW_TOKEN
-                </Button>
-                <Button
                   variant="outline"
                   onClick={() => window.location.href = '/explorer'}
-                  className="border-2 border-black font-bold text-sm uppercase tracking-widest h-14 px-8"
+                  className="border-2 border-black font-bold text-sm uppercase tracking-widest h-12 px-6"
                 >
                   <TrendingUp className="mr-2 h-5 w-5" />
                   EXPLORE_TOKENS
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.href = '/leaderboard'}
+                  className="border-2 border-black font-bold text-sm uppercase tracking-widest h-12 px-6"
+                >
+                  <Users className="mr-2 h-5 w-5" />
+                  LUCKY_WALLETS
                 </Button>
               </div>
             </div>
@@ -275,17 +260,36 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Next Launch Section */}
+        {/* Next AI Launch Section */}
         <div className="mb-8">
-          <TerminalCard title="NEXT LAUNCH">
-            <div className="text-center space-y-4">
+          <TerminalCard title="NEXT_AI_AUTONOMOUS_LAUNCH">
+            <div className="text-center space-y-6">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Activity className="w-6 h-6 animate-pulse text-primary" />
+                <span className="text-sm font-bold uppercase tracking-widest">
+                  AI SYSTEM GENERATING TOKEN
+                </span>
+              </div>
               <div className="text-7xl md:text-8xl font-extrabold font-mono">
                 <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
               </div>
-              <div className="flex justify-center gap-8 text-xs border-t-2 border-border pt-4">
-                <div><span className="font-bold uppercase tracking-wider">Type:</span> <span className="font-mono">AUTO</span></div>
-                <div><span className="font-bold uppercase tracking-wider">Supply:</span> <span className="font-mono">1M</span></div>
-                <div><span className="font-bold uppercase tracking-wider">Liquidity:</span> <span className="font-mono">~50 SOL</span></div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs border-t-2 border-border pt-4">
+                <div className="border-r border-border pr-4">
+                  <div className="font-bold uppercase tracking-wider text-muted-foreground mb-1">Mode</div>
+                  <div className="font-mono">AUTONOMOUS</div>
+                </div>
+                <div className="border-r border-border pr-4">
+                  <div className="font-bold uppercase tracking-wider text-muted-foreground mb-1">Frequency</div>
+                  <div className="font-mono">{settings?.launch_freq_hours || 12}H</div>
+                </div>
+                <div className="border-r border-border pr-4">
+                  <div className="font-bold uppercase tracking-wider text-muted-foreground mb-1">Distribution</div>
+                  <div className="font-mono">AI:7% PUB:83%</div>
+                </div>
+                <div>
+                  <div className="font-bold uppercase tracking-wider text-muted-foreground mb-1">Status</div>
+                  <div className="font-mono">{isPaused ? 'PAUSED' : 'ACTIVE'}</div>
+                </div>
               </div>
             </div>
           </TerminalCard>
