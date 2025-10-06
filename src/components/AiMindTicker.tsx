@@ -13,9 +13,9 @@ const AiMindTicker = () => {
   ];
 
   return (
-    <div className="bg-black text-primary border-y border-black overflow-hidden py-3">
+    <div className="bg-black text-primary border-y-2 border-black overflow-hidden py-2">
       <div className="ticker-wrapper">
-        <div className="ticker-content text-xs font-mono tracking-wider">
+        <div className="ticker-content text-[10px] font-mono tracking-widest uppercase font-bold">
           {thoughts.map((thought, index) => (
             <span key={index} className="ticker-item">
               {'>'} {thought} <span className="mx-8">•</span>

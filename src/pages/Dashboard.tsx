@@ -28,64 +28,100 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      
+      {/* Info Bar */}
+      <div className="border-b-2 border-border bg-card">
+        <div className="container mx-auto px-6 py-3 max-w-7xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+            <div className="border-r border-border pr-4">
+              <span className="font-bold uppercase tracking-wider">Status:</span> <span className="text-primary font-mono">● ACTIVE</span>
+            </div>
+            <div className="border-r border-border pr-4">
+              <span className="font-bold uppercase tracking-wider">Network:</span> <span className="font-mono">SOLANA</span>
+            </div>
+            <div className="border-r border-border pr-4">
+              <span className="font-bold uppercase tracking-wider">Tokens:</span> <span className="font-mono">127</span>
+            </div>
+            <div>
+              <span className="font-bold uppercase tracking-wider">Treasury:</span> <span className="font-mono">1,247.83 SOL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <AiMindTicker />
       
       <main className="container mx-auto px-6 py-12 max-w-7xl">
         {/* Hero Section */}
-        <div className="mb-12 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-3">
-            VisionFlow
-          </h1>
-          <p className="text-muted-foreground text-base max-w-2xl mx-auto">
-            Autonomous Solana coin generator powered by AI
-          </p>
+        <div className="mb-12 border-b-2 border-border pb-8">
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-2">SYSTÈME AUTONOME</div>
+              <h1 className="text-6xl md:text-7xl font-bold mb-2 leading-none">
+                VISIONFLOW
+              </h1>
+              <p className="text-sm uppercase tracking-wide font-medium">
+                Générateur de tokens Solana — Intelligence artificielle
+              </p>
+            </div>
+            <div className="text-right text-xs border-l-2 border-border pl-6">
+              <div className="font-bold uppercase tracking-wider mb-1">Version</div>
+              <div className="font-mono mb-3">2.0.1</div>
+              <div className="font-bold uppercase tracking-wider mb-1">Uptime</div>
+              <div className="font-mono">99.9%</div>
+            </div>
+          </div>
         </div>
 
         {/* Next Launch Section */}
         <div className="mb-8">
-          <TerminalCard>
-            <div className="text-center space-y-3">
-              <div className="text-7xl md:text-8xl font-extrabold">
+          <TerminalCard title="PROCHAIN LANCEMENT">
+            <div className="text-center space-y-4">
+              <div className="text-7xl md:text-8xl font-extrabold font-mono">
                 <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
               </div>
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Next Token Launch</p>
+              <div className="flex justify-center gap-8 text-xs border-t-2 border-border pt-4">
+                <div><span className="font-bold uppercase tracking-wider">Type:</span> <span className="font-mono">AUTO</span></div>
+                <div><span className="font-bold uppercase tracking-wider">Supply:</span> <span className="font-mono">1M</span></div>
+                <div><span className="font-bold uppercase tracking-wider">Liquidity:</span> <span className="font-mono">~50 SOL</span></div>
+              </div>
             </div>
           </TerminalCard>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <TerminalCard>
-            <div className="space-y-3">
-              <div className="text-7xl md:text-8xl font-extrabold">1,247.83</div>
-              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Treasury Wallet (SOL)</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+          <TerminalCard title="TRÉSORERIE">
+            <div className="space-y-2">
+              <div className="text-5xl md:text-6xl font-bold font-mono">1,247.83</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">SOLANA (SOL)</div>
             </div>
           </TerminalCard>
 
-          <TerminalCard>
-            <div className="space-y-3">
-              <div className="text-7xl md:text-8xl font-extrabold text-primary">142.50</div>
-              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Lucky Distribution (7D SOL)</div>
+          <TerminalCard title="DISTRIBUTION LUCKY (7J)">
+            <div className="space-y-2">
+              <div className="text-5xl md:text-6xl font-bold font-mono text-primary">142.50</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">SOLANA (SOL)</div>
             </div>
           </TerminalCard>
 
-          <TerminalCard>
-            <div className="space-y-3">
-              <div className="text-7xl md:text-8xl font-extrabold">127</div>
-              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total Tokens Minted</div>
+          <TerminalCard title="TOKENS MINTÉS">
+            <div className="space-y-2">
+              <div className="text-5xl md:text-6xl font-bold font-mono">127</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">TOTAL</div>
             </div>
           </TerminalCard>
         </div>
 
         {/* Recent Tokens */}
-        <div className="mb-16">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Recent Tokens</h2>
-            <a href="/explorer" className="text-sm font-semibold text-primary hover:opacity-80 transition-opacity">
-              View All →
+        <div className="mb-12 border-2 border-border p-6">
+          <div className="mb-6 flex items-center justify-between border-b-2 border-border pb-4">
+            <h2 className="text-2xl font-bold uppercase tracking-tight">Tokens Récents</h2>
+            <a href="/explorer" className="text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors border border-border px-3 py-1">
+              VOIR TOUT →
             </a>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {mockTokens.map((token) => (
               <TokenCard key={token.id} {...token} />
             ))}
@@ -93,11 +129,11 @@ const Dashboard = () => {
         </div>
 
         {/* AI Console Log */}
-        <div className="bg-black text-white rounded-3xl p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-3 h-3 rounded-full bg-primary"></div>
-            <h3 className="text-xs font-medium uppercase tracking-wide text-gray-400">
-              AI System Console
+        <div className="bg-black text-white border-2 border-black p-6">
+          <div className="flex items-center gap-3 mb-6 border-b border-gray-800 pb-3">
+            <div className="w-2 h-2 bg-primary"></div>
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              CONSOLE SYSTÈME IA
             </h3>
           </div>
           <ConsoleLog logs={mockLogs} />

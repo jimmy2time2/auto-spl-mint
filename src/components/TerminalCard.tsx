@@ -8,10 +8,10 @@ interface TerminalCardProps {
 
 const TerminalCard = ({ title, children, className = "" }: TerminalCardProps) => {
   return (
-    <div className={`bg-card border border-border p-8 rounded-3xl hover:shadow-lg transition-shadow ${className}`}>
+    <div className={`bg-card border-2 border-border p-6 hover:shadow-none transition-all ${className}`}>
       {title && (
         <div className="mb-6">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-foreground border-b border-border pb-2">
             {title}
           </h3>
         </div>

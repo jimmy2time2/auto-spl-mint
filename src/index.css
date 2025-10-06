@@ -33,11 +33,11 @@ All colors MUST be HSL.
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 89%;            /* Light borders */
+    --border: 0 0% 0%;            /* Strong black borders */
     --input: 0 0% 100%;
     --ring: 142 76% 36%;
 
-    --radius: 1.5rem;              /* Rounded corners */
+    --radius: 0rem;              /* Sharp corners for brutalist aesthetic */
 
     /* Dark sections */
     --dark-bg: 0 0% 8%;
