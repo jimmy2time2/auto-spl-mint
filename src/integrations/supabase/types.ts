@@ -14,6 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
+      coin_distributions: {
+        Row: {
+          ai_wallet_amount: number
+          creator_wallet_amount: number
+          distribution_timestamp: string
+          id: string
+          lucky_wallet_amount: number
+          public_sale_amount: number
+          system_wallet_amount: number
+          token_id: string
+          total_supply: number
+        }
+        Insert: {
+          ai_wallet_amount?: number
+          creator_wallet_amount?: number
+          distribution_timestamp?: string
+          id?: string
+          lucky_wallet_amount?: number
+          public_sale_amount?: number
+          system_wallet_amount?: number
+          token_id: string
+          total_supply: number
+        }
+        Update: {
+          ai_wallet_amount?: number
+          creator_wallet_amount?: number
+          distribution_timestamp?: string
+          id?: string
+          lucky_wallet_amount?: number
+          public_sale_amount?: number
+          system_wallet_amount?: number
+          token_id?: string
+          total_supply?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coin_distributions_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_wallet_profits: {
+        Row: {
+          amount: number
+          creator_address: string
+          id: string
+          profit_source: string
+          timestamp: string
+          token_id: string
+          transaction_hash: string | null
+        }
+        Insert: {
+          amount: number
+          creator_address: string
+          id?: string
+          profit_source: string
+          timestamp?: string
+          token_id: string
+          transaction_hash?: string | null
+        }
+        Update: {
+          amount?: number
+          creator_address?: string
+          id?: string
+          profit_source?: string
+          timestamp?: string
+          token_id?: string
+          transaction_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_wallet_profits_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dao_eligibility: {
+        Row: {
+          flagged_reason: string | null
+          id: string
+          is_eligible: boolean
+          last_activity: string
+          max_buy_percentage: number
+          max_sell_percentage: number
+          token_id: string
+          total_bought: number
+          total_sold: number
+          wallet_address: string
+          whale_status: boolean
+        }
+        Insert: {
+          flagged_reason?: string | null
+          id?: string
+          is_eligible?: boolean
+          last_activity?: string
+          max_buy_percentage?: number
+          max_sell_percentage?: number
+          token_id: string
+          total_bought?: number
+          total_sold?: number
+          wallet_address: string
+          whale_status?: boolean
+        }
+        Update: {
+          flagged_reason?: string | null
+          id?: string
+          is_eligible?: boolean
+          last_activity?: string
+          max_buy_percentage?: number
+          max_sell_percentage?: number
+          token_id?: string
+          total_bought?: number
+          total_sold?: number
+          wallet_address?: string
+          whale_status?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dao_eligibility_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dao_treasury: {
+        Row: {
+          balance: number
+          id: string
+          last_update: string
+          total_distributed: number
+          total_received: number
+        }
+        Insert: {
+          balance?: number
+          id?: string
+          last_update?: string
+          total_distributed?: number
+          total_received?: number
+        }
+        Update: {
+          balance?: number
+          id?: string
+          last_update?: string
+          total_distributed?: number
+          total_received?: number
+        }
+        Relationships: []
+      }
       logs: {
         Row: {
           action: string
@@ -39,6 +195,123 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "logs_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lucky_wallet_selections: {
+        Row: {
+          activity_score: number
+          distribution_amount: number
+          id: string
+          is_recent_minter: boolean
+          selection_timestamp: string
+          token_id: string
+          wallet_address: string
+        }
+        Insert: {
+          activity_score?: number
+          distribution_amount?: number
+          id?: string
+          is_recent_minter?: boolean
+          selection_timestamp?: string
+          token_id: string
+          wallet_address: string
+        }
+        Update: {
+          activity_score?: number
+          distribution_amount?: number
+          id?: string
+          is_recent_minter?: boolean
+          selection_timestamp?: string
+          token_id?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lucky_wallet_selections_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profit_events: {
+        Row: {
+          creator_amount: number
+          dao_amount: number
+          id: string
+          lucky_amount: number
+          reinvestment_amount: number
+          sale_amount: number
+          timestamp: string
+          token_id: string
+          transaction_hash: string | null
+        }
+        Insert: {
+          creator_amount: number
+          dao_amount: number
+          id?: string
+          lucky_amount: number
+          reinvestment_amount: number
+          sale_amount: number
+          timestamp?: string
+          token_id: string
+          transaction_hash?: string | null
+        }
+        Update: {
+          creator_amount?: number
+          dao_amount?: number
+          id?: string
+          lucky_amount?: number
+          reinvestment_amount?: number
+          sale_amount?: number
+          timestamp?: string
+          token_id?: string
+          transaction_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profit_events_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      protocol_activity: {
+        Row: {
+          activity_type: string
+          description: string
+          id: string
+          metadata: Json | null
+          timestamp: string
+          token_id: string | null
+        }
+        Insert: {
+          activity_type: string
+          description: string
+          id?: string
+          metadata?: Json | null
+          timestamp?: string
+          token_id?: string | null
+        }
+        Update: {
+          activity_type?: string
+          description?: string
+          id?: string
+          metadata?: Json | null
+          timestamp?: string
+          token_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "protocol_activity_token_id_fkey"
             columns: ["token_id"]
             isOneToOne: false
             referencedRelation: "tokens"
@@ -126,6 +399,94 @@ export type Database = {
           volume_24h?: number
         }
         Relationships: []
+      }
+      trade_fees_log: {
+        Row: {
+          creator_fee: number
+          id: string
+          system_fee: number
+          timestamp: string
+          token_id: string
+          trade_amount: number
+          trade_type: string
+          trader_address: string
+          transaction_hash: string | null
+        }
+        Insert: {
+          creator_fee: number
+          id?: string
+          system_fee: number
+          timestamp?: string
+          token_id: string
+          trade_amount: number
+          trade_type: string
+          trader_address: string
+          transaction_hash?: string | null
+        }
+        Update: {
+          creator_fee?: number
+          id?: string
+          system_fee?: number
+          timestamp?: string
+          token_id?: string
+          trade_amount?: number
+          trade_type?: string
+          trader_address?: string
+          transaction_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_fees_log_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallet_activity_log: {
+        Row: {
+          activity_type: string
+          amount: number
+          id: string
+          is_whale_flagged: boolean
+          percentage_of_supply: number
+          timestamp: string
+          token_id: string
+          transaction_hash: string | null
+          wallet_address: string
+        }
+        Insert: {
+          activity_type: string
+          amount: number
+          id?: string
+          is_whale_flagged?: boolean
+          percentage_of_supply: number
+          timestamp?: string
+          token_id: string
+          transaction_hash?: string | null
+          wallet_address: string
+        }
+        Update: {
+          activity_type?: string
+          amount?: number
+          id?: string
+          is_whale_flagged?: boolean
+          percentage_of_supply?: number
+          timestamp?: string
+          token_id?: string
+          transaction_hash?: string | null
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_activity_log_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wallets: {
         Row: {
