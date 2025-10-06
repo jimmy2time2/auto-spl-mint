@@ -21,10 +21,14 @@ serve(async (req) => {
 
     console.log('Processing trade:', { tokenId, tradeType, tradeAmount });
 
-    // Fee calculation: 1% creator, 1% system
+    // MANDATORY 2% TRADING FEE: 1% Creator + 1% System  
+    // This fee CANNOT be bypassed - core protocol logic
     const creatorFee = Number(tradeAmount) * 0.01;
     const systemFee = Number(tradeAmount) * 0.01;
     const totalFees = creatorFee + systemFee;
+    const netAmount = Number(tradeAmount) - totalFees;
+    
+    console.log('[TRADE FEE] Creator:', creatorFee, 'System:', systemFee, 'Net:', netAmount);
 
     // Get token supply for whale detection
     const { data: token } = await supabaseClient

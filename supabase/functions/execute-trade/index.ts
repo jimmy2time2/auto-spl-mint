@@ -40,10 +40,14 @@ serve(async (req) => {
       console.log('🚨 WHALE DETECTED:', { trader_address, percentageOfSupply, trade_type });
     }
 
-    // Calculate fees: 1% creator, 1% system (total 2%)
+    // MANDATORY 2% TRADING FEE: 1% Creator + 1% System
+    // This fee CANNOT be bypassed - core protocol logic
     const creatorFee = tradeAmount * 0.01;
     const systemFee = tradeAmount * 0.01;
     const totalFees = creatorFee + systemFee;
+    const netAmount = tradeAmount - totalFees;
+    
+    console.log('[TRADE FEE] Creator:', creatorFee, 'System:', systemFee, 'Net:', netAmount);
 
     // 1. Log trade fees
     const { error: feeError } = await supabase

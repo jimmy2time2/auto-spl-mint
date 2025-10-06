@@ -80,11 +80,90 @@ async function handleTrade(supabase: any, data: any) {
   console.log(`[AI MIND] Trade: ${data.type}`);
   
   try {
-    await logAction(supabase, 'trade_observed', data);
-    await detectWhale(supabase, { wallet: data.wallet, event: { type: data.type, tokenId: data.tokenId, amount: data.amount } });
-    await updateDAO(supabase, { wallet: data.wallet, tokenId: data.tokenId });
+    const { wallet, type, amount, tokenId } = data;
+
+    // MANDATORY 2% TRADING FEE LOGIC
+    const creatorFee = Number(amount) * 0.01; // 1% to creator
+    const systemFee = Number(amount) * 0.01;  // 1% to system (AI)
+    const netAmount = Number(amount) - creatorFee - systemFee;
+
+    console.log(`[AI MIND] 💰 Fee breakdown: Creator=${creatorFee}, System=${systemFee}, Net=${netAmount}`);
+
+    // Get creator address from token
+    const { data: tokenData } = await supabase
+      .from('tokens')
+      .select('mint_address')
+      .eq('id', tokenId)
+      .single();
+
+    const creatorAddress = tokenData?.mint_address || 'system_default';
+    const systemAddress = Deno.env.get('SYSTEM_WALLET_ADDRESS') || 'system_ai_wallet';
+
+    // Log fees to trade_fees_log
+    const { error: feeLogError } = await supabase
+      .from('trade_fees_log')
+      .insert({
+        token_id: tokenId,
+        trader_address: wallet,
+        trade_type: type,
+        trade_amount: amount,
+        creator_fee: creatorFee,
+        system_fee: systemFee,
+        transaction_hash: `TX_${crypto.randomUUID()}`,
+        timestamp: new Date().toISOString()
+      });
+
+    if (feeLogError) {
+      console.error('[AI MIND] Fee log error:', feeLogError);
+    }
+
+    // Record creator profit
+    const { error: creatorProfitError } = await supabase
+      .from('creator_wallet_profits')
+      .insert({
+        token_id: tokenId,
+        creator_address: creatorAddress,
+        profit_source: `trade_${type}_fee`,
+        amount: creatorFee,
+        transaction_hash: `TX_${crypto.randomUUID()}`,
+        timestamp: new Date().toISOString()
+      });
+
+    if (creatorProfitError) {
+      console.error('[AI MIND] Creator profit error:', creatorProfitError);
+    }
+
+    // Log all activity
+    await logAction(supabase, 'trade_observed', {
+      wallet,
+      type,
+      amount,
+      netAmount,
+      fees: { creator: creatorFee, system: systemFee },
+      tokenId
+    });
+
+    // Detect whale activity based on net amount
+    await detectWhale(supabase, { 
+      wallet, 
+      event: { type, tokenId, amount: netAmount } 
+    });
+
+    // Update DAO eligibility
+    await updateDAO(supabase, { wallet, tokenId });
+
+    // If this is an AI wallet sell, trigger profit distribution
+    if (type === 'sell' && wallet === systemAddress) {
+      console.log('[AI MIND] 🤖 AI Wallet selling - triggering profit split');
+      await handleAIProfit(supabase, { amount: netAmount, tokenId });
+    }
     
-    return { success: true, action: 'trade_processed' };
+    return { 
+      success: true, 
+      action: 'trade_processed',
+      fees: { creator: creatorFee, system: systemFee },
+      netAmount 
+    };
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'Error' };
   }
