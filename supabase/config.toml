@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.ai-governor]
 verify_jwt = false
+
+[functions.mind-think]
+verify_jwt = false
