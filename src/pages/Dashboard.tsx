@@ -64,9 +64,9 @@ const Dashboard = () => {
                 Générateur de tokens Solana — Intelligence artificielle
               </p>
             </div>
-            <div className="text-right text-xs border-l-2 border-border pl-6">
-              <div className="font-bold uppercase tracking-wider mb-1">Version</div>
-              <div className="font-mono mb-3">2.0.1</div>
+              <div className="text-xs border-l-2 border-border pl-6">
+              <div className="font-bold uppercase tracking-wider mb-1">Status</div>
+              <div className="font-mono mb-3">● ACTIF</div>
               <div className="font-bold uppercase tracking-wider mb-1">Uptime</div>
               <div className="font-mono">99.9%</div>
             </div>
@@ -100,7 +100,7 @@ const Dashboard = () => {
 
           <TerminalCard title="DISTRIBUTION LUCKY (7J)">
             <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-bold font-mono text-primary">142.50</div>
+              <div className="text-5xl md:text-6xl font-bold font-mono">142.50</div>
               <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">SOLANA (SOL)</div>
             </div>
           </TerminalCard>

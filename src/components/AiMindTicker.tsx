@@ -13,7 +13,7 @@ const AiMindTicker = () => {
   ];
 
   return (
-    <div className="bg-black text-primary border-y-2 border-black overflow-hidden py-2">
+    <div className="bg-black text-white border-y-2 border-black overflow-hidden py-2">
       <div className="ticker-wrapper">
         <div className="ticker-content text-[10px] font-mono tracking-widest uppercase font-bold">
           {thoughts.map((thought, index) => (
