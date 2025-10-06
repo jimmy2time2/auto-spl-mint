@@ -8,42 +8,44 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Mind9 Brand Colors */
-    --background: 0 0% 0%;           /* Pure black */
-    --foreground: 0 0% 100%;         /* Pure white */
+    /* Monochrome Terminal Design System */
+    --background: 0 0% 98%;        /* Off-white background */
+    --foreground: 0 0% 0%;         /* Pure black text */
 
-    --card: 0 0% 5%;                 /* Very dark gray */
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 100%;             /* White cards */
+    --card-foreground: 0 0% 0%;
 
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 56 100% 50%;          /* Electric Yellow #FFF200 */
-    --primary-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;            /* Black primary */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 335 100% 73%;       /* Neon Pink #FF77B7 */
+    --secondary: 0 0% 95%;         /* Light gray */
     --secondary-foreground: 0 0% 0%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 0 0% 90%;
+    --muted-foreground: 0 0% 30%;
 
-    --accent: 335 100% 73%;          /* Neon Pink */
-    --accent-foreground: 0 0% 0%;
+    --accent: 0 0% 0%;             /* Black accent */
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 0% 0%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 56 100% 50%;
+    --border: 0 0% 0%;            /* Strong black borders */
+    --input: 0 0% 100%;
+    --ring: 0 0% 0%;
 
-    --radius: 0.5rem;
+    --radius: 0rem;              /* Sharp corners for brutalist aesthetic */
+
+    /* Dark sections - inverted */
+    --dark-bg: 0 0% 0%;
+    --dark-text: 0 0% 100%;
     
-    --chart-1: 56 100% 50%;
-    --chart-2: 335 100% 73%;
-    --chart-3: 280 100% 70%;
-    --chart-4: 173 58% 39%;
-    --chart-5: 27 87% 67%;
+    /* Terminal-specific tokens */
+    --terminal-glow: 0 0% 0%;
+    --success-green: 0 0% 0%;
   }
 }
 
@@ -53,59 +55,45 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-mono;
-    background: radial-gradient(ellipse at top, hsl(0 0% 5%), hsl(0 0% 0%));
-    min-height: 100vh;
+    @apply bg-background text-foreground font-sans;
   }
 
-  /* Mind9 Typography */
-  .text-glow {
-    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  /* Terminal typography - used sparingly */
+  .terminal-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
   }
-  
-  .text-cyber {
-    font-family: 'Orbitron', monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+
+  .pixel-text {
+    font-family: 'VT323', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* ASCII art rendering */
+  pre {
+    font-family: monospace;
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: pre;
+    overflow: visible;
+  }
+
+  .ascii-border {
+    border-style: dashed;
   }
 
   /* Glitch effect */
   @keyframes glitch {
-    2%, 64% {
-      transform: translate(2px, 0) skew(0deg);
-    }
-    4%, 60% {
-      transform: translate(-2px, 0) skew(0deg);
-    }
-    62% {
-      transform: translate(0, 0) skew(5deg); 
-    }
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
   }
 
   .glitch {
-    animation: glitch 1s linear infinite;
-  }
-
-  /* Cyber grid background */
-  .cyber-grid {
-    background-image: 
-      linear-gradient(rgba(255, 242, 0, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 242, 0, 0.05) 1px, transparent 1px);
-    background-size: 50px 50px;
-  }
-
-  /* Pulse animation */
-  @keyframes pulse-glow {
-    0%, 100% {
-      box-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary));
-    }
-    50% {
-      box-shadow: 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
-    }
-  }
-
-  .pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
+    animation: glitch 0.3s infinite;
   }
 
   /* Blink cursor */
@@ -116,6 +104,14 @@ All colors MUST be HSL.
 
   .cursor-blink {
     animation: blink 1s infinite;
+  }
+
+  /* ASCII loader */
+  @keyframes ascii-spin {
+    0% { content: '|'; }
+    25% { content: '/'; }
+    50% { content: '—'; }
+    75% { content: '\\'; }
   }
 
   /* Ticker animation */
