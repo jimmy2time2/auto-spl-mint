@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_governor_log: {
+        Row: {
+          action_taken: string
+          ai_score: number | null
+          error_message: string | null
+          execution_time_ms: number | null
+          id: string
+          market_signals: Json | null
+          prompt_input: string
+          result: Json
+          security_validated: boolean | null
+          timestamp: string
+        }
+        Insert: {
+          action_taken: string
+          ai_score?: number | null
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          market_signals?: Json | null
+          prompt_input: string
+          result: Json
+          security_validated?: boolean | null
+          timestamp?: string
+        }
+        Update: {
+          action_taken?: string
+          ai_score?: number | null
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          market_signals?: Json | null
+          prompt_input?: string
+          result?: Json
+          security_validated?: boolean | null
+          timestamp?: string
+        }
+        Relationships: []
+      }
       coin_distributions: {
         Row: {
           ai_wallet_amount: number
@@ -239,6 +278,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      market_sentiment: {
+        Row: {
+          confidence: number
+          dao_participation_rate: number | null
+          id: string
+          recommendation: string
+          sentiment_score: number
+          solana_volume: number | null
+          timestamp: string
+          trending_tags: string[] | null
+          whale_activity_level: string | null
+        }
+        Insert: {
+          confidence: number
+          dao_participation_rate?: number | null
+          id?: string
+          recommendation: string
+          sentiment_score: number
+          solana_volume?: number | null
+          timestamp?: string
+          trending_tags?: string[] | null
+          whale_activity_level?: string | null
+        }
+        Update: {
+          confidence?: number
+          dao_participation_rate?: number | null
+          id?: string
+          recommendation?: string
+          sentiment_score?: number
+          solana_volume?: number | null
+          timestamp?: string
+          trending_tags?: string[] | null
+          whale_activity_level?: string | null
+        }
+        Relationships: []
       }
       profit_events: {
         Row: {
