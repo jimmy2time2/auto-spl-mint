@@ -198,7 +198,7 @@ const Dashboard = () => {
                 <Activity className="inline w-3 h-3 mr-1 animate-pulse" />
                 AUTONOMOUS AI SYSTEM
               </div>
-              <pre className="text-xl md:text-3xl font-bold mb-6 leading-none font-mono overflow-x-auto">
+              <pre className="text-sm md:text-xl font-bold mb-6 leading-none font-mono overflow-x-auto">
 {`███╗   ███╗██╗███╗   ██╗██████╗  █████╗ 
 ████╗ ████║██║████╗  ██║██╔══██╗██╔══██╗
 ██╔████╔██║██║██╔██╗ ██║██║  ██║╚██████║
