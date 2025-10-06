@@ -7,7 +7,6 @@ import Dashboard from "./pages/Dashboard";
 import Explorer from "./pages/Explorer";
 import TokenDetail from "./pages/TokenDetail";
 import Leaderboard from "./pages/Leaderboard";
-import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,7 +22,6 @@ const App = () => (
           <Route path="/explorer" element={<Explorer />} />
           <Route path="/token/:id" element={<TokenDetail />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

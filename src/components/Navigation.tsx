@@ -39,14 +39,6 @@ const Navigation = () => {
             >
               Leaderboard
             </Link>
-            <Link 
-              to="/settings" 
-              className={`text-xs font-bold uppercase tracking-widest hover:text-foreground transition-colors ${
-                isActive('/settings') ? 'text-foreground border-b-2 border-foreground pb-1' : 'text-muted-foreground'
-              }`}
-            >
-              Settings
-            </Link>
           </nav>
         </div>
 
