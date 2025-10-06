@@ -1,152 +1,158 @@
-import { AIGovernorStatus } from "@/components/AIGovernorStatus";
+import { DateHeader } from "@/components/DateHeader";
+import { WeatherWidget } from "@/components/WeatherWidget";
 import { MintedTokenFeed } from "@/components/MintedTokenCard";
 import { LuckyWallet } from "@/components/LuckyWallet";
 import { CreatorRevenue } from "@/components/CreatorRevenue";
 import { TopWallets } from "@/components/TopWallets";
-import { RugAlert } from "@/components/RugAlert";
-import { AIMintBroadcast } from "@/components/AIMintBroadcast";
-import { motion } from "framer-motion";
-import { Brain, Zap, Trophy } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Brain, TrendingUp, Users } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen pb-20">
-      {/* Rug Alert Ticker */}
-      <RugAlert />
-
-      {/* AI Mint Broadcast Overlay */}
-      <AIMintBroadcast />
-
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 pt-20 pb-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-7xl font-orbitron text-primary text-glow mb-4 glitch">
-            MIND9
-          </h1>
-          <p className="text-xl font-mono text-foreground mb-8">
-            The AI decides. You participate. Someone gets lucky.
-          </p>
-          
-          <div className="flex items-center justify-center gap-4">
-            <Button
-              size="lg"
-              className="text-lg px-8 py-6 font-orbitron bg-primary text-primary-foreground hover:bg-primary/90"
-              onClick={() => {
-                // Mock wallet connection
-                localStorage.setItem('connected_wallet', 'DEMO_WALLET_' + Date.now());
-                window.location.href = '/profile';
-              }}
-            >
-              CONNECT WALLET
-            </Button>
-
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg px-8 py-6 font-orbitron border-secondary text-secondary hover:bg-secondary/10"
-            >
-              HOW IT WORKS
-            </Button>
-          </div>
-        </motion.div>
-
-        {/* AI Governor Banner */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <AIGovernorStatus />
-        </motion.div>
-      </section>
-
-      {/* Main Content Grid */}
-      <section className="container mx-auto px-4 space-y-12">
-        {/* Token Feed */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <MintedTokenFeed />
-        </motion.div>
-
-        {/* Two Column Layout */}
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Left Column */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="space-y-8"
-          >
-            <LuckyWallet />
-            <CreatorRevenue />
-          </motion.div>
-
-          {/* Right Column */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-          >
-            <TopWallets />
-          </motion.div>
+    <div className="min-h-screen bg-background">
+      <DateHeader />
+      
+      {/* Weather Bar */}
+      <div className="border-b-2 border-foreground">
+        <div className="container mx-auto px-4 py-4 grid grid-cols-4 gap-4">
+          <WeatherWidget city="NEW YORK" temp="15°C" condition="sunny" />
+          <WeatherWidget city="LONDON" temp="12°C" condition="cloudy" />
+          <WeatherWidget city="TOKYO" temp="18°C" condition="rainy" />
+          <WeatherWidget city="PARIS" temp="14°C" condition="cloudy" />
         </div>
+      </div>
 
-        {/* Info Sections */}
-        <div className="grid md:grid-cols-3 gap-6">
-          <InfoCard
-            icon={<Brain className="w-12 h-12" />}
-            title="AI GOVERNED"
-            description="An autonomous AI decides when and what to mint based on market analysis and cryptic logic."
-            color="primary"
-          />
-          
-          <InfoCard
-            icon={<Zap className="w-12 h-12" />}
-            title="INSTANT PROFITS"
-            description="Earn from trading fees, AI profit splits, and lucky wallet selections."
-            color="secondary"
-          />
-          
-          <InfoCard
-            icon={<Trophy className="w-12 h-12" />}
-            title="BE LUCKY"
-            description="3% of every new token goes to a random active minter. Could be you."
-            color="accent"
-          />
+      {/* Main Grid Layout */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-12 gap-0">
+          {/* Left Sidebar */}
+          <aside className="col-span-3 border-r-2 border-foreground pr-4 space-y-0">
+            <div className="border-2 border-foreground p-4 mb-4">
+              <h3 className="text-[10px] font-bold tracking-widest mb-4 border-b-2 border-foreground pb-2">
+                NAVIGATION
+              </h3>
+              <nav className="space-y-2 text-[10px] font-bold">
+                <div className="py-2 border-b border-foreground">DASHBOARD</div>
+                <div className="py-2 border-b border-foreground">TOKENS</div>
+                <div className="py-2 border-b border-foreground">DAO</div>
+                <div className="py-2 border-b border-foreground">LEADERBOARD</div>
+              </nav>
+            </div>
+
+            <div className="border-2 border-foreground p-4">
+              <h3 className="text-[10px] font-bold tracking-widest mb-4 border-b-2 border-foreground pb-2">
+                AI STATUS
+              </h3>
+              <div className="space-y-2 text-[10px]">
+                <div className="flex justify-between py-1 border-b border-muted">
+                  <span>ÉTAT</span>
+                  <span className="font-bold">ACTIF</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-muted">
+                  <span>TOKENS</span>
+                  <span className="font-bold">42</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span>PROFIT</span>
+                  <span className="font-bold">$12,450</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main Content */}
+          <main className="col-span-6 px-4">
+            {/* Hero */}
+            <div className="border-4 border-foreground p-8 mb-4 bg-background">
+              <h1 className="text-5xl font-bold mb-4 tracking-tight">
+                MIND9 N°001
+              </h1>
+              <p className="text-sm leading-relaxed mb-6">
+                Le système autonome de gouvernance par IA. L'intelligence artificielle décide. 
+                Vous participez. Quelqu'un devient chanceux.
+              </p>
+              <div className="flex gap-2">
+                <button className="border-2 border-foreground bg-foreground text-background px-4 py-2 text-[10px] font-bold tracking-widest hover:bg-background hover:text-foreground">
+                  CONNECTER WALLET
+                </button>
+                <button className="border-2 border-foreground bg-background text-foreground px-4 py-2 text-[10px] font-bold tracking-widest hover:bg-foreground hover:text-background">
+                  EN SAVOIR PLUS
+                </button>
+              </div>
+            </div>
+
+            {/* Token Feed */}
+            <div className="border-2 border-foreground p-4 mb-4">
+              <h2 className="text-[10px] font-bold tracking-widest mb-4 border-b-2 border-foreground pb-2">
+                TOKENS RÉCENTS
+              </h2>
+              <MintedTokenFeed />
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-3 gap-4">
+              <StatBox
+                icon={<Brain className="w-6 h-6" />}
+                label="AI GOUVERNANCE"
+                value="ACTIF"
+              />
+              <StatBox
+                icon={<TrendingUp className="w-6 h-6" />}
+                label="VOLUME 24H"
+                value="$45.2K"
+              />
+              <StatBox
+                icon={<Users className="w-6 h-6" />}
+                label="WALLETS"
+                value="1,234"
+              />
+            </div>
+          </main>
+
+          {/* Right Sidebar */}
+          <aside className="col-span-3 border-l-2 border-foreground pl-4 space-y-4">
+            <div className="border-2 border-foreground p-4">
+              <h3 className="text-[10px] font-bold tracking-widest mb-4 border-b-2 border-foreground pb-2">
+                WALLET CHANCEUX
+              </h3>
+              <LuckyWallet />
+            </div>
+
+            <div className="border-2 border-foreground p-4">
+              <h3 className="text-[10px] font-bold tracking-widest mb-4 border-b-2 border-foreground pb-2">
+                TOP WALLETS
+              </h3>
+              <TopWallets />
+            </div>
+
+            <div className="border-2 border-foreground p-4">
+              <h3 className="text-[10px] font-bold tracking-widest mb-4 border-b-2 border-foreground pb-2">
+                REVENUE CRÉATEUR
+              </h3>
+              <CreatorRevenue />
+            </div>
+          </aside>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
 
-const InfoCard = ({
+const StatBox = ({
   icon,
-  title,
-  description,
-  color
+  label,
+  value
 }: {
   icon: React.ReactNode;
-  title: string;
-  description: string;
-  color: string;
+  label: string;
+  value: string;
 }) => {
   return (
-    <motion.div
-      whileHover={{ scale: 1.05 }}
-      className={`p-6 border-2 border-${color} bg-card text-${color}`}
-    >
-      <div className="mb-4">{icon}</div>
-      <h3 className="text-xl font-orbitron mb-2 text-glow">{title}</h3>
-      <p className="text-sm text-muted-foreground font-mono">{description}</p>
-    </motion.div>
+    <div className="border-2 border-foreground p-4 bg-background">
+      <div className="mb-2">{icon}</div>
+      <div className="text-[8px] font-bold tracking-widest text-muted-foreground mb-1">
+        {label}
+      </div>
+      <div className="text-lg font-bold">{value}</div>
+    </div>
   );
 };
