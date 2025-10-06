@@ -145,17 +145,17 @@ const Dashboard = () => {
         <div className="mb-12 border-b-2 border-border pb-8">
           <div className="flex items-start justify-between">
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-2">SYSTÈME AUTONOME</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-2">AUTONOMOUS SYSTEM</div>
               <h1 className="text-6xl md:text-7xl font-bold mb-2 leading-none">
                 VISIONFLOW
               </h1>
               <p className="text-sm uppercase tracking-wide font-medium">
-                Générateur de tokens Solana — Intelligence artificielle
+                Solana Token Generator — Artificial Intelligence
               </p>
             </div>
-              <div className="text-xs border-l-2 border-border pl-6">
+            <div className="text-xs border-l-2 border-border pl-6">
               <div className="font-bold uppercase tracking-wider mb-1">Status</div>
-              <div className="font-mono mb-3">● ACTIF</div>
+              <div className="font-mono mb-3">● ACTIVE</div>
               <div className="font-bold uppercase tracking-wider mb-1">Uptime</div>
               <div className="font-mono">99.9%</div>
             </div>
@@ -164,7 +164,7 @@ const Dashboard = () => {
 
         {/* Next Launch Section */}
         <div className="mb-8">
-          <TerminalCard title="PROCHAIN LANCEMENT">
+          <TerminalCard title="NEXT LAUNCH">
             <div className="text-center space-y-4">
               <div className="text-7xl md:text-8xl font-extrabold font-mono">
                 <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
@@ -180,21 +180,21 @@ const Dashboard = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          <TerminalCard title="TRÉSORERIE">
+          <TerminalCard title="TREASURY">
             <div className="space-y-2">
               <div className="text-5xl md:text-6xl font-bold font-mono">{treasuryBalance.toLocaleString()}</div>
               <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">SOLANA (SOL)</div>
             </div>
           </TerminalCard>
 
-          <TerminalCard title="DISTRIBUTION LUCKY (7J)">
+          <TerminalCard title="LUCKY DISTRIBUTION (7D)">
             <div className="space-y-2">
               <div className="text-5xl md:text-6xl font-bold font-mono">{luckyDistribution.toFixed(2)}</div>
               <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">SOLANA (SOL)</div>
             </div>
           </TerminalCard>
 
-          <TerminalCard title="TOKENS MINTÉS">
+          <TerminalCard title="TOKENS MINTED">
             <div className="space-y-2">
               <div className="text-5xl md:text-6xl font-bold font-mono">{totalTokens}</div>
               <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">TOTAL</div>
@@ -205,9 +205,9 @@ const Dashboard = () => {
         {/* Recent Tokens */}
         <div className="mb-12 border-2 border-border p-6">
           <div className="mb-6 flex items-center justify-between border-b-2 border-border pb-4">
-            <h2 className="text-2xl font-bold uppercase tracking-tight">Tokens Récents</h2>
-            <a href="/explorer" className="text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors border border-border px-3 py-1">
-              VOIR TOUT →
+            <h2 className="text-2xl font-bold uppercase tracking-tight">Recent Tokens</h2>
+            <a href="/explorer" className="text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity border border-border px-3 py-1">
+              VIEW ALL →
             </a>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -228,9 +228,9 @@ const Dashboard = () => {
         {/* AI Console Log */}
         <div className="bg-black text-white border-2 border-black p-6">
           <div className="flex items-center gap-3 mb-6 border-b border-gray-800 pb-3">
-            <div className="w-2 h-2 bg-primary"></div>
+            <div className="w-2 h-2 bg-white"></div>
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-              CONSOLE SYSTÈME IA
+              AI SYSTEM CONSOLE
             </h3>
           </div>
           <ConsoleLog logs={formattedLogs} />
