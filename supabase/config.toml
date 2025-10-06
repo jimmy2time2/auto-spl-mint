@@ -3,10 +3,10 @@ project_id = "hrhklzusdctgrwpiacyq"
 [functions.mint-token]
 verify_jwt = false
 
-[functions.process-trade]
+[functions.execute-trade]
 verify_jwt = false
 
-[functions.process-ai-profits]
+[functions.ai-profit-sale]
 verify_jwt = false
 
 [functions.select-lucky-wallet]

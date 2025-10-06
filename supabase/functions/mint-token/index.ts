@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,93 +12,105 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { tokenName, tokenSymbol, totalSupply, creatorAddress } = await req.json();
+    const { name, symbol, supply, creator_address } = await req.json();
 
-    console.log('Minting token:', { tokenName, tokenSymbol, totalSupply });
+    console.log('Minting token:', { name, symbol, supply, creator_address });
 
     // Distribution percentages: 7% AI, 5% Creator, 3% Lucky, 2% System, 83% Public
-    const distribution = {
-      ai: Number(totalSupply) * 0.07,
-      creator: Number(totalSupply) * 0.05,
-      lucky: Number(totalSupply) * 0.03,
-      system: Number(totalSupply) * 0.02,
-      public: Number(totalSupply) * 0.83
-    };
+    const totalSupply = parseFloat(supply);
+    const aiAmount = totalSupply * 0.07;
+    const creatorAmount = totalSupply * 0.05;
+    const luckyAmount = totalSupply * 0.03;
+    const systemAmount = totalSupply * 0.02;
+    const publicAmount = totalSupply * 0.83;
 
-    // Create the token
-    const { data: token, error: tokenError } = await supabaseClient
+    // 1. Create token record
+    const { data: token, error: tokenError } = await supabase
       .from('tokens')
       .insert({
-        name: tokenName,
-        symbol: tokenSymbol,
+        name,
+        symbol,
         supply: totalSupply,
-        price: 0.001,
+        price: 0.001, // Initial price
         liquidity: 0,
         volume_24h: 0,
-        holders: 0,
-        mint_address: `MINT_${crypto.randomUUID().substring(0, 8)}`,
-        pool_address: `POOL_${crypto.randomUUID().substring(0, 8)}`,
+        holders: 1,
+        mint_address: `MINT_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        pool_address: `POOL_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       })
       .select()
       .single();
 
     if (tokenError) throw tokenError;
 
-    // Record distribution
-    const { error: distError } = await supabaseClient
+    // 2. Log coin distribution
+    const { error: distError } = await supabase
       .from('coin_distributions')
       .insert({
         token_id: token.id,
-        ai_wallet_amount: distribution.ai,
-        creator_wallet_amount: distribution.creator,
-        lucky_wallet_amount: distribution.lucky,
-        system_wallet_amount: distribution.system,
-        public_sale_amount: distribution.public,
+        ai_wallet_amount: aiAmount,
+        creator_wallet_amount: creatorAmount,
+        lucky_wallet_amount: luckyAmount,
+        system_wallet_amount: systemAmount,
+        public_sale_amount: publicAmount,
         total_supply: totalSupply
       });
 
     if (distError) throw distError;
 
-    // Record creator profit
-    const { error: profitError } = await supabaseClient
+    // 3. Track creator profit from mint allocation
+    const { error: profitError } = await supabase
       .from('creator_wallet_profits')
       .insert({
         token_id: token.id,
-        creator_address: creatorAddress,
+        creator_address,
         profit_source: 'mint_allocation',
-        amount: distribution.creator,
-        transaction_hash: `TX_${crypto.randomUUID()}`
+        amount: creatorAmount,
+        transaction_hash: `TX_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       });
 
     if (profitError) throw profitError;
 
-    // Log protocol activity
-    await supabaseClient
+    // 4. Log protocol activity
+    const { error: activityError } = await supabase
       .from('protocol_activity')
       .insert({
         activity_type: 'token_mint',
         token_id: token.id,
-        description: `Token ${tokenSymbol} minted with ${totalSupply} supply`,
-        metadata: { distribution }
-      });
-
-    // Create log entry
-    await supabaseClient
-      .from('logs')
-      .insert({
-        action: 'TOKEN_MINTED',
-        token_id: token.id,
-        details: { 
-          name: tokenName, 
-          symbol: tokenSymbol,
-          distribution 
+        description: `Token ${symbol} minted with ${totalSupply} supply`,
+        metadata: {
+          distribution: {
+            ai: aiAmount,
+            creator: creatorAmount,
+            lucky: luckyAmount,
+            system: systemAmount,
+            public: publicAmount
+          },
+          creator_address
         }
       });
+
+    if (activityError) throw activityError;
+
+    // 5. Create system log
+    const { error: logError } = await supabase
+      .from('logs')
+      .insert({
+        action: `TOKEN_MINT: ${symbol}`,
+        token_id: token.id,
+        details: {
+          name,
+          symbol,
+          supply: totalSupply,
+          distribution: 'AI:7% Creator:5% Lucky:3% System:2% Public:83%'
+        }
+      });
+
+    if (logError) console.error('Log error:', logError);
 
     console.log('Token minted successfully:', token.id);
 
@@ -106,19 +118,23 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         token,
-        distribution 
+        distribution: {
+          ai: aiAmount,
+          creator: creatorAmount,
+          lucky: luckyAmount,
+          system: systemAmount,
+          public: publicAmount
+        }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error in mint-token:', error);
+    console.error('Mint token error:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      JSON.stringify({ error: message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
