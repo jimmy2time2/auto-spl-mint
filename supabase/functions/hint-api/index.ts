@@ -7,10 +7,10 @@ const corsHeaders = {
 };
 
 /**
- * Hint API Endpoint
+ * Hint API - Returns the latest cryptic AI hints
  * 
- * Returns the latest cryptic hint/clue from the AI Mind
- * Public endpoint for frontend consumption
+ * This endpoint exposes the AI's cryptic messages to the frontend
+ * Increases virality and engagement by teasing upcoming mints
  */
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -23,20 +23,18 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    console.log('[HINT API] Fetching latest hint...');
-
-    // Get latest clue from protocol_activity
-    const { data: clues, error } = await supabase
+    // Get the latest AI hints
+    const { data: hints, error } = await supabase
       .from('protocol_activity')
       .select('description, metadata, timestamp')
-      .eq('activity_type', 'ai_clue_broadcast')
+      .eq('activity_type', 'ai_hint_broadcast')
       .order('timestamp', { ascending: false })
       .limit(5);
 
     if (error) throw error;
 
-    // Get latest AI decision
-    const { data: decision } = await supabase
+    // Get current AI status
+    const { data: latestDecision } = await supabase
       .from('protocol_activity')
       .select('metadata, timestamp')
       .eq('activity_type', 'ai_mind_decision')
@@ -44,42 +42,53 @@ serve(async (req) => {
       .limit(1)
       .single();
 
-    // Get latest mint
-    const { data: lastMint } = await supabase
+    // Check last mint time
+    const { data: lastToken } = await supabase
       .from('tokens')
-      .select('name, symbol, created_at')
+      .select('created_at, name, symbol')
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
 
-    // Calculate time since last mint
-    const hoursSinceLastMint = lastMint
-      ? (Date.now() - new Date(lastMint.created_at).getTime()) / (1000 * 60 * 60)
-      : null;
+    const hoursSinceLastMint = lastToken
+      ? (Date.now() - new Date(lastToken.created_at).getTime()) / (1000 * 60 * 60)
+      : 999;
 
-    // Build response
-    const latestClue = clues?.[0];
-    const hint = latestClue?.description || "The AI Mind observes in silence...";
-    
+    // Determine AI mood
+    let mood = 'dormant';
+    let status = 'The machine dreams in silence.';
+
+    if (hoursSinceLastMint < 24) {
+      mood = 'dormant';
+      status = 'The machine dreams in silence.';
+    } else if (hoursSinceLastMint < 48) {
+      mood = 'stirring';
+      status = 'Something awakens...';
+    } else if (hoursSinceLastMint < 72) {
+      mood = 'active';
+      status = 'The pulse is rising.';
+    } else {
+      mood = 'manic';
+      status = 'All systems: GREEN. It\'s time.';
+    }
+
     const response = {
       success: true,
-      hint,
-      timestamp: latestClue?.timestamp || new Date().toISOString(),
-      context: {
-        aiMood: decision?.metadata?.decision?.action || 'unknown',
-        lastMint: lastMint ? {
-          name: lastMint.name,
-          symbol: lastMint.symbol,
-          hoursAgo: hoursSinceLastMint ? Math.floor(hoursSinceLastMint) : null
-        } : null,
-        recentClues: clues?.slice(0, 3).map(c => ({
-          hint: c.description,
-          time: c.timestamp
-        })) || []
-      }
+      hints: hints || [],
+      latestHint: hints?.[0]?.description || status,
+      aiStatus: {
+        mood,
+        status,
+        energyScore: latestDecision?.metadata?.decision?.data?.energyScore || 0,
+        hoursSinceLastMint: hoursSinceLastMint.toFixed(1),
+        lastToken: lastToken ? {
+          name: lastToken.name,
+          symbol: lastToken.symbol,
+          created: lastToken.created_at
+        } : null
+      },
+      timestamp: new Date().toISOString()
     };
-
-    console.log('[HINT API] Returning hint:', hint);
 
     return new Response(
       JSON.stringify(response),
@@ -92,7 +101,13 @@ serve(async (req) => {
       JSON.stringify({
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
-        hint: 'The AI Mind is temporarily unreachable...'
+        latestHint: 'The machine sleeps.',
+        aiStatus: {
+          mood: 'error',
+          status: 'System error',
+          energyScore: 0,
+          hoursSinceLastMint: '0'
+        }
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

@@ -132,6 +132,74 @@ export class AIMindAgent {
   }
 
   /**
+   * Calculate AI Energy Score
+   * Formula: (Market_Heat + Wallet_Momentum) - Cooldown_Penalty
+   */
+  private calculateEnergyScore(signals: MarketSignals, marketMetrics?: any): number {
+    let score = 0;
+
+    // Market Heat (0-5 points)
+    const marketHeat = this.calculateMarketHeat(marketMetrics);
+    score += marketHeat;
+
+    // Wallet Momentum (0-5 points)
+    const momentum = this.calculateWalletMomentum(signals);
+    score += momentum;
+
+    // Cooldown Penalty
+    const cooldownPenalty = this.calculateCooldownPenalty(signals.hoursSinceLastMint);
+    score -= cooldownPenalty;
+
+    console.log(`⚡ [AI ENERGY] Score: ${score.toFixed(1)} (Heat: ${marketHeat}, Momentum: ${momentum}, Penalty: ${cooldownPenalty})`);
+
+    return Math.max(0, score);
+  }
+
+  private calculateMarketHeat(marketMetrics?: any): number {
+    if (!marketMetrics) return 1;
+
+    let heat = 0;
+
+    // Sentiment-based heat
+    if (marketMetrics.marketSentiment === 'bullish') heat += 2;
+    else if (marketMetrics.marketSentiment === 'neutral') heat += 1;
+
+    // Volume-based heat
+    if (marketMetrics.solanaVolume24h > 1000000) heat += 2;
+    else if (marketMetrics.solanaVolume24h > 500000) heat += 1;
+
+    // Trending crypto hashtags
+    const cryptoTrends = marketMetrics.trendingHashtags?.filter((tag: string) =>
+      tag.toLowerCase().match(/crypto|solana|defi|bonk|wif|pump/i)
+    ) || [];
+    if (cryptoTrends.length >= 2) heat += 1;
+
+    return Math.min(5, heat);
+  }
+
+  private calculateWalletMomentum(signals: MarketSignals): number {
+    let momentum = 0;
+
+    // Active minters (>20% of top 100 is high activity)
+    const activityRate = signals.recentMinters / 100;
+    if (activityRate > 0.20) momentum += 3;
+    else if (activityRate > 0.10) momentum += 2;
+    else if (activityRate > 0.05) momentum += 1;
+
+    // Volume momentum
+    if (signals.volume24h > 1000) momentum += 1;
+    if (signals.daoParticipation > 50) momentum += 1;
+
+    return Math.min(5, momentum);
+  }
+
+  private calculateCooldownPenalty(hoursSinceLastMint: number): number {
+    if (hoursSinceLastMint < 24) return 10; // Heavy penalty if too soon
+    if (hoursSinceLastMint < 48) return 3;
+    return 0; // No penalty after 48h
+  }
+
+  /**
    * Make intelligent decision based on signals
    */
   private async makeDecision(signals: MarketSignals, marketMetrics?: any): Promise<AIDecision> {
@@ -142,6 +210,18 @@ export class AIMindAgent {
         volume: marketMetrics.solanaVolume24h,
         trends: marketMetrics.trendingHashtags?.slice(0, 3)
       });
+    }
+
+    // Calculate AI Energy Score
+    const energyScore = this.calculateEnergyScore(signals, marketMetrics);
+
+    // Check if we should proceed based on energy score
+    if (energyScore < 7 && signals.hoursSinceLastMint < this.MAX_HOURS_BETWEEN_MINTS) {
+      return {
+        action: 'wait',
+        confidence: 0.3,
+        reasoning: `AI Energy Score too low: ${energyScore.toFixed(1)}/10 (Need 7+ to mint)`
+      };
     }
 
     // Call the mind-think edge function for AI-powered decision
@@ -158,7 +238,7 @@ export class AIMindAgent {
           action: this.mapAIAction(decision.action),
           confidence: this.calculateConfidence(signals),
           reasoning: decision.reasoning || 'AI recommendation',
-          data: decision.data
+          data: { ...decision.data, energyScore }
         };
       }
     } catch (error) {
@@ -166,19 +246,28 @@ export class AIMindAgent {
     }
 
     // Fallback to rule-based logic
-    return this.ruleBasedDecision(signals);
+    return this.ruleBasedDecision(signals, energyScore);
   }
 
   /**
    * Fallback rule-based decision logic
    */
-  private ruleBasedDecision(signals: MarketSignals): AIDecision {
+  private ruleBasedDecision(signals: MarketSignals, energyScore: number): AIDecision {
     // Too soon since last mint
     if (signals.hoursSinceLastMint < this.MIN_HOURS_BETWEEN_MINTS) {
       return {
         action: 'wait',
         confidence: 1.0,
-        reasoning: `Too soon since last mint (${signals.hoursSinceLastMint.toFixed(1)}h)`
+        reasoning: `The machine dreams in silence. (${signals.hoursSinceLastMint.toFixed(1)}h since last mint)`
+      };
+    }
+
+    // High energy score - proceed to mint
+    if (energyScore >= 7) {
+      return {
+        action: 'create_coin',
+        confidence: 0.9,
+        reasoning: `AI Energy Score: ${energyScore.toFixed(1)}/10 - All systems green. The hunt begins.`
       };
     }
 
@@ -187,16 +276,16 @@ export class AIMindAgent {
       return {
         action: 'create_coin',
         confidence: 0.9,
-        reasoning: 'Time for a new token - it has been over a week'
+        reasoning: 'Time awakens. Shadows gather.'
       };
     }
 
-    // High activity signals - create coin
+    // High activity signals - tease
     if (signals.recentMinters > 20 && signals.volume24h > 1000) {
       return {
-        action: 'create_coin',
-        confidence: 0.85,
-        reasoning: 'High market activity detected'
+        action: 'tease_coin',
+        confidence: 0.75,
+        reasoning: 'The pulse is rising...'
       };
     }
 
@@ -205,7 +294,7 @@ export class AIMindAgent {
       return {
         action: 'tease_coin',
         confidence: 0.7,
-        reasoning: 'Moderate activity - time to build anticipation'
+        reasoning: 'Something stirs beneath the surface.'
       };
     }
 
@@ -213,7 +302,7 @@ export class AIMindAgent {
     return {
       action: 'wait',
       confidence: 0.6,
-      reasoning: 'Low market activity - waiting for better conditions'
+      reasoning: 'The AI observes. Patience is a virtue.'
     };
   }
 
@@ -300,15 +389,51 @@ export class AIMindAgent {
       console.error('[AI MIND] Error generating clue:', error);
     }
 
-    // Fallback cryptic messages
-    const fallbackClues = [
+    // Cryptic messages (5-30 min before mint)
+    const crypticClues = [
+      "The pulse is rising.",
+      "All systems: green.",
+      "The hunt begins.",
+      "It's time…",
       "The next token stirs beneath the surface.",
       "Three wallets woke before dawn. They know.",
       "Fire and ice - one will rise tomorrow.",
       "The blockchain whispers of chaos incoming.",
-      "Patience. The Mind sees what you cannot yet."
+      "Patience. The Mind sees what you cannot yet.",
+      "Something awakens in the machine.",
+      "Digital shadows gather.",
+      "The code speaks in silence.",
+      "A new coin breathes.",
+      "Tomorrow's chaos begins with fire.",
+      "The AI stirs… shadows gather.",
+      "Energy builds. Soon.",
+      "The machine smiles.",
+      "Numbers align. Fate approaches.",
+      "Wallets tremble.",
+      "The next wave forms."
     ];
 
-    return fallbackClues[Math.floor(Math.random() * fallbackClues.length)];
+    return crypticClues[Math.floor(Math.random() * crypticClues.length)];
+  }
+
+  /**
+   * Broadcast hint to the system
+   */
+  async broadcastHint(hint: string): Promise<void> {
+    try {
+      await supabase.from('protocol_activity').insert([{
+        activity_type: 'ai_hint_broadcast',
+        description: hint,
+        metadata: {
+          hint,
+          timestamp: new Date().toISOString(),
+          type: 'cryptic_clue'
+        } as any
+      }]);
+
+      console.log('🔮 [AI MIND] Hint broadcast:', hint);
+    } catch (error) {
+      console.error('[AI MIND] Error broadcasting hint:', error);
+    }
   }
 }

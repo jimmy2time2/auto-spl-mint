@@ -174,7 +174,9 @@ export class AutonomousHeartbeat {
     console.log('🔮 [HEARTBEAT] Broadcasting clue...');
 
     const clue = decision.data?.clue || await this.agent.generateClue();
-    await this.governor.broadcastClue(clue);
+    
+    // Broadcast the hint
+    await this.agent.broadcastHint(clue);
 
     console.log('✅ [HEARTBEAT] Clue broadcast:', clue);
   }

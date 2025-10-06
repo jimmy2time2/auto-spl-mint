@@ -6,6 +6,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import TokenCard from "@/components/TokenCard";
 import ConsoleLog from "@/components/ConsoleLog";
 import AiMindTicker from "@/components/AiMindTicker";
+import { AIHintDisplay } from "@/components/AIHintDisplay";
 import { Button } from "@/components/ui/button";
 import { Sparkles, TrendingUp, Users, Zap, Activity } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
@@ -298,6 +299,11 @@ const Dashboard = () => {
               </div>
             </div>
           </TerminalCard>
+        </div>
+
+        {/* AI Hint Display */}
+        <div className="mb-8">
+          <AIHintDisplay />
         </div>
 
         {/* Stats Grid */}

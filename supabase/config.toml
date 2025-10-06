@@ -21,11 +21,12 @@ verify_jwt = false
 [functions.autonomous-heartbeat]
 verify_jwt = false
 
+[functions.hint-api]
+verify_jwt = false
+
 [functions.fetch-twitter-trends]
 verify_jwt = false
 
 [functions.fetch-solana-metrics]
 verify_jwt = false
 
-[functions.hint-api]
-verify_jwt = false

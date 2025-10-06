@@ -180,11 +180,41 @@ serve(async (req) => {
       .limit(1)
       .single();
 
-    // Check when last coin was created
+    // Check when last coin was created (24h cooldown enforced)
     const lastCoinTime = tokens?.[0]?.created_at;
     const hoursSinceLastCoin = lastCoinTime 
       ? (Date.now() - new Date(lastCoinTime).getTime()) / (1000 * 60 * 60)
       : 999;
+
+    // ENFORCE 24H COOLDOWN
+    if (hoursSinceLastCoin < 24) {
+      console.log(`[AI MIND] ⏸️  Cooldown active: ${hoursSinceLastCoin.toFixed(1)}h / 24h`);
+      
+      await supabase.from('protocol_activity').insert({
+        activity_type: 'ai_mind_decision',
+        description: 'AI Mind decided: wait (cooldown)',
+        metadata: {
+          decision: {
+            action: 'wait',
+            reasoning: `The machine dreams in silence. ${hoursSinceLastCoin.toFixed(1)}h since last mint.`
+          },
+          hoursSinceLastCoin,
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          decision: {
+            action: 'wait',
+            reasoning: `The machine dreams in silence. ${hoursSinceLastCoin.toFixed(1)}h since last mint.`
+          },
+          timestamp: new Date().toISOString()
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Build context for AI
     const marketData = JSON.stringify({
