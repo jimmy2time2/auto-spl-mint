@@ -1,30 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import TerminalCard from "@/components/TerminalCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import type { Tables } from "@/integrations/supabase/types";
 
-const mockTokens = [
-  { id: '1', symbol: 'VX9', name: 'VisionX Nine', price: 0.001234, volume: 12500, liquidity: 45, holders: 234, launchTime: '2025-10-02 14:32' },
-  { id: '2', symbol: 'NRG', name: 'NeoRetroGen', price: 0.005678, volume: 45000, liquidity: 120, holders: 567, launchTime: '2025-10-02 12:15' },
-  { id: '3', symbol: 'QNT', name: 'QuantumNet', price: 0.000891, volume: 23400, liquidity: 78, holders: 189, launchTime: '2025-10-02 10:00' },
-  { id: '4', symbol: 'BYT', name: 'ByteForce', price: 0.002345, volume: 34500, liquidity: 95, holders: 401, launchTime: '2025-10-02 08:45' },
-  { id: '5', symbol: 'PHX', name: 'PhoenixRise', price: 0.001789, volume: 28900, liquidity: 62, holders: 312, launchTime: '2025-10-02 06:30' },
-];
+type Token = Tables<"tokens">;
 
 const Explorer = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("launchTime");
+  const [sortBy, setSortBy] = useState<keyof Token>("launch_timestamp");
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+
+  useEffect(() => {
+    const fetchTokens = async () => {
+      let query = supabase
+        .from("tokens")
+        .select("*", { count: 'exact' });
+
+      if (searchTerm) {
+        query = query.ilike("symbol", `%${searchTerm}%`);
+      }
+
+      query = query.order(sortBy, { ascending: sortBy === "price" ? false : false });
+
+      const { data, count } = await query;
+
+      if (data) {
+        setTokens(data);
+      }
+      if (count !== null) {
+        setTotalCount(count);
+      }
+    };
+
+    fetchTokens();
+  }, [searchTerm, sortBy]);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
       <main className="container mx-auto px-4 py-8 max-w-screen-xl">
-        <div className="mb-6">
-          <h1 className="text-4xl font-bold terminal-text mb-2">{'>'} TOKEN_EXPLORER</h1>
-          <p className="terminal-text opacity-70">// ALL_AI_GENERATED_TOKENS</p>
+          <div className="mb-6">
+          <h1 className="text-2xl font-bold uppercase tracking-tight mb-2">Token Explorer</h1>
+          <p className="text-xs uppercase tracking-widest opacity-70">All AI-Generated Tokens</p>
         </div>
 
         <TerminalCard>
@@ -40,21 +63,21 @@ const Explorer = () => {
               <Button
                 variant={sortBy === "price" ? "default" : "outline"}
                 onClick={() => setSortBy("price")}
-                className="border-2 border-black font-mono"
+                className="border-2 border-black font-mono text-xs"
               >
                 PRICE
               </Button>
               <Button
-                variant={sortBy === "volume" ? "default" : "outline"}
-                onClick={() => setSortBy("volume")}
-                className="border-2 border-black font-mono"
+                variant={sortBy === "volume_24h" ? "default" : "outline"}
+                onClick={() => setSortBy("volume_24h")}
+                className="border-2 border-black font-mono text-xs"
               >
                 VOLUME
               </Button>
               <Button
-                variant={sortBy === "launchTime" ? "default" : "outline"}
-                onClick={() => setSortBy("launchTime")}
-                className="border-2 border-black font-mono"
+                variant={sortBy === "launch_timestamp" ? "default" : "outline"}
+                onClick={() => setSortBy("launch_timestamp")}
+                className="border-2 border-black font-mono text-xs"
               >
                 LAUNCH
               </Button>
@@ -76,36 +99,36 @@ const Explorer = () => {
                 </tr>
               </thead>
               <tbody>
-                {mockTokens
-                  .filter(token => token.symbol.toLowerCase().includes(searchTerm.toLowerCase()))
-                  .map((token, index) => (
-                    <tr 
-                      key={token.id} 
-                      className={`border-b border-dashed border-black hover:bg-secondary transition-colors ${index % 2 === 0 ? 'bg-card' : ''}`}
-                    >
-                      <td className="py-3 px-2">
-                        <Link to={`/token/${token.id}`} className="font-bold hover:opacity-70">
-                          ${token.symbol}
-                        </Link>
-                      </td>
-                      <td className="py-3 px-2">{token.name}</td>
-                      <td className="py-3 px-2 text-right">${token.price.toFixed(6)}</td>
-                      <td className="py-3 px-2 text-right">${token.volume.toLocaleString()}</td>
-                      <td className="py-3 px-2 text-right">{token.liquidity} SOL</td>
-                      <td className="py-3 px-2 text-right">{token.holders}</td>
-                      <td className="py-3 px-2 text-right text-sm opacity-70">{token.launchTime}</td>
-                    </tr>
-                  ))}
+                {tokens.map((token, index) => (
+                  <tr 
+                    key={token.id} 
+                    className={`border-b border-dashed border-black hover:bg-secondary transition-colors ${index % 2 === 0 ? 'bg-card' : ''}`}
+                  >
+                    <td className="py-3 px-2">
+                      <Link to={`/token/${token.id}`} className="font-bold hover:opacity-70">
+                        ${token.symbol}
+                      </Link>
+                    </td>
+                    <td className="py-3 px-2">{token.name}</td>
+                    <td className="py-3 px-2 text-right">${Number(token.price).toFixed(6)}</td>
+                    <td className="py-3 px-2 text-right">${Number(token.volume_24h).toLocaleString()}</td>
+                    <td className="py-3 px-2 text-right">{Number(token.liquidity)} SOL</td>
+                    <td className="py-3 px-2 text-right">{token.holders}</td>
+                    <td className="py-3 px-2 text-right text-sm opacity-70">
+                      {new Date(token.launch_timestamp).toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
 
           {/* Pagination */}
-          <div className="mt-6 flex justify-between items-center terminal-text">
-            <div>SHOWING 1-5 OF 127 TOKENS</div>
+          <div className="mt-6 flex justify-between items-center terminal-text text-xs">
+            <div>SHOWING 1-{tokens.length} OF {totalCount} TOKENS</div>
             <div className="flex gap-2">
-              <Button variant="outline" className="border-2 border-black font-mono">{'<'} PREV</Button>
-              <Button variant="outline" className="border-2 border-black font-mono">NEXT {'>'}</Button>
+              <Button variant="outline" className="border-2 border-black font-mono text-xs">{'<'} PREV</Button>
+              <Button variant="outline" className="border-2 border-black font-mono text-xs">NEXT {'>'}</Button>
             </div>
           </div>
         </TerminalCard>

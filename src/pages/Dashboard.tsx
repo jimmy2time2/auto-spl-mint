@@ -1,29 +1,118 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import TerminalCard from "@/components/TerminalCard";
 import CountdownTimer from "@/components/CountdownTimer";
 import TokenCard from "@/components/TokenCard";
 import ConsoleLog from "@/components/ConsoleLog";
 import AiMindTicker from "@/components/AiMindTicker";
+import type { Tables } from "@/integrations/supabase/types";
 
-// Mock data
-const mockTokens = [
-  { id: '1', symbol: 'VX9', name: 'VisionX Nine', price: 0.001234, liquidity: 45, volume: 12500 },
-  { id: '2', symbol: 'NRG', name: 'NeoRetroGen', price: 0.005678, liquidity: 120, volume: 45000 },
-  { id: '3', symbol: 'QNT', name: 'QuantumNet', price: 0.000891, liquidity: 78, volume: 23400 },
-];
-
-const mockLogs = [
-  { timestamp: '2025-10-02 14:32:11', message: 'AI minted token VX9, supply: 1,000,000', type: 'success' as const },
-  { timestamp: '2025-10-02 14:32:45', message: 'Created liquidity pool on Raydium: 45 SOL', type: 'info' as const },
-  { timestamp: '2025-10-02 14:33:01', message: 'Fee distribution: Creator 20%, Lucky 30%, Treasury 50%', type: 'info' as const },
-  { timestamp: '2025-10-02 14:33:15', message: 'Lucky Wallet injection: 8x5k...3jL received 0.5 SOL', type: 'success' as const },
-  { timestamp: '2025-10-02 14:35:00', message: 'Next launch scheduled in 2h 15m', type: 'info' as const },
-];
+type Token = Tables<"tokens">;
+type Log = Tables<"logs">;
+type Settings = Tables<"settings">;
 
 const Dashboard = () => {
-  const [nextLaunch] = useState(new Date(Date.now() + 2 * 60 * 60 * 1000 + 15 * 60 * 1000));
-  const [isPaused] = useState(false);
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [logs, setLogs] = useState<Log[]>([]);
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [nextLaunch, setNextLaunch] = useState(new Date(Date.now() + 2 * 60 * 60 * 1000));
+  const [isPaused, setIsPaused] = useState(false);
+  const [treasuryBalance] = useState(1247.83);
+  const [luckyDistribution] = useState(142.50);
+  const [totalTokens, setTotalTokens] = useState(127);
+
+  // Fetch settings
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const { data } = await supabase
+        .from("settings")
+        .select("*")
+        .single();
+      
+      if (data) {
+        setSettings(data);
+        setIsPaused(data.status !== 'ACTIVE');
+        if (data.next_launch_timestamp) {
+          setNextLaunch(new Date(data.next_launch_timestamp));
+        }
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  // Fetch recent tokens
+  useEffect(() => {
+    const fetchTokens = async () => {
+      const { data } = await supabase
+        .from("tokens")
+        .select("*")
+        .order("launch_timestamp", { ascending: false })
+        .limit(3);
+      
+      if (data) {
+        setTokens(data);
+      }
+    };
+    fetchTokens();
+  }, []);
+
+  // Fetch total token count
+  useEffect(() => {
+    const fetchTokenCount = async () => {
+      const { count } = await supabase
+        .from("tokens")
+        .select("*", { count: 'exact', head: true });
+      
+      if (count !== null) {
+        setTotalTokens(count);
+      }
+    };
+    fetchTokenCount();
+  }, []);
+
+  // Fetch recent logs
+  useEffect(() => {
+    const fetchLogs = async () => {
+      const { data } = await supabase
+        .from("logs")
+        .select("*")
+        .order("timestamp", { ascending: false })
+        .limit(5);
+      
+      if (data) {
+        setLogs(data);
+      }
+    };
+    fetchLogs();
+  }, []);
+
+  // Format logs for ConsoleLog component
+  const formattedLogs = logs.map(log => {
+    const details = log.details as any;
+    let message = '';
+    let type: 'success' | 'info' | 'error' = 'info';
+
+    if (log.action === 'MINT') {
+      message = `AI minted token ${details?.token}, supply: ${details?.supply}`;
+      type = 'success';
+    } else if (log.action === 'POOL') {
+      message = `Created liquidity pool on ${details?.dex}: ${details?.liquidity}`;
+      type = 'info';
+    } else if (log.action === 'REWARD') {
+      message = `Lucky Wallet injection: ${details?.wallet} received ${details?.amount}`;
+      type = 'success';
+    } else if (log.action === 'SYSTEM') {
+      message = details?.message || 'System update';
+      type = 'info';
+    }
+
+    return {
+      timestamp: new Date(log.timestamp).toLocaleString(),
+      message,
+      type
+    };
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,21 +182,21 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
           <TerminalCard title="TRÉSORERIE">
             <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-bold font-mono">1,247.83</div>
+              <div className="text-5xl md:text-6xl font-bold font-mono">{treasuryBalance.toLocaleString()}</div>
               <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">SOLANA (SOL)</div>
             </div>
           </TerminalCard>
 
           <TerminalCard title="DISTRIBUTION LUCKY (7J)">
             <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-bold font-mono">142.50</div>
+              <div className="text-5xl md:text-6xl font-bold font-mono">{luckyDistribution.toFixed(2)}</div>
               <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">SOLANA (SOL)</div>
             </div>
           </TerminalCard>
 
           <TerminalCard title="TOKENS MINTÉS">
             <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-bold font-mono">127</div>
+              <div className="text-5xl md:text-6xl font-bold font-mono">{totalTokens}</div>
               <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">TOTAL</div>
             </div>
           </TerminalCard>
@@ -122,8 +211,16 @@ const Dashboard = () => {
             </a>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {mockTokens.map((token) => (
-              <TokenCard key={token.id} {...token} />
+            {tokens.map((token) => (
+              <TokenCard 
+                key={token.id} 
+                id={token.id}
+                symbol={token.symbol}
+                name={token.name}
+                price={Number(token.price)}
+                liquidity={Number(token.liquidity)}
+                volume={Number(token.volume_24h)}
+              />
             ))}
           </div>
         </div>
@@ -136,7 +233,7 @@ const Dashboard = () => {
               CONSOLE SYSTÈME IA
             </h3>
           </div>
-          <ConsoleLog logs={mockLogs} />
+          <ConsoleLog logs={formattedLogs} />
         </div>
       </main>
     </div>
