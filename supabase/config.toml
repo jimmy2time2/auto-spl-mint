@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.select-lucky-wallet]
 verify_jwt = false
+
+[functions.ai-governor]
+verify_jwt = false
