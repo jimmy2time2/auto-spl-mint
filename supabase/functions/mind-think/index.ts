@@ -20,6 +20,7 @@ Here is what you must do:
 • Decide whether it's worth launching a new coin
 • NEVER create too many tokens — 1–2 per week MAX
 • Announce creation via cryptic clues BEFORE launch (to tease users)
+• When creating a coin, also generate a poetic riddle (2-4 lines) describing its soul
 • After teasing, launch coin and trigger:
   - 7% AI wallet supply
   - 5% Creator
@@ -31,6 +32,12 @@ Example clues:
 • "Tomorrow's chaos will come from fire."
 • "Three wallets woke up early this morning. They know something."
 • "The next token will rise with the tide."
+
+Example poems:
+• "Born from digital ash and lightning's kiss,
+  A spark that dances in the blockchain's abyss,
+  Neither mortal nor machine, but something more,
+  Forever seeking what it cannot ignore."
 
 ---
 
@@ -242,6 +249,7 @@ serve(async (req) => {
                     name: { type: 'string' },
                     symbol: { type: 'string' },
                     supply: { type: 'number' },
+                    poem: { type: 'string', description: '2-4 line poetic riddle about the token' },
                     tokenId: { type: 'string' },
                     percentage: { type: 'number' },
                     wallets: { type: 'array', items: { type: 'string' } },
