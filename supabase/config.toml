@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.mind-think]
 verify_jwt = false
+
+[functions.autonomous-heartbeat]
+verify_jwt = false
