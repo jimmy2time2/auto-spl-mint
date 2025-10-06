@@ -352,6 +352,53 @@ export type Database = {
         }
         Relationships: []
       }
+      token_profiles: {
+        Row: {
+          audio_url: string | null
+          bio: string
+          created_at: string
+          id: string
+          image_url: string | null
+          mint_reason: string
+          mood: Database["public"]["Enums"]["token_mood"]
+          social_text: string
+          style: string
+          token_id: string
+        }
+        Insert: {
+          audio_url?: string | null
+          bio: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          mint_reason: string
+          mood: Database["public"]["Enums"]["token_mood"]
+          social_text: string
+          style: string
+          token_id: string
+        }
+        Update: {
+          audio_url?: string | null
+          bio?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          mint_reason?: string
+          mood?: Database["public"]["Enums"]["token_mood"]
+          social_text?: string
+          style?: string
+          token_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_profiles_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: true
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tokens: {
         Row: {
           bonding_curve_data: Json | null
@@ -529,6 +576,17 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      token_mood:
+        | "troll"
+        | "hype"
+        | "philosopher"
+        | "casino"
+        | "doomcore"
+        | "discofi"
+        | "cosmic"
+        | "glitch"
+        | "chaos"
+        | "zen"
       wallet_type:
         | "treasury"
         | "creator"
@@ -662,6 +720,18 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      token_mood: [
+        "troll",
+        "hype",
+        "philosopher",
+        "casino",
+        "doomcore",
+        "discofi",
+        "cosmic",
+        "glitch",
+        "chaos",
+        "zen",
+      ],
       wallet_type: [
         "treasury",
         "creator",

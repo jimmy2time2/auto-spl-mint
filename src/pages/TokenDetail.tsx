@@ -2,6 +2,10 @@ import { useParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import TerminalCard from "@/components/TerminalCard";
 import ConsoleLog from "@/components/ConsoleLog";
+import TokenProfile from "@/components/TokenProfile";
+import GenerateProfileButton from "@/components/GenerateProfileButton";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const mockTokenData = {
   symbol: 'VX9',
@@ -24,6 +28,21 @@ const mockLogs = [
 const TokenDetail = () => {
   const { id } = useParams();
 
+  // Check if profile exists
+  const { data: profile, refetch: refetchProfile } = useQuery({
+    queryKey: ["token-profile-check", id],
+    queryFn: async () => {
+      if (!id) return null;
+      const { data } = await supabase
+        .from("token_profiles")
+        .select("id")
+        .eq("token_id", id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!id,
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -37,6 +56,21 @@ const TokenDetail = () => {
           <div className="inline-block border-2 border-black bg-card px-3 py-1 terminal-text text-sm">
             LAUNCHED: {mockTokenData.launchTime}
           </div>
+        </div>
+
+        {/* Token Profile */}
+        <div className="mb-8">
+          {!profile ? (
+            <div className="border-2 border-border bg-card p-8 text-center">
+              <div className="terminal-text mb-4">
+                <div className="text-4xl mb-2">🤖</div>
+                <div className="text-sm opacity-70">NO AI IDENTITY YET</div>
+              </div>
+              <GenerateProfileButton tokenId={id || ""} onGenerated={() => refetchProfile()} />
+            </div>
+          ) : (
+            <TokenProfile tokenId={id || ""} />
+          )}
         </div>
 
         {/* Metrics */}
