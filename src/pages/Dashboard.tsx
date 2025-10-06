@@ -194,13 +194,18 @@ const Dashboard = () => {
         <div className="mb-12 border-2 border-border p-8 bg-card">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex-1">
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-2 text-muted-foreground">
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-4 text-muted-foreground">
                 <Activity className="inline w-3 h-3 mr-1 animate-pulse" />
                 AUTONOMOUS AI SYSTEM
               </div>
-              <h1 className="text-5xl md:text-7xl font-bold mb-4 leading-none">
-                VISIONFLOW
-              </h1>
+              <pre className="text-xl md:text-3xl font-bold mb-6 leading-none font-mono overflow-x-auto">
+{`███╗   ███╗██╗███╗   ██╗██████╗  █████╗ 
+████╗ ████║██║████╗  ██║██╔══██╗██╔══██╗
+██╔████╔██║██║██╔██╗ ██║██║  ██║╚██████║
+██║╚██╔╝██║██║██║╚██╗██║██║  ██║ ╚═══██║
+██║ ╚═╝ ██║██║██║ ╚████║██████╔╝ █████╔╝
+╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝  ╚════╝`}
+              </pre>
               <p className="text-base md:text-lg uppercase tracking-wide font-medium mb-4">
                 Solana Token Generator — Artificial Intelligence
               </p>

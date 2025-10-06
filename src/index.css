@@ -70,6 +70,15 @@ All colors MUST be HSL.
     letter-spacing: 0.05em;
   }
 
+  /* ASCII art rendering */
+  pre {
+    font-family: monospace;
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: pre;
+    overflow: visible;
+  }
+
   .ascii-border {
     border-style: dashed;
   }
