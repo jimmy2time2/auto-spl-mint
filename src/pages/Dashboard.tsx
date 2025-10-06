@@ -6,6 +6,9 @@ import CountdownTimer from "@/components/CountdownTimer";
 import TokenCard from "@/components/TokenCard";
 import ConsoleLog from "@/components/ConsoleLog";
 import AiMindTicker from "@/components/AiMindTicker";
+import MintTokenDialog from "@/components/MintTokenDialog";
+import { Button } from "@/components/ui/button";
+import { Plus, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Token = Tables<"tokens">;
@@ -18,9 +21,11 @@ const Dashboard = () => {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [nextLaunch, setNextLaunch] = useState(new Date(Date.now() + 2 * 60 * 60 * 1000));
   const [isPaused, setIsPaused] = useState(false);
-  const [treasuryBalance] = useState(1247.83);
-  const [luckyDistribution] = useState(142.50);
-  const [totalTokens, setTotalTokens] = useState(127);
+  const [treasuryBalance, setTreasuryBalance] = useState(0);
+  const [luckyDistribution, setLuckyDistribution] = useState(0);
+  const [totalTokens, setTotalTokens] = useState(0);
+  const [mintDialogOpen, setMintDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Fetch settings
   useEffect(() => {
@@ -57,9 +62,12 @@ const Dashboard = () => {
     fetchTokens();
   }, []);
 
-  // Fetch total token count
+  // Fetch stats (total tokens, treasury, lucky distribution)
   useEffect(() => {
-    const fetchTokenCount = async () => {
+    const fetchStats = async () => {
+      setLoading(true);
+      
+      // Get total token count
       const { count } = await supabase
         .from("tokens")
         .select("*", { count: 'exact', head: true });
@@ -67,8 +75,39 @@ const Dashboard = () => {
       if (count !== null) {
         setTotalTokens(count);
       }
+
+      // Get DAO treasury balance
+      const { data: treasury } = await supabase
+        .from("dao_treasury")
+        .select("balance")
+        .single();
+      
+      if (treasury) {
+        setTreasuryBalance(Number(treasury.balance));
+      }
+
+      // Calculate lucky wallet distribution (last 7 days)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const { data: luckySelections } = await supabase
+        .from("lucky_wallet_selections")
+        .select("distribution_amount")
+        .gte("selection_timestamp", sevenDaysAgo.toISOString());
+      
+      if (luckySelections) {
+        const total = luckySelections.reduce((sum, s) => sum + parseFloat(s.distribution_amount.toString()), 0);
+        setLuckyDistribution(total);
+      }
+
+      setLoading(false);
     };
-    fetchTokenCount();
+    
+    fetchStats();
+    
+    // Refresh stats every 30 seconds
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   // Fetch recent logs
@@ -114,6 +153,33 @@ const Dashboard = () => {
     };
   });
 
+  const refreshData = () => {
+    // Refresh tokens and stats
+    const fetchTokens = async () => {
+      const { data } = await supabase
+        .from("tokens")
+        .select("*")
+        .order("launch_timestamp", { ascending: false })
+        .limit(3);
+      
+      if (data) {
+        setTokens(data);
+      }
+    };
+    fetchTokens();
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl font-bold font-mono mb-4 animate-pulse">LOADING...</div>
+          <div className="text-sm uppercase tracking-widest text-muted-foreground">Initializing VisionFlow System</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -123,16 +189,16 @@ const Dashboard = () => {
         <div className="container mx-auto px-6 py-3 max-w-7xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
             <div className="border-r border-border pr-4">
-              <span className="font-bold uppercase tracking-wider">Status:</span> <span className="text-primary font-mono">● ACTIVE</span>
+              <span className="font-bold uppercase tracking-wider">Status:</span> <span className="text-primary font-mono">● {isPaused ? 'PAUSED' : 'ACTIVE'}</span>
             </div>
             <div className="border-r border-border pr-4">
               <span className="font-bold uppercase tracking-wider">Network:</span> <span className="font-mono">SOLANA</span>
             </div>
             <div className="border-r border-border pr-4">
-              <span className="font-bold uppercase tracking-wider">Tokens:</span> <span className="font-mono">127</span>
+              <span className="font-bold uppercase tracking-wider">Tokens:</span> <span className="font-mono">{totalTokens}</span>
             </div>
             <div>
-              <span className="font-bold uppercase tracking-wider">Treasury:</span> <span className="font-mono">1,247.83 SOL</span>
+              <span className="font-bold uppercase tracking-wider">Treasury:</span> <span className="font-mono">{treasuryBalance.toLocaleString()} SOL</span>
             </div>
           </div>
         </div>
@@ -140,24 +206,71 @@ const Dashboard = () => {
       
       <AiMindTicker />
       
+      <MintTokenDialog 
+        open={mintDialogOpen} 
+        onOpenChange={setMintDialogOpen}
+        onSuccess={refreshData}
+      />
+      
       <main className="container mx-auto px-6 py-12 max-w-7xl">
         {/* Hero Section */}
-        <div className="mb-12 border-b-2 border-border pb-8">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-2">AUTONOMOUS SYSTEM</div>
-              <h1 className="text-6xl md:text-7xl font-bold mb-2 leading-none">
+        <div className="mb-12 border-2 border-border p-8 bg-card">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex-1">
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-2 text-muted-foreground">AUTONOMOUS SYSTEM</div>
+              <h1 className="text-5xl md:text-7xl font-bold mb-4 leading-none">
                 VISIONFLOW
               </h1>
-              <p className="text-sm uppercase tracking-wide font-medium">
+              <p className="text-base md:text-lg uppercase tracking-wide font-medium mb-6">
                 Solana Token Generator — Artificial Intelligence
               </p>
+              <div className="flex gap-4">
+                <Button
+                  onClick={() => setMintDialogOpen(true)}
+                  className="bg-black text-white border-2 border-black font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all h-14 px-8"
+                >
+                  <Plus className="mr-2 h-5 w-5" />
+                  MINT_NEW_TOKEN
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.href = '/explorer'}
+                  className="border-2 border-black font-bold text-sm uppercase tracking-widest h-14 px-8"
+                >
+                  <TrendingUp className="mr-2 h-5 w-5" />
+                  EXPLORE_TOKENS
+                </Button>
+              </div>
             </div>
-            <div className="text-xs border-l-2 border-border pl-6">
-              <div className="font-bold uppercase tracking-wider mb-1">Status</div>
-              <div className="font-mono mb-3">● ACTIVE</div>
-              <div className="font-bold uppercase tracking-wider mb-1">Uptime</div>
-              <div className="font-mono">99.9%</div>
+            <div className="grid grid-cols-2 gap-4 text-xs">
+              <div className="border-2 border-border p-4 bg-background">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="w-4 h-4" />
+                  <span className="font-bold uppercase tracking-wider">Status</span>
+                </div>
+                <div className="font-mono text-lg">● {isPaused ? 'PAUSED' : 'ACTIVE'}</div>
+              </div>
+              <div className="border-2 border-border p-4 bg-background">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-4 h-4" />
+                  <span className="font-bold uppercase tracking-wider">Network</span>
+                </div>
+                <div className="font-mono text-lg">SOLANA</div>
+              </div>
+              <div className="border-2 border-border p-4 bg-background">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="w-4 h-4" />
+                  <span className="font-bold uppercase tracking-wider">Uptime</span>
+                </div>
+                <div className="font-mono text-lg">99.9%</div>
+              </div>
+              <div className="border-2 border-border p-4 bg-background">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="font-bold uppercase tracking-wider">Tokens</span>
+                </div>
+                <div className="font-mono text-lg">{totalTokens}</div>
+              </div>
             </div>
           </div>
         </div>
