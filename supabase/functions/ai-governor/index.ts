@@ -11,8 +11,6 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const startTime = Date.now();
-
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -21,38 +19,6 @@ serve(async (req) => {
 
     const { action, data, prompt } = await req.json();
     console.log(`[AI GOVERNOR] Action: ${action}`);
-
-    // Security validation - validate all parameters before execution
-    let securityValidated = true;
-    let validationErrors: string[] = [];
-
-    if (action === 'decide_creation' && data) {
-      // Validate token creation parameters
-      if (data.name && data.name.length < 2) {
-        validationErrors.push('Token name too short');
-        securityValidated = false;
-      }
-      if (data.symbol && (data.symbol.length < 2 || !/^[A-Z0-9]+$/.test(data.symbol))) {
-        validationErrors.push('Invalid token symbol');
-        securityValidated = false;
-      }
-      if (data.supply && (data.supply < 1000 || data.supply > 1000000000000)) {
-        validationErrors.push('Token supply out of valid range');
-        securityValidated = false;
-      }
-    }
-
-    if (!securityValidated) {
-      console.error('[AI GOVERNOR] Security validation failed:', validationErrors);
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'Security validation failed',
-          errors: validationErrors 
-        }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
 
     let result;
 
@@ -78,20 +44,6 @@ serve(async (req) => {
     } else {
       result = { success: false, error: `Unknown action: ${action}` };
     }
-
-    const executionTime = Date.now() - startTime;
-
-    // Log execution to ai_governor_log
-    await supabase.from('ai_governor_log').insert({
-      prompt_input: prompt || action,
-      action_taken: action,
-      result: result,
-      security_validated: securityValidated,
-      execution_time_ms: executionTime,
-      error_message: result.success ? null : (result.error || 'Unknown error')
-    });
-
-    console.log(`[AI GOVERNOR] Completed in ${executionTime}ms`);
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

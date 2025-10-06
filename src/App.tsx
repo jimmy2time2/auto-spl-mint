@@ -10,9 +10,6 @@ import Explorer from "./pages/Explorer";
 import TokenDetail from "./pages/TokenDetail";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
-import AIGovernor from "./pages/AIGovernor";
-import DAO from "./pages/DAO";
-import ProposalDetail from "./pages/ProposalDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,9 +28,6 @@ const App = () => (
           <Route path="/token/:id" element={<TokenDetail />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/ai-governor" element={<AIGovernor />} />
-          <Route path="/dao" element={<DAO />} />
-          <Route path="/dao/:id" element={<ProposalDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

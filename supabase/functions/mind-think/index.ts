@@ -283,44 +283,12 @@ serve(async (req) => {
     console.log('[AI MIND] 💡 Decision:', decision.action);
     console.log('[AI MIND] 🧐 Reasoning:', decision.reasoning);
 
-    // Calculate AI Score for logging
-    const aiScore = decision.data?.aiScore || (
-      decision.action === 'createCoin' ? 9 :
-      decision.action === 'teaseNextCoin' ? 6 :
-      decision.action === 'sellProfit' ? 7 :
-      3
-    );
-
-    // Log to ai_governor_log for structured tracking
-    const logResult = await supabase.from('ai_governor_log').insert({
-      prompt_input: prompt,
-      action_taken: decision.action,
-      result: {
-        decision,
-        marketData: JSON.parse(marketData),
-        reasoning: decision.reasoning
-      },
-      ai_score: aiScore,
-      market_signals: {
-        tokens: tokens?.length || 0,
-        hoursSinceLastCoin,
-        recentActivity: recentActivity?.length || 0
-      },
-      security_validated: true,
-      execution_time_ms: Date.now() - Date.now()
-    });
-
-    if (logResult.error) {
-      console.error('[AI MIND] Failed to log to ai_governor_log:', logResult.error);
-    }
-
-    // Also log to protocol_activity for backward compatibility
+    // Log the AI's decision
     await supabase.from('protocol_activity').insert({
       activity_type: 'ai_mind_decision',
-      description: `AI Mind decided: ${decision.action} (Score: ${aiScore})`,
+      description: `AI Mind decided: ${decision.action}`,
       metadata: {
         decision,
-        aiScore,
         marketData: JSON.parse(marketData),
         timestamp: new Date().toISOString()
       }

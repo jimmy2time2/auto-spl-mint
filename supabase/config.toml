@@ -29,21 +29,3 @@ verify_jwt = false
 
 [functions.hint-api]
 verify_jwt = false
-
-[functions.generate-token-profile]
-verify_jwt = false
-
-[functions.dao-create-proposal]
-verify_jwt = false
-
-[functions.dao-vote]
-verify_jwt = false
-
-[functions.dao-check-eligibility]
-verify_jwt = false
-
-[functions.dao-generate-invite]
-verify_jwt = false
-
-[functions.dao-use-invite]
-verify_jwt = false

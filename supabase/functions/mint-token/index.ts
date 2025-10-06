@@ -114,26 +114,6 @@ serve(async (req) => {
 
     console.log('Token minted successfully:', token.id);
 
-    // 6. Auto-generate token profile in background (fire and forget)
-    fetch(`${supabaseUrl}/functions/v1/generate-token-profile`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ token_id: token.id }),
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          console.error('Profile generation failed:', await res.text());
-        } else {
-          console.log('Profile generation started for token:', token.id);
-        }
-      })
-      .catch((err) => {
-        console.error('Failed to trigger profile generation:', err);
-      });
-
     return new Response(
       JSON.stringify({ 
         success: true, 
