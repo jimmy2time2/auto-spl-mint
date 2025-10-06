@@ -154,19 +154,22 @@ export class MindGovernor {
   }
 
   private async logMint(params: TokenParams, tokenId?: string) {
-    const logEntry = {
-      timestamp: new Date().toISOString(),
-      tokenId,
-      params,
-      mood: await this.getMood()
-    };
-
-    // Store in logs table instead
-    await supabase.from('logs').insert({
+    const mood = await this.getMood();
+    
+    // Store in logs table - insert expects an array
+    await supabase.from('logs').insert([{
       action: 'AUTONOMOUS_MINT',
       token_id: tokenId,
-      details: logEntry
-    });
+      details: {
+        timestamp: new Date().toISOString(),
+        tokenId,
+        name: params.name,
+        symbol: params.symbol,
+        supply: params.supply,
+        poem: params.poem,
+        mood
+      } as any
+    }]);
   }
 
   private generateFallbackName(): string {
