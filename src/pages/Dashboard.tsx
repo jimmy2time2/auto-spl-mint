@@ -187,28 +187,36 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      {/* Info Bar */}
-      <div className="border-b border-border/50 bg-card/80 backdrop-blur-sm">
-        <div className="container mx-auto px-8 py-4 max-w-7xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: isPaused ? 'hsl(var(--destructive))' : 'hsl(var(--success-green))' }} />
-              <div>
-                <div className="metric-label text-muted-foreground">STATUS</div>
-                <div className="text-sm font-bold">{isPaused ? 'PAUSED' : 'ACTIVE'}</div>
+      {/* Top Info Bar */}
+      <div className="border-b-2 border-border bg-card">
+        <div className="container mx-auto px-8 py-3 max-w-7xl">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-xs">
+            <div>
+              <div className="metric-label">STATUS</div>
+              <div className="font-bold flex items-center gap-2">
+                <div className="w-2 h-2" style={{ backgroundColor: isPaused ? 'hsl(var(--destructive))' : 'hsl(var(--success-green))' }} />
+                {isPaused ? 'PAUSED' : 'ACTIVE'}
               </div>
             </div>
             <div>
-              <div className="metric-label text-muted-foreground">NETWORK</div>
-              <div className="text-sm font-bold">SOLANA</div>
+              <div className="metric-label">NETWORK</div>
+              <div className="font-bold">SOLANA</div>
             </div>
             <div>
-              <div className="metric-label text-muted-foreground">TOKENS</div>
-              <div className="text-sm metric-display">{totalTokens}</div>
+              <div className="metric-label">TOKENS</div>
+              <div className="font-bold metric-display">{totalTokens}</div>
             </div>
             <div>
-              <div className="metric-label text-muted-foreground">TREASURY</div>
-              <div className="text-sm metric-display">{treasuryBalance.toLocaleString()} SOL</div>
+              <div className="metric-label">TREASURY</div>
+              <div className="font-bold metric-display">{treasuryBalance.toFixed(2)} SOL</div>
+            </div>
+            <div>
+              <div className="metric-label">AI MOOD</div>
+              <div className="font-bold capitalize">{aiMood?.current_mood || 'NEUTRAL'}</div>
+            </div>
+            <div>
+              <div className="metric-label">LUCKY DIST</div>
+              <div className="font-bold metric-display">{luckyDistribution.toFixed(2)} SOL</div>
             </div>
           </div>
         </div>
@@ -216,153 +224,218 @@ const Dashboard = () => {
       
       <AiMindTicker />
       
-      <main className="container mx-auto px-6 py-12 max-w-7xl">
-        {/* Hero Section */}
-        <div className="mb-16">
-          <div className="max-w-4xl">
-            <div className="metric-label mb-4 flex items-center gap-2">
-              <Activity className="w-3 h-3" />
-              AUTONOMOUS AI SYSTEM
+      <main className="container mx-auto px-8 py-6 max-w-7xl">
+        {/* 3-Column Grid Layout */}
+        <div className="grid grid-cols-12 gap-4">
+          
+          {/* LEFT SIDEBAR */}
+          <div className="col-span-12 lg:col-span-3 space-y-4">
+            {/* Recent Tokens List */}
+            <div className="border-2 border-border bg-card p-4">
+              <h3 className="metric-label mb-4 font-bold">RECENT TOKENS</h3>
+              <div className="space-y-3">
+                {tokens.slice(0, 5).map((token, idx) => (
+                  <div key={token.id} className="border-b-2 border-border pb-2 last:border-0">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-xs">{token.symbol}</div>
+                        <div className="text-[10px] metric-label">{token.name}</div>
+                      </div>
+                      <div className="text-xs font-bold metric-display">
+                        {Number(token.price).toFixed(4)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.href = '/explorer'}
+                className="w-full mt-4 text-xs"
+              >
+                VIEW ALL →
+              </Button>
             </div>
-            <pre className="text-2xl font-bold leading-none mb-6 tracking-tight">
+
+            {/* Quick Stats */}
+            <div className="border-2 border-border bg-card p-4">
+              <h3 className="metric-label mb-4 font-bold">PROTOCOL STATS</h3>
+              <div className="space-y-3 text-xs">
+                <div className="flex justify-between">
+                  <span className="metric-label">TOTAL VOLUME</span>
+                  <span className="font-bold">--</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="metric-label">TOTAL HOLDERS</span>
+                  <span className="font-bold">--</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="metric-label">ACTIVE TRADES</span>
+                  <span className="font-bold">--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* MAIN CONTENT */}
+          <div className="col-span-12 lg:col-span-6 space-y-4">
+            {/* ASCII Logo Header */}
+            <div className="border-2 border-border bg-card p-8 text-center">
+              <pre className="text-lg font-bold leading-none mb-4 tracking-tight inline-block">
 {`███╗   ███╗██╗███╗   ██╗██████╗  █████╗ 
 ████╗ ████║██║████╗  ██║██╔══██╗██╔══██╗
 ██╔████╔██║██║██╔██╗ ██║██║  ██║╚██████║
 ██║╚██╔╝██║██║██║╚██╗██║██║  ██║ ╚═══██║
 ██║ ╚═╝ ██║██║██║ ╚████║██████╔╝ █████╔╝
 ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝  ╚════╝`}
-            </pre>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl">
-              Fully autonomous AI system that decides when to generate and launch tokens based on market conditions, with intelligent distribution and whale protection.
-            </p>
-            <div className="flex gap-4">
+              </pre>
+              <p className="text-sm mt-4 max-w-2xl mx-auto">
+                Fully autonomous AI system that decides when to generate and launch tokens based on market conditions.
+              </p>
+            </div>
+
+            {/* Next Launch Timer */}
+            <div className="border-2 border-border bg-card p-6">
+              <div className="text-center space-y-6">
+                <div className="metric-label">NEXT AUTONOMOUS LAUNCH</div>
+                <div className="metric-display text-6xl text-metric-primary">
+                  <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
+                </div>
+                <div className="grid grid-cols-3 gap-4 text-xs pt-4 border-t-2 border-border">
+                  <div>
+                    <div className="metric-label mb-1">MODE</div>
+                    <div className="font-bold">AUTONOMOUS</div>
+                  </div>
+                  <div>
+                    <div className="metric-label mb-1 flex items-center justify-center gap-2">
+                      <Brain className="w-3 h-3" />
+                      AI MOOD
+                    </div>
+                    <div className="font-bold capitalize">
+                      {aiMood?.current_mood || 'NEUTRAL'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="metric-label mb-1">STATUS</div>
+                    <div className="font-bold">{isPaused ? 'PAUSED' : 'ACTIVE'}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Key Metrics Grid */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="border-2 border-border bg-card p-4 text-center">
+                <div className="metric-label mb-2">TREASURY</div>
+                <div className="text-2xl font-bold metric-display">{treasuryBalance.toFixed(0)}</div>
+                <div className="text-xs mt-1">SOL</div>
+              </div>
+              <div className="border-2 border-border bg-card p-4 text-center">
+                <div className="metric-label mb-2">LUCKY (7D)</div>
+                <div className="text-2xl font-bold metric-display">{luckyDistribution.toFixed(2)}</div>
+                <div className="text-xs mt-1">SOL</div>
+              </div>
+              <div className="border-2 border-border bg-card p-4 text-center">
+                <div className="metric-label mb-2">TOKENS</div>
+                <div className="text-2xl font-bold metric-display">{totalTokens}</div>
+                <div className="text-xs mt-1">MINTED</div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="default"
                 onClick={() => window.location.href = '/explorer'}
-                className="h-12 px-8 font-bold uppercase tracking-wide"
+                className="h-12 font-bold uppercase tracking-wide"
               >
                 <TrendingUp className="mr-2 h-4 w-4" />
-                Explore Tokens
+                EXPLORE
               </Button>
               <Button
                 variant="outline"
                 onClick={() => window.location.href = '/leaderboard'}
-                className="h-12 px-8 font-bold uppercase tracking-wide"
+                className="h-12 font-bold uppercase tracking-wide"
               >
                 <Users className="mr-2 h-4 w-4" />
-                Lucky Wallets
+                LEADERBOARD
               </Button>
             </div>
           </div>
-        </div>
 
-        {/* Next AI Launch Section */}
-        <div className="mb-12">
-          <TerminalCard>
-            <div className="text-center space-y-8 py-8">
-              <div className="flex items-center justify-center gap-3">
-                <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-pulse" style={{ animationDelay: '0.2s' }} />
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary/30 animate-pulse" style={{ animationDelay: '0.4s' }} />
-                </div>
-                <span className="metric-label">
-                  NEXT AUTONOMOUS LAUNCH
-                </span>
+          {/* RIGHT SIDEBAR */}
+          <div className="col-span-12 lg:col-span-3 space-y-4">
+            {/* System Activity Log */}
+            <div className="border-2 border-border bg-card p-4">
+              <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-border">
+                <div className="w-2 h-2 bg-primary" />
+                <h3 className="metric-label font-bold">ACTIVITY LOG</h3>
               </div>
-              <div className="metric-display text-8xl text-metric-primary">
-                <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
+              <div className="space-y-2">
+                {formattedLogs.slice(0, 8).map((log, idx) => {
+                  let colorClass = '';
+                  if (String(log.type) === 'success') colorClass = 'text-success-green';
+                  else if (String(log.type) === 'error') colorClass = 'text-destructive';
+                  
+                  return (
+                    <div key={idx} className="text-[10px] leading-tight pb-2 border-b border-border last:border-0">
+                      <div className={`font-bold ${colorClass}`}>
+                        {'>'} {log.message.substring(0, 50)}
+                        {log.message.length > 50 && '...'}
+                      </div>
+                      <div className="metric-label mt-1">{log.timestamp}</div>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto pt-6">
-                <div>
-                  <div className="metric-label mb-2">Mode</div>
-                  <div className="text-sm font-medium">Autonomous</div>
+            </div>
+
+            {/* Distribution Info */}
+            <div className="border-2 border-border bg-card p-4">
+              <h3 className="metric-label mb-4 font-bold">TOKEN DISTRIBUTION</h3>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between items-center">
+                  <span className="metric-label">PUBLIC</span>
+                  <span className="font-bold">83%</span>
                 </div>
-                <div>
-                  <div className="metric-label mb-2 flex items-center gap-2">
-                    <Brain className="w-3 h-3" />
-                    AI Mood
-                  </div>
-                  <div className="text-sm metric-display capitalize">
-                    {aiMood?.current_mood || 'Neutral'}
-                  </div>
+                <div className="flex justify-between items-center">
+                  <span className="metric-label">AI WALLET</span>
+                  <span className="font-bold">7%</span>
                 </div>
-                <div>
-                  <div className="metric-label mb-2">Distribution</div>
-                  <div className="text-sm metric-display">AI:7% PUB:83%</div>
+                <div className="flex justify-between items-center">
+                  <span className="metric-label">CREATOR</span>
+                  <span className="font-bold">5%</span>
                 </div>
-                <div>
-                  <div className="metric-label mb-2">Status</div>
-                  <div className="text-sm font-medium">{isPaused ? 'Paused' : 'Active'}</div>
+                <div className="flex justify-between items-center">
+                  <span className="metric-label">LUCKY</span>
+                  <span className="font-bold">3%</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="metric-label">SYSTEM</span>
+                  <span className="font-bold">2%</span>
                 </div>
               </div>
             </div>
-          </TerminalCard>
-        </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <MetricCard
-            label="Treasury Balance"
-            value={treasuryBalance.toLocaleString()}
-            unit="SOL"
-            subtitle="Total system reserves"
-          />
-
-          <MetricCard
-            label="Lucky Distribution"
-            value={luckyDistribution.toFixed(2)}
-            unit="SOL"
-            subtitle="Last 7 days"
-            trend="up"
-          />
-
-          <MetricCard
-            label="Tokens Minted"
-            value={totalTokens}
-            subtitle="Total AI-generated"
-          />
-        </div>
-
-        {/* Recent Tokens */}
-        <div className="mb-16">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight mb-1">RECENT TOKENS</h2>
-              <div className="metric-label">Latest AI-generated assets</div>
+            {/* Fee Structure */}
+            <div className="border-2 border-border bg-card p-4">
+              <h3 className="metric-label mb-4 font-bold">FEE STRUCTURE</h3>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between items-center">
+                  <span className="metric-label">TRADING FEE</span>
+                  <span className="font-bold">2%</span>
+                </div>
+                <div className="flex justify-between items-center pl-4">
+                  <span className="metric-label">• CREATOR</span>
+                  <span className="font-bold">1%</span>
+                </div>
+                <div className="flex justify-between items-center pl-4">
+                  <span className="metric-label">• SYSTEM</span>
+                  <span className="font-bold">1%</span>
+                </div>
+              </div>
             </div>
-            <Button 
-              variant="ghost" 
-              onClick={() => window.location.href = '/explorer'}
-              className="metric-label font-bold"
-            >
-              VIEW ALL →
-            </Button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {tokens.map((token) => (
-              <TokenCard 
-                key={token.id} 
-                id={token.id}
-                symbol={token.symbol}
-                name={token.name}
-                price={Number(token.price)}
-                liquidity={Number(token.liquidity)}
-                volume={Number(token.volume_24h)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* AI Console Log */}
-        <div className="bg-card border-2 border-border p-8">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-border">
-            <div className="w-2 h-2 bg-primary" />
-            <h3 className="metric-label font-bold">
-              SYSTEM ACTIVITY LOG
-            </h3>
-          </div>
-          <ConsoleLog logs={formattedLogs} />
         </div>
       </main>
     </div>
