@@ -3,30 +3,37 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { WalletProvider } from "./components/WalletProvider";
 import Dashboard from "./pages/Dashboard";
 import Explorer from "./pages/Explorer";
 import TokenDetail from "./pages/TokenDetail";
 import Leaderboard from "./pages/Leaderboard";
+import Mint from "./pages/Mint";
+import Wallet from "./pages/Wallet";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/explorer" element={<Explorer />} />
-          <Route path="/token/:id" element={<TokenDetail />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <WalletProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/explorer" element={<Explorer />} />
+            <Route path="/token/:id" element={<TokenDetail />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/mint" element={<Mint />} />
+            <Route path="/wallet" element={<Wallet />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </WalletProvider>
   </QueryClientProvider>
 );
 

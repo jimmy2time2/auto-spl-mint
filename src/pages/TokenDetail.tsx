@@ -1,7 +1,15 @@
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import TerminalCard from "@/components/TerminalCard";
 import ConsoleLog from "@/components/ConsoleLog";
+import { TradingChart } from "@/components/TradingChart";
+import { TradeForm } from "@/components/TradeForm";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Token = Tables<"tokens">;
+type Log = Tables<"logs">;
 
 const mockTokenData = {
   symbol: 'VX9',
@@ -23,97 +31,160 @@ const mockLogs = [
 
 const TokenDetail = () => {
   const { id } = useParams();
+  const [token, setToken] = useState<Token | null>(null);
+  const [logs, setLogs] = useState<Log[]>([]);
+  const [chartData, setChartData] = useState<Array<{ time: string; value: number }>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      fetchTokenData();
+      fetchTokenLogs();
+    }
+  }, [id]);
+
+  const fetchTokenData = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('tokens')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      if (data) {
+        setToken(data);
+        // Generate mock chart data based on current price
+        generateChartData(Number(data.price));
+      }
+    } catch (error) {
+      console.error('Error fetching token:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTokenLogs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('logs')
+        .select('*')
+        .eq('token_id', id)
+        .order('timestamp', { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      if (data) setLogs(data);
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+    }
+  };
+
+  const generateChartData = (currentPrice: number) => {
+    const data = [];
+    const now = Date.now();
+    for (let i = 24; i >= 0; i--) {
+      data.push({
+        time: new Date(now - i * 60 * 60 * 1000).toISOString(),
+        value: currentPrice * (0.8 + Math.random() * 0.4),
+      });
+    }
+    setChartData(data);
+  };
+
+  const formattedLogs = logs.map(log => {
+    const details = log.details as any;
+    return {
+      timestamp: new Date(log.timestamp).toLocaleString(),
+      message: `${log.action}: ${JSON.stringify(details)}`,
+      type: 'info' as const
+    };
+  });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl font-bold font-mono mb-4 animate-pulse">LOADING...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!token) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-6 py-12">
+          <div className="text-center">Token not found</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 py-8 max-w-screen-xl">
-        <div className="mb-6">
+      <main className="container mx-auto px-6 py-12 max-w-7xl">
+        {/* Token Header */}
+        <div className="mb-8">
           <div className="flex items-baseline gap-4 mb-2">
-            <h1 className="text-5xl font-bold terminal-text">${mockTokenData.symbol}</h1>
-            <span className="text-xl opacity-70 terminal-text">{mockTokenData.name}</span>
+            <h1 className="text-6xl font-bold font-mono">${token.symbol}</h1>
+            <span className="text-2xl opacity-70">{token.name}</span>
           </div>
-          <div className="inline-block border-2 border-black bg-card px-3 py-1 terminal-text text-sm">
-            LAUNCHED: {mockTokenData.launchTime}
+          <div className="text-xs uppercase tracking-widest opacity-70">
+            Launched: {new Date(token.launch_timestamp).toLocaleString()}
           </div>
         </div>
 
-        {/* Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <TerminalCard>
-            <div className="text-sm opacity-70 terminal-text mb-1">SUPPLY</div>
-            <div className="text-2xl font-bold terminal-text">{mockTokenData.supply}</div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <TerminalCard title="SUPPLY">
+            <div className="text-3xl font-bold font-mono">{Number(token.supply).toLocaleString()}</div>
           </TerminalCard>
-          <TerminalCard>
-            <div className="text-sm opacity-70 terminal-text mb-1">MARKET_CAP</div>
-            <div className="text-2xl font-bold terminal-text">{mockTokenData.marketCap}</div>
+          <TerminalCard title="PRICE">
+            <div className="text-3xl font-bold font-mono">${Number(token.price).toFixed(6)}</div>
           </TerminalCard>
-          <TerminalCard>
-            <div className="text-sm opacity-70 terminal-text mb-1">LIQUIDITY</div>
-            <div className="text-2xl font-bold terminal-text">{mockTokenData.liquidity}</div>
+          <TerminalCard title="LIQUIDITY">
+            <div className="text-3xl font-bold font-mono">{Number(token.liquidity)} SOL</div>
           </TerminalCard>
-          <TerminalCard>
-            <div className="text-sm opacity-70 terminal-text mb-1">HOLDERS</div>
-            <div className="text-2xl font-bold terminal-text">{mockTokenData.holders}</div>
+          <TerminalCard title="HOLDERS">
+            <div className="text-3xl font-bold font-mono">{token.holders}</div>
           </TerminalCard>
         </div>
 
-        {/* Bonding Curve Chart */}
-        <div className="mb-8">
-          <TerminalCard title="BONDING_CURVE">
-            <div className="h-64 flex items-center justify-center border-2 border-dashed border-black">
-              <div className="text-center terminal-text">
-                <div className="text-4xl mb-2">📈</div>
-                <div className="opacity-70">PRICE_CHART_VISUALIZATION</div>
-                <div className="text-sm mt-2">CURRENT_PRICE: {mockTokenData.price}</div>
-              </div>
+        {/* Chart and Trading */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          <div className="lg:col-span-2">
+            <TradingChart 
+              data={chartData} 
+              tokenSymbol={token.symbol}
+            />
+          </div>
+          <div>
+            <TradeForm 
+              tokenId={token.id}
+              tokenSymbol={token.symbol}
+              currentPrice={Number(token.price)}
+              onTradeComplete={fetchTokenData}
+            />
+          </div>
+        </div>
+
+        {/* Activity Log */}
+        {formattedLogs.length > 0 && (
+          <div className="bg-black text-white border-2 border-black p-6">
+            <div className="flex items-center gap-3 mb-6 border-b border-gray-800 pb-3">
+              <div className="w-2 h-2 bg-white"></div>
+              <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                TOKEN_ACTIVITY_LOG
+              </h3>
             </div>
-          </TerminalCard>
-        </div>
-
-        {/* Wallet Distribution */}
-        <div className="mb-8">
-          <TerminalCard title="WALLET_DISTRIBUTION">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="flex items-center justify-center border-2 border-dashed border-black p-8">
-                <div className="text-center terminal-text">
-                  <div className="text-4xl mb-2">🥧</div>
-                  <div className="opacity-70">PIE_CHART</div>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center terminal-text">
-                  <span>TREASURY:</span>
-                  <span className="font-bold">50% (500,000)</span>
-                </div>
-                <div className="flex justify-between items-center terminal-text">
-                  <span>CREATOR:</span>
-                  <span className="font-bold">20% (200,000)</span>
-                </div>
-                <div className="flex justify-between items-center terminal-text">
-                  <span>LUCKY_WALLETS:</span>
-                  <span className="font-bold">30% (300,000)</span>
-                </div>
-                <div className="border-t-2 border-dashed border-black pt-3 mt-3">
-                  <div className="text-xs opacity-70 terminal-text mb-2">TOP_HOLDERS:</div>
-                  <div className="space-y-1 text-xs terminal-text">
-                    <div>8x5kJ...g3jL: 45,000 (4.5%)</div>
-                    <div>Bw9pL...k8Qm: 32,100 (3.2%)</div>
-                    <div>Nx7tM...j4Rv: 28,500 (2.85%)</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TerminalCard>
-        </div>
-
-        {/* Token Logs */}
-        <div>
-          <TerminalCard title="TOKEN_ACTIVITY_LOG">
-            <ConsoleLog logs={mockLogs} maxHeight="300px" />
-          </TerminalCard>
-        </div>
+            <ConsoleLog logs={formattedLogs} />
+          </div>
+        )}
       </main>
     </div>
   );
