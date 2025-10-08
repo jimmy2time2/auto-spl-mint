@@ -137,13 +137,8 @@ export type Database = {
       }
       dao_eligibility: {
         Row: {
-          active: boolean
-          ai_score: number
-          eligibility_date: string | null
-          eligibility_type: string
           flagged_reason: string | null
           id: string
-          invite_count: number
           is_eligible: boolean
           last_activity: string
           max_buy_percentage: number
@@ -155,13 +150,8 @@ export type Database = {
           whale_status: boolean
         }
         Insert: {
-          active?: boolean
-          ai_score?: number
-          eligibility_date?: string | null
-          eligibility_type?: string
           flagged_reason?: string | null
           id?: string
-          invite_count?: number
           is_eligible?: boolean
           last_activity?: string
           max_buy_percentage?: number
@@ -173,13 +163,8 @@ export type Database = {
           whale_status?: boolean
         }
         Update: {
-          active?: boolean
-          ai_score?: number
-          eligibility_date?: string | null
-          eligibility_type?: string
           flagged_reason?: string | null
           id?: string
-          invite_count?: number
           is_eligible?: boolean
           last_activity?: string
           max_buy_percentage?: number
@@ -200,161 +185,27 @@ export type Database = {
           },
         ]
       }
-      dao_proposals: {
-        Row: {
-          ai_vote: string | null
-          closes_at: string
-          created_at: string
-          created_by: string
-          description: string
-          id: string
-          is_ai_generated: boolean
-          payout_address: string | null
-          payout_amount: number | null
-          quorum_required: number
-          signature_hash: string | null
-          status: string
-          tags: string[] | null
-          title: string
-          votes_abstain: number
-          votes_no: number
-          votes_yes: number
-        }
-        Insert: {
-          ai_vote?: string | null
-          closes_at?: string
-          created_at?: string
-          created_by: string
-          description: string
-          id?: string
-          is_ai_generated?: boolean
-          payout_address?: string | null
-          payout_amount?: number | null
-          quorum_required?: number
-          signature_hash?: string | null
-          status?: string
-          tags?: string[] | null
-          title: string
-          votes_abstain?: number
-          votes_no?: number
-          votes_yes?: number
-        }
-        Update: {
-          ai_vote?: string | null
-          closes_at?: string
-          created_at?: string
-          created_by?: string
-          description?: string
-          id?: string
-          is_ai_generated?: boolean
-          payout_address?: string | null
-          payout_amount?: number | null
-          quorum_required?: number
-          signature_hash?: string | null
-          status?: string
-          tags?: string[] | null
-          title?: string
-          votes_abstain?: number
-          votes_no?: number
-          votes_yes?: number
-        }
-        Relationships: []
-      }
       dao_treasury: {
         Row: {
-          amount: number | null
           balance: number
-          description: string | null
-          event_type: string | null
           id: string
           last_update: string
           total_distributed: number
           total_received: number
         }
         Insert: {
-          amount?: number | null
           balance?: number
-          description?: string | null
-          event_type?: string | null
           id?: string
           last_update?: string
           total_distributed?: number
           total_received?: number
         }
         Update: {
-          amount?: number | null
           balance?: number
-          description?: string | null
-          event_type?: string | null
           id?: string
           last_update?: string
           total_distributed?: number
           total_received?: number
-        }
-        Relationships: []
-      }
-      dao_votes: {
-        Row: {
-          id: string
-          locked_until: string
-          proposal_id: string
-          timestamp: string
-          vote: string
-          vote_power: number
-          wallet_address: string
-        }
-        Insert: {
-          id?: string
-          locked_until?: string
-          proposal_id: string
-          timestamp?: string
-          vote: string
-          vote_power?: number
-          wallet_address: string
-        }
-        Update: {
-          id?: string
-          locked_until?: string
-          proposal_id?: string
-          timestamp?: string
-          vote?: string
-          vote_power?: number
-          wallet_address?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "dao_votes_proposal_id_fkey"
-            columns: ["proposal_id"]
-            isOneToOne: false
-            referencedRelation: "dao_proposals"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      invite_log: {
-        Row: {
-          id: string
-          invite_code: string
-          invitee_wallet: string
-          inviter_score: number
-          inviter_wallet: string
-          timestamp: string
-        }
-        Insert: {
-          id?: string
-          invite_code: string
-          invitee_wallet: string
-          inviter_score?: number
-          inviter_wallet: string
-          timestamp?: string
-        }
-        Update: {
-          id?: string
-          invite_code?: string
-          invitee_wallet?: string
-          inviter_score?: number
-          inviter_wallet?: string
-          timestamp?: string
         }
         Relationships: []
       }
@@ -797,14 +648,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_dao_eligibility: {
-        Args: { wallet: string }
-        Returns: boolean
-      }
-      close_expired_proposals: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      [_ in never]: never
     }
     Enums: {
       token_mood:
