@@ -50,9 +50,8 @@ const Navigation = () => {
       <div className="container mx-auto px-8 py-5 flex items-center justify-between max-w-7xl">
         <div className="flex items-center gap-16">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="flex items-center gap-1 font-bold text-xl tracking-tight">
-              <span className="border-2 border-primary px-2 py-1">M9</span>
-              <span>MIND9</span>
+            <div className="border-2 border-primary px-2 py-1 font-bold text-xl tracking-tight">
+              M9
             </div>
           </Link>
           
