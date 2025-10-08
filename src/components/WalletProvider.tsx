@@ -11,6 +11,7 @@ interface WalletProviderProps {
 }
 
 export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
+  // Using devnet for development - supports Phantom and Solflare wallets
   const endpoint = useMemo(() => clusterApiUrl('devnet'), []);
   
   const wallets = useMemo(
