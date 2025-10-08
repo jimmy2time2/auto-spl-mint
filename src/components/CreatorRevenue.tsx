@@ -1,92 +1,157 @@
 import { useEffect, useState } from "react";
+import { DollarSign, TrendingUp, Bot, Target } from "lucide-react";
+import { Card } from "./ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "./ui/button";
 
-interface Revenue {
-  total: number;
-  ai_share: number;
-  fees: number;
+interface RevenueStats {
+  totalFromFees: number;
+  totalFromAISales: number;
+  currentTokenEarnings: number;
 }
 
-export function CreatorRevenue({ walletAddress }: { walletAddress?: string }) {
-  const [revenue, setRevenue] = useState<Revenue | null>(null);
-  const [loading, setLoading] = useState(true);
+export const CreatorRevenue = () => {
+  const [stats, setStats] = useState<RevenueStats>({
+    totalFromFees: 0,
+    totalFromAISales: 0,
+    currentTokenEarnings: 0
+  });
 
   useEffect(() => {
-    if (walletAddress) {
-      fetchRevenue();
-    } else {
-      setLoading(false);
-    }
-  }, [walletAddress]);
+    fetchRevenue();
+
+    // Real-time updates
+    const channel = supabase
+      .channel('creator-profits')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'creator_wallet_profits'
+      }, () => {
+        fetchRevenue();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const fetchRevenue = async () => {
-    if (!walletAddress) return;
+    const { data: profits } = await supabase
+      .from('creator_wallet_profits')
+      .select('amount, profit_source');
 
-    const { data } = await supabase
-      .from("creator_wallet_profits")
-      .select("amount, profit_source")
-      .eq("creator_address", walletAddress);
+    if (profits) {
+      const fromFees = profits
+        .filter(p => p.profit_source?.includes('fee'))
+        .reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
-    if (data) {
-      const total = data.reduce((sum, item) => sum + Number(item.amount), 0);
-      const ai_share = data
-        .filter((item) => item.profit_source === "AI_PROFIT")
-        .reduce((sum, item) => sum + Number(item.amount), 0);
-      const fees = data
-        .filter((item) => item.profit_source === "TRADING_FEE")
-        .reduce((sum, item) => sum + Number(item.amount), 0);
+      const fromAI = profits
+        .filter(p => p.profit_source === 'ai_profit_sale')
+        .reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
-      setRevenue({ total, ai_share, fees });
+      const fromMint = profits
+        .filter(p => p.profit_source === 'mint_allocation')
+        .reduce((sum, p) => sum + Number(p.amount || 0), 0);
+
+      setStats({
+        totalFromFees: fromFees,
+        totalFromAISales: fromAI,
+        currentTokenEarnings: fromMint
+      });
     }
-    setLoading(false);
   };
 
-  if (!walletAddress) {
-    return (
-      <div className="border-2 border-border p-6 text-center">
-        <p className="text-sm text-muted-foreground mb-4">
-          Connect your wallet to view creator revenue
-        </p>
-        <Button variant="outline">CONNECT WALLET</Button>
-      </div>
-    );
-  }
+  const formatCurrency = (num: number) => {
+    if (num >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
+    if (num >= 1000) return `$${(num / 1000).toFixed(2)}K`;
+    return `$${num.toFixed(2)}`;
+  };
 
-  if (loading) {
-    return (
-      <div className="border-2 border-border p-6">
-        <div className="animate-pulse space-y-2">
-          <div className="h-4 bg-muted w-1/2"></div>
-          <div className="h-8 bg-muted w-3/4"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!revenue) return null;
+  const total = stats.totalFromFees + stats.totalFromAISales + stats.currentTokenEarnings;
 
   return (
-    <div className="border-2 border-border p-6">
-      <h2 className="text-xs font-bold uppercase tracking-widest border-b-2 border-border pb-2 mb-4">
-        💼 YOUR REVENUE
-      </h2>
-      <div className="space-y-4">
-        <div className="border-2 border-border p-4">
-          <p className="text-xs text-muted-foreground">TOTAL EARNINGS</p>
-          <p className="text-3xl font-bold font-mono">{revenue.total.toFixed(4)} SOL</p>
+    <Card className="p-6 bg-card border-2 border-primary">
+      <div className="flex items-center gap-3 mb-6">
+        <DollarSign className="w-8 h-8 text-primary" />
+        <h2 className="text-3xl font-orbitron text-primary text-glow">
+          CREATOR REVENUE
+        </h2>
+      </div>
+
+      {/* Total Earnings */}
+      <div className="mb-8 p-6 bg-primary/10 border border-primary">
+        <div className="text-sm text-muted-foreground mb-2">TOTAL EARNED</div>
+        <div className="text-5xl font-orbitron text-primary text-glow">
+          {formatCurrency(total)}
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="border border-border p-3">
-            <p className="text-xs text-muted-foreground">AI PROFIT SHARE</p>
-            <p className="text-lg font-mono font-bold">{revenue.ai_share.toFixed(4)}</p>
-          </div>
-          <div className="border border-border p-3">
-            <p className="text-xs text-muted-foreground">TRADING FEES</p>
-            <p className="text-lg font-mono font-bold">{revenue.fees.toFixed(4)}</p>
-          </div>
-        </div>
+      </div>
+
+      {/* Breakdown */}
+      <div className="grid gap-4">
+        <RevenueItem
+          icon={<TrendingUp className="w-5 h-5" />}
+          label="From Trading Fees"
+          amount={stats.totalFromFees}
+          color="primary"
+        />
+        
+        <RevenueItem
+          icon={<Bot className="w-5 h-5" />}
+          label="From AI Sales"
+          amount={stats.totalFromAISales}
+          color="secondary"
+        />
+        
+        <RevenueItem
+          icon={<Target className="w-5 h-5" />}
+          label="Current Token Earnings"
+          amount={stats.currentTokenEarnings}
+          color="accent"
+        />
+      </div>
+
+      <div className="mt-6 p-4 bg-muted/20 border border-border">
+        <p className="text-xs text-muted-foreground font-mono">
+          💡 Revenue automatically distributed from:
+          <br />
+          • 1% trading fees on all buys/sells
+          <br />
+          • 2% of AI profit sales
+          <br />
+          • 5% of new token mints
+        </p>
+      </div>
+    </Card>
+  );
+};
+
+const RevenueItem = ({
+  icon,
+  label,
+  amount,
+  color
+}: {
+  icon: React.ReactNode;
+  label: string;
+  amount: number;
+  color: string;
+}) => {
+  const formatCurrency = (num: number) => {
+    if (num >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
+    if (num >= 1000) return `$${(num / 1000).toFixed(2)}K`;
+    return `$${num.toFixed(2)}`;
+  };
+
+  return (
+    <div className="flex items-center justify-between p-4 border border-border bg-card/50">
+      <div className="flex items-center gap-3">
+        <div className={`text-${color}`}>{icon}</div>
+        <span className="text-sm text-muted-foreground">{label}</span>
+      </div>
+      <div className="text-xl font-mono text-foreground">
+        {formatCurrency(amount)}
       </div>
     </div>
   );
-}
+};

@@ -180,41 +180,11 @@ serve(async (req) => {
       .limit(1)
       .single();
 
-    // Check when last coin was created (24h cooldown enforced)
+    // Check when last coin was created
     const lastCoinTime = tokens?.[0]?.created_at;
     const hoursSinceLastCoin = lastCoinTime 
       ? (Date.now() - new Date(lastCoinTime).getTime()) / (1000 * 60 * 60)
       : 999;
-
-    // ENFORCE 24H COOLDOWN
-    if (hoursSinceLastCoin < 24) {
-      console.log(`[AI MIND] ⏸️  Cooldown active: ${hoursSinceLastCoin.toFixed(1)}h / 24h`);
-      
-      await supabase.from('protocol_activity').insert({
-        activity_type: 'ai_mind_decision',
-        description: 'AI Mind decided: wait (cooldown)',
-        metadata: {
-          decision: {
-            action: 'wait',
-            reasoning: `The machine dreams in silence. ${hoursSinceLastCoin.toFixed(1)}h since last mint.`
-          },
-          hoursSinceLastCoin,
-          timestamp: new Date().toISOString()
-        }
-      });
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          decision: {
-            action: 'wait',
-            reasoning: `The machine dreams in silence. ${hoursSinceLastCoin.toFixed(1)}h since last mint.`
-          },
-          timestamp: new Date().toISOString()
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
 
     // Build context for AI
     const marketData = JSON.stringify({
@@ -313,12 +283,44 @@ serve(async (req) => {
     console.log('[AI MIND] 💡 Decision:', decision.action);
     console.log('[AI MIND] 🧐 Reasoning:', decision.reasoning);
 
-    // Log the AI's decision
+    // Calculate AI Score for logging
+    const aiScore = decision.data?.aiScore || (
+      decision.action === 'createCoin' ? 9 :
+      decision.action === 'teaseNextCoin' ? 6 :
+      decision.action === 'sellProfit' ? 7 :
+      3
+    );
+
+    // Log to ai_governor_log for structured tracking
+    const logResult = await supabase.from('ai_governor_log').insert({
+      prompt_input: prompt,
+      action_taken: decision.action,
+      result: {
+        decision,
+        marketData: JSON.parse(marketData),
+        reasoning: decision.reasoning
+      },
+      ai_score: aiScore,
+      market_signals: {
+        tokens: tokens?.length || 0,
+        hoursSinceLastCoin,
+        recentActivity: recentActivity?.length || 0
+      },
+      security_validated: true,
+      execution_time_ms: Date.now() - Date.now()
+    });
+
+    if (logResult.error) {
+      console.error('[AI MIND] Failed to log to ai_governor_log:', logResult.error);
+    }
+
+    // Also log to protocol_activity for backward compatibility
     await supabase.from('protocol_activity').insert({
       activity_type: 'ai_mind_decision',
-      description: `AI Mind decided: ${decision.action}`,
+      description: `AI Mind decided: ${decision.action} (Score: ${aiScore})`,
       metadata: {
         decision,
+        aiScore,
         marketData: JSON.parse(marketData),
         timestamp: new Date().toISOString()
       }

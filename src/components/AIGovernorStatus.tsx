@@ -1,52 +1,33 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Brain, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface AIHint {
-  id: string;
-  content: string;
+  hint: string;
   timestamp: string;
-  ai_score?: number;
+  aiScore?: number;
 }
 
-const PulseMeter = ({ strength = 5 }: { strength?: number }) => {
-  return (
-    <div className="flex items-end gap-0.5 h-8">
-      {[...Array(10)].map((_, i) => (
-        <div
-          key={i}
-          className={`w-1 bg-foreground transition-all duration-300 ${
-            i < strength ? "opacity-100" : "opacity-20"
-          }`}
-          style={{
-            height: `${((i + 1) / 10) * 100}%`,
-            animation: i < strength ? `pulse ${0.5 + i * 0.1}s ease-in-out infinite` : "none",
-          }}
-        />
-      ))}
-    </div>
-  );
-};
-
-export function AIGovernorStatus() {
+export const AIGovernorStatus = () => {
   const [hints, setHints] = useState<AIHint[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [pulseStrength, setPulseStrength] = useState(5);
+  const [aiScore, setAIScore] = useState(0);
 
   useEffect(() => {
     fetchHints();
     
+    // Subscribe to new hints
     const channel = supabase
-      .channel("ai-hints-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "protocol_activity",
-          filter: "activity_type=eq.AI_HINT",
-        },
-        () => fetchHints()
-      )
+      .channel('ai-hints')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'protocol_activity',
+        filter: 'activity_type=eq.ai_clue_broadcast'
+      }, () => {
+        fetchHints();
+      })
       .subscribe();
 
     return () => {
@@ -58,54 +39,88 @@ export function AIGovernorStatus() {
     if (hints.length > 1) {
       const interval = setInterval(() => {
         setCurrentIndex((prev) => (prev + 1) % hints.length);
-      }, 30000);
+      }, 30000); // Rotate every 30 seconds
+
       return () => clearInterval(interval);
     }
   }, [hints.length]);
 
   const fetchHints = async () => {
-    const { data } = await supabase
-      .from("protocol_activity")
-      .select("*")
-      .eq("activity_type", "AI_HINT")
-      .order("timestamp", { ascending: false })
+    const { data: clues } = await supabase
+      .from('protocol_activity')
+      .select('description, timestamp, metadata')
+      .eq('activity_type', 'ai_clue_broadcast')
+      .order('timestamp', { ascending: false })
       .limit(5);
 
-    if (data) {
-      const formatted = data.map((item) => ({
-        id: item.id,
-        content: item.description,
-        timestamp: item.timestamp,
-        ai_score: (item.metadata as any)?.ai_score || 5,
-      }));
-      setHints(formatted);
-      if (formatted[0]?.ai_score) {
-        setPulseStrength(Math.floor(formatted[0].ai_score));
-      }
+    if (clues) {
+      setHints(clues.map(c => ({
+        hint: c.description,
+        timestamp: c.timestamp,
+        aiScore: (c.metadata as any)?.aiScore
+      })));
+    }
+
+    // Get latest AI score
+    const { data: decision } = await supabase
+      .from('logs')
+      .select('details')
+      .eq('action', 'AI_MIND_DECISION')
+      .order('timestamp', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (decision?.details) {
+      setAIScore((decision.details as any).aiScore || 0);
     }
   };
 
-  if (hints.length === 0) return null;
+  const currentHint = hints[currentIndex] || {
+    hint: "The AI Mind observes...",
+    timestamp: new Date().toISOString()
+  };
 
   return (
-    <div className="bg-dark-bg text-dark-text border-2 border-border p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xs font-bold uppercase tracking-widest">
-          🧠 AI GOVERNOR STATUS
-        </h2>
-        <PulseMeter strength={pulseStrength} />
-      </div>
-      <div className="relative overflow-hidden">
-        <p className="text-2xl font-bold font-mono glitch">
-          {hints[currentIndex]?.content || "Initializing..."}
-        </p>
+    <div className="relative overflow-hidden border-2 border-primary bg-card">
+      {/* Glitch overlay */}
+      <div className="absolute inset-0 cyber-grid opacity-20 pointer-events-none" />
+      
+      <div className="relative p-8">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Brain className="w-8 h-8 text-primary pulse-glow" />
+            <h2 className="text-2xl font-orbitron text-primary text-glow">
+              AI MIND
+            </h2>
+          </div>
+
+          {/* AI Pulse Meter */}
+          <AIPulseMeter score={aiScore} />
+        </div>
+
+        {/* Hint Display */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl font-mono text-foreground leading-relaxed"
+          >
+            <span className="text-glow">{currentHint.hint}</span>
+            <span className="cursor-blink text-primary">_</span>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Hint Counter */}
         {hints.length > 1 && (
-          <div className="flex gap-1 mt-4">
-            {hints.map((_, i) => (
+          <div className="mt-4 flex gap-2">
+            {hints.map((_, idx) => (
               <div
-                key={i}
-                className={`h-0.5 flex-1 ${
-                  i === currentIndex ? "bg-foreground" : "bg-muted"
+                key={idx}
+                className={`h-1 flex-1 transition-all ${
+                  idx === currentIndex ? 'bg-primary' : 'bg-muted'
                 }`}
               />
             ))}
@@ -114,4 +129,35 @@ export function AIGovernorStatus() {
       </div>
     </div>
   );
-}
+};
+
+const AIPulseMeter = ({ score }: { score: number }) => {
+  const bars = 10;
+  const activeBars = Math.min(bars, Math.ceil((score / 10) * bars));
+
+  return (
+    <div className="flex items-center gap-2">
+      <Zap className="w-4 h-4 text-primary" />
+      <div className="flex gap-1">
+        {Array.from({ length: bars }).map((_, idx) => (
+          <motion.div
+            key={idx}
+            className={`w-1 h-8 ${
+              idx < activeBars
+                ? idx < bars * 0.7
+                  ? 'bg-primary'
+                  : 'bg-secondary'
+                : 'bg-muted'
+            }`}
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: idx < activeBars ? 1 : 0.3 }}
+            transition={{ duration: 0.3, delay: idx * 0.05 }}
+          />
+        ))}
+      </div>
+      <span className="text-xs text-muted-foreground font-orbitron">
+        {score.toFixed(1)}/10
+      </span>
+    </div>
+  );
+};

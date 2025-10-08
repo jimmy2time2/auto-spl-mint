@@ -1,53 +1,43 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { AlertTriangle, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { X } from "lucide-react";
 
-interface Alert {
-  id: string;
-  token_symbol: string;
-  wallet: string;
-  amount: number;
+interface RugEvent {
+  wallet_address: string;
+  token_id: string;
   percentage: number;
   timestamp: string;
 }
 
-export function RugAlert() {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+export const RugAlert = () => {
+  const [alerts, setAlerts] = useState<RugEvent[]>([]);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const channel = supabase
-      .channel("whale-dumps")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "wallet_activity_log",
-          filter: "is_whale_flagged=eq.true",
-        },
-        (payload: any) => {
-          const newAlert: Alert = {
-            id: payload.new.id,
-            token_symbol: "TOKEN",
-            wallet: payload.new.wallet_address,
-            amount: payload.new.amount,
-            percentage: payload.new.percentage_of_supply,
-            timestamp: payload.new.timestamp,
-          };
-          
-          setAlerts((prev) => [newAlert, ...prev].slice(0, 5));
-          setVisible(true);
+    fetchAlerts();
 
-          // Play alert sound (optional)
-          try {
-            const audio = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVqzn77RnHwU7k9v0yX0p");
-            audio.play();
-          } catch (e) {
-            // Ignore audio errors
-          }
+    // Real-time whale detection
+    const channel = supabase
+      .channel('whale-alerts')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'protocol_activity',
+        filter: 'activity_type=eq.whale_detected'
+      }, (payload) => {
+        const metadata = payload.new.metadata as any;
+        if (metadata?.type === 'sell' && metadata?.percentageOfSupply > 50) {
+          const newAlert: RugEvent = {
+            wallet_address: metadata.wallet,
+            token_id: metadata.tokenId,
+            percentage: metadata.percentageOfSupply,
+            timestamp: new Date().toISOString()
+          };
+          setAlerts(prev => [newAlert, ...prev].slice(0, 3));
+          setVisible(true);
         }
-      )
+      })
       .subscribe();
 
     return () => {
@@ -55,41 +45,93 @@ export function RugAlert() {
     };
   }, []);
 
-  if (!visible || alerts.length === 0) return null;
+  const fetchAlerts = async () => {
+    const { data } = await supabase
+      .from('protocol_activity')
+      .select('metadata, timestamp')
+      .eq('activity_type', 'whale_detected')
+      .order('timestamp', { ascending: false })
+      .limit(3);
 
-  const shortenAddress = (addr: string) => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+    if (data) {
+      const recentAlerts = data
+        .filter(d => {
+          const meta = d.metadata as any;
+          return meta?.type === 'sell' && meta?.percentageOfSupply > 50;
+        })
+        .map(d => {
+          const meta = d.metadata as any;
+          return {
+            wallet_address: meta.wallet,
+            token_id: meta.tokenId,
+            percentage: meta.percentageOfSupply,
+            timestamp: d.timestamp
+          };
+        });
+
+      if (recentAlerts.length > 0) {
+        setAlerts(recentAlerts);
+      }
+    }
   };
 
+  const shortenAddress = (address: string) => {
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  };
+
+  if (!visible || alerts.length === 0) return null;
+
   return (
-    <div className="fixed top-20 left-0 right-0 z-50 animate-in slide-in-from-top">
-      <div className="container mx-auto px-4">
-        <div className="bg-destructive text-destructive-foreground border-2 border-border p-4 shadow-lg">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h3 className="text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
-                🚨 WHALE DUMP ALERT
-              </h3>
-              {alerts.slice(0, 1).map((alert) => (
-                <div key={alert.id} className="space-y-1">
-                  <p className="font-mono font-bold">
-                    {shortenAddress(alert.wallet)} dumped {alert.percentage.toFixed(1)}% of supply
-                  </p>
-                  <p className="text-xs opacity-80">
-                    Amount: {alert.amount.toLocaleString()} tokens
-                  </p>
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={() => setVisible(false)}
-              className="p-1 hover:bg-background/20 transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
+    <AnimatePresence>
+      <motion.div
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -100, opacity: 0 }}
+        className="fixed top-0 left-0 right-0 z-50 bg-destructive border-b-2 border-destructive-foreground"
+      >
+        <div className="ticker-wrapper">
+          <div className="ticker-content">
+            {alerts.map((alert, idx) => (
+              <div key={idx} className="ticker-item px-8 py-3 flex items-center gap-3">
+                <AlertTriangle className="w-5 h-5 text-destructive-foreground flex-shrink-0" />
+                <span className="font-orbitron text-destructive-foreground">
+                  ⚠️ LARGE HOLDER JUST DUMPED
+                </span>
+                <span className="font-mono text-destructive-foreground/80">
+                  {shortenAddress(alert.wallet_address)}
+                </span>
+                <span className="font-orbitron text-destructive-foreground">
+                  SOLD {alert.percentage.toFixed(0)}%
+                </span>
+                <span className="mx-4 text-destructive-foreground/40">|</span>
+              </div>
+            ))}
+            {/* Duplicate for seamless loop */}
+            {alerts.map((alert, idx) => (
+              <div key={`dup-${idx}`} className="ticker-item px-8 py-3 flex items-center gap-3">
+                <AlertTriangle className="w-5 h-5 text-destructive-foreground flex-shrink-0" />
+                <span className="font-orbitron text-destructive-foreground">
+                  ⚠️ LARGE HOLDER JUST DUMPED
+                </span>
+                <span className="font-mono text-destructive-foreground/80">
+                  {shortenAddress(alert.wallet_address)}
+                </span>
+                <span className="font-orbitron text-destructive-foreground">
+                  SOLD {alert.percentage.toFixed(0)}%
+                </span>
+                <span className="mx-4 text-destructive-foreground/40">|</span>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-    </div>
+
+        <button
+          onClick={() => setVisible(false)}
+          className="absolute top-2 right-2 p-1 hover:bg-destructive-foreground/20 rounded"
+        >
+          <X className="w-4 h-4 text-destructive-foreground" />
+        </button>
+      </motion.div>
+    </AnimatePresence>
   );
-}
+};
