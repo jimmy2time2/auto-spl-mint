@@ -14,45 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      ai_governor_log: {
-        Row: {
-          action_taken: string
-          ai_score: number | null
-          error_message: string | null
-          execution_time_ms: number | null
-          id: string
-          market_signals: Json | null
-          prompt_input: string
-          result: Json
-          security_validated: boolean | null
-          timestamp: string
-        }
-        Insert: {
-          action_taken: string
-          ai_score?: number | null
-          error_message?: string | null
-          execution_time_ms?: number | null
-          id?: string
-          market_signals?: Json | null
-          prompt_input: string
-          result: Json
-          security_validated?: boolean | null
-          timestamp?: string
-        }
-        Update: {
-          action_taken?: string
-          ai_score?: number | null
-          error_message?: string | null
-          execution_time_ms?: number | null
-          id?: string
-          market_signals?: Json | null
-          prompt_input?: string
-          result?: Json
-          security_validated?: boolean | null
-          timestamp?: string
-        }
-        Relationships: []
-      }
       coin_distributions: {
         Row: {
           ai_wallet_amount: number
@@ -279,42 +240,6 @@ export type Database = {
           },
         ]
       }
-      market_sentiment: {
-        Row: {
-          confidence: number
-          dao_participation_rate: number | null
-          id: string
-          recommendation: string
-          sentiment_score: number
-          solana_volume: number | null
-          timestamp: string
-          trending_tags: string[] | null
-          whale_activity_level: string | null
-        }
-        Insert: {
-          confidence: number
-          dao_participation_rate?: number | null
-          id?: string
-          recommendation: string
-          sentiment_score: number
-          solana_volume?: number | null
-          timestamp?: string
-          trending_tags?: string[] | null
-          whale_activity_level?: string | null
-        }
-        Update: {
-          confidence?: number
-          dao_participation_rate?: number | null
-          id?: string
-          recommendation?: string
-          sentiment_score?: number
-          solana_volume?: number | null
-          timestamp?: string
-          trending_tags?: string[] | null
-          whale_activity_level?: string | null
-        }
-        Relationships: []
-      }
       profit_events: {
         Row: {
           creator_amount: number
@@ -426,53 +351,6 @@ export type Database = {
           status?: string
         }
         Relationships: []
-      }
-      token_profiles: {
-        Row: {
-          audio_url: string | null
-          bio: string
-          created_at: string
-          id: string
-          image_url: string | null
-          mint_reason: string
-          mood: Database["public"]["Enums"]["token_mood"]
-          social_text: string
-          style: string
-          token_id: string
-        }
-        Insert: {
-          audio_url?: string | null
-          bio: string
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          mint_reason: string
-          mood: Database["public"]["Enums"]["token_mood"]
-          social_text: string
-          style: string
-          token_id: string
-        }
-        Update: {
-          audio_url?: string | null
-          bio?: string
-          created_at?: string
-          id?: string
-          image_url?: string | null
-          mint_reason?: string
-          mood?: Database["public"]["Enums"]["token_mood"]
-          social_text?: string
-          style?: string
-          token_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "token_profiles_token_id_fkey"
-            columns: ["token_id"]
-            isOneToOne: true
-            referencedRelation: "tokens"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       tokens: {
         Row: {
@@ -651,17 +529,6 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      token_mood:
-        | "troll"
-        | "hype"
-        | "philosopher"
-        | "casino"
-        | "doomcore"
-        | "discofi"
-        | "cosmic"
-        | "glitch"
-        | "chaos"
-        | "zen"
       wallet_type:
         | "treasury"
         | "creator"
@@ -795,18 +662,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      token_mood: [
-        "troll",
-        "hype",
-        "philosopher",
-        "casino",
-        "doomcore",
-        "discofi",
-        "cosmic",
-        "glitch",
-        "chaos",
-        "zen",
-      ],
       wallet_type: [
         "treasury",
         "creator",

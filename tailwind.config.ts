@@ -14,9 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ["Libre Baskerville", "Georgia", "serif"],
-        mono: ["IBM Plex Mono", "Courier New", "monospace"],
-        sans: ["IBM Plex Mono", "monospace"],
+        mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        pixel: ['"VT323"', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",

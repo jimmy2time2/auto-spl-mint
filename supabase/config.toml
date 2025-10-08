@@ -29,6 +29,3 @@ verify_jwt = false
 
 [functions.hint-api]
 verify_jwt = false
-
-[functions.generate-token-profile]
-verify_jwt = false
