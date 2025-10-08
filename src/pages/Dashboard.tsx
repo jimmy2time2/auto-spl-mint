@@ -188,26 +188,26 @@ const Dashboard = () => {
       <Navigation />
       
       {/* Info Bar */}
-      <div className="border-b border-border/30 bg-card/50 backdrop-blur-sm">
+      <div className="border-b border-border/50 bg-card/80 backdrop-blur-sm">
         <div className="container mx-auto px-8 py-4 max-w-7xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="flex items-center gap-3">
-              <Circle className="w-2 h-2 fill-current" style={{ color: isPaused ? 'hsl(var(--destructive))' : 'hsl(var(--success-green))' }} />
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: isPaused ? 'hsl(var(--destructive))' : 'hsl(var(--success-green))' }} />
               <div>
-                <div className="metric-label text-muted-foreground">Status</div>
-                <div className="text-sm font-medium">{isPaused ? 'PAUSED' : 'ACTIVE'}</div>
+                <div className="metric-label text-muted-foreground">STATUS</div>
+                <div className="text-sm font-bold">{isPaused ? 'PAUSED' : 'ACTIVE'}</div>
               </div>
             </div>
             <div>
-              <div className="metric-label text-muted-foreground">Network</div>
-              <div className="text-sm font-medium">SOLANA</div>
+              <div className="metric-label text-muted-foreground">NETWORK</div>
+              <div className="text-sm font-bold">SOLANA</div>
             </div>
             <div>
-              <div className="metric-label text-muted-foreground">Tokens</div>
+              <div className="metric-label text-muted-foreground">TOKENS</div>
               <div className="text-sm metric-display">{totalTokens}</div>
             </div>
             <div>
-              <div className="metric-label text-muted-foreground">Treasury</div>
+              <div className="metric-label text-muted-foreground">TREASURY</div>
               <div className="text-sm metric-display">{treasuryBalance.toLocaleString()} SOL</div>
             </div>
           </div>
@@ -224,17 +224,17 @@ const Dashboard = () => {
               <Activity className="w-3 h-3" />
               AUTONOMOUS AI SYSTEM
             </div>
-            <h1 className="text-7xl font-light tracking-tight mb-6">
+            <h1 className="text-7xl font-bold tracking-tight mb-6">
               MIND<span className="metric-display">9</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl font-light">
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl">
               Fully autonomous AI system that decides when to generate and launch tokens based on market conditions, with intelligent distribution and whale protection.
             </p>
             <div className="flex gap-4">
               <Button
                 variant="default"
                 onClick={() => window.location.href = '/explorer'}
-                className="rounded-xl h-12 px-8 font-medium"
+                className="h-12 px-8 font-bold uppercase tracking-wide"
               >
                 <TrendingUp className="mr-2 h-4 w-4" />
                 Explore Tokens
@@ -242,7 +242,7 @@ const Dashboard = () => {
               <Button
                 variant="outline"
                 onClick={() => window.location.href = '/leaderboard'}
-                className="rounded-xl h-12 px-8 font-medium"
+                className="h-12 px-8 font-bold uppercase tracking-wide"
               >
                 <Users className="mr-2 h-4 w-4" />
                 Lucky Wallets
@@ -323,15 +323,15 @@ const Dashboard = () => {
         <div className="mb-16">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-light tracking-tight mb-1">Recent Tokens</h2>
+              <h2 className="text-2xl font-bold tracking-tight mb-1">RECENT TOKENS</h2>
               <div className="metric-label">Latest AI-generated assets</div>
             </div>
             <Button 
               variant="ghost" 
               onClick={() => window.location.href = '/explorer'}
-              className="rounded-xl metric-label"
+              className="metric-label font-bold"
             >
-              View All →
+              VIEW ALL →
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -350,11 +350,11 @@ const Dashboard = () => {
         </div>
 
         {/* AI Console Log */}
-        <div className="bg-card border border-border rounded-2xl p-8">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border/50">
-            <div className="w-2 h-2 rounded-full bg-primary" />
-            <h3 className="metric-label">
-              System Activity Log
+        <div className="bg-card border-2 border-border p-8">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-border">
+            <div className="w-2 h-2 bg-primary" />
+            <h3 className="metric-label font-bold">
+              SYSTEM ACTIVITY LOG
             </h3>
           </div>
           <ConsoleLog logs={formattedLogs} />
