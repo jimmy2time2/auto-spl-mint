@@ -10,60 +10,68 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path;
   
   return (
-    <header className="border-b-2 border-border bg-card sticky top-0 z-50">
-      <div className="container mx-auto px-6 py-4 flex items-center justify-between max-w-7xl">
-        <div className="flex items-center gap-12">
-          <Link to="/" className="font-bold text-lg tracking-wider hover:text-primary transition-colors">
-            <span className="font-mono">MIND9</span>
+    <header className="border-b border-border/50 bg-card/80 backdrop-blur-md sticky top-0 z-50">
+      <div className="container mx-auto px-8 py-5 flex items-center justify-between max-w-7xl">
+        <div className="flex items-center gap-16">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-8 h-8 rounded-full bg-primary/5 border border-primary/20 flex items-center justify-center">
+              <div className="w-4 h-4 rounded-full bg-primary/80" />
+            </div>
+            <span className="font-semibold text-xl tracking-tight">MIND9</span>
           </Link>
           
-          <nav className="hidden md:flex gap-8">
+          <nav className="hidden md:flex gap-10">
             <Link 
               to="/" 
-              className={`text-xs font-bold uppercase tracking-widest hover:text-foreground transition-colors ${
-                isActive('/') ? 'text-foreground border-b-2 border-foreground pb-1' : 'text-muted-foreground'
+              className={`metric-label transition-all relative ${
+                isActive('/') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               Dashboard
+              {isActive('/') && <div className="absolute -bottom-5 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             <Link 
               to="/explorer" 
-              className={`text-xs font-bold uppercase tracking-widest hover:text-foreground transition-colors ${
-                isActive('/explorer') ? 'text-foreground border-b-2 border-foreground pb-1' : 'text-muted-foreground'
+              className={`metric-label transition-all relative ${
+                isActive('/explorer') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               Explorer
+              {isActive('/explorer') && <div className="absolute -bottom-5 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             <Link 
               to="/leaderboard" 
-              className={`text-xs font-bold uppercase tracking-widest hover:text-foreground transition-colors ${
-                isActive('/leaderboard') ? 'text-foreground border-b-2 border-foreground pb-1' : 'text-muted-foreground'
+              className={`metric-label transition-all relative ${
+                isActive('/leaderboard') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               Leaderboard
+              {isActive('/leaderboard') && <div className="absolute -bottom-5 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             <Link 
               to="/mint" 
-              className={`text-xs font-bold uppercase tracking-widest hover:text-foreground transition-colors ${
-                isActive('/mint') ? 'text-foreground border-b-2 border-foreground pb-1' : 'text-muted-foreground'
+              className={`metric-label transition-all relative ${
+                isActive('/mint') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               Mint
+              {isActive('/mint') && <div className="absolute -bottom-5 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             {connected && (
               <Link 
                 to="/wallet" 
-                className={`text-xs font-bold uppercase tracking-widest hover:text-foreground transition-colors ${
-                  isActive('/wallet') ? 'text-foreground border-b-2 border-foreground pb-1' : 'text-muted-foreground'
+                className={`metric-label transition-all relative ${
+                  isActive('/wallet') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Wallet
+                {isActive('/wallet') && <div className="absolute -bottom-5 left-0 right-0 h-0.5 bg-primary" />}
               </Link>
             )}
           </nav>
         </div>
 
-        <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !border-2 !border-border !font-bold !uppercase !tracking-widest !text-xs !h-10" />
+        <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/80 !border !border-border/50 !rounded-xl !font-medium !text-xs !h-10 !px-6 !transition-all" />
       </div>
     </header>
   );

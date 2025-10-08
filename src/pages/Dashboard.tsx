@@ -6,8 +6,9 @@ import CountdownTimer from "@/components/CountdownTimer";
 import TokenCard from "@/components/TokenCard";
 import ConsoleLog from "@/components/ConsoleLog";
 import AiMindTicker from "@/components/AiMindTicker";
+import MetricCard from "@/components/MetricCard";
 import { Button } from "@/components/ui/button";
-import { Sparkles, TrendingUp, Users, Zap, Activity } from "lucide-react";
+import { Sparkles, TrendingUp, Users, Zap, Activity, Circle } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Token = Tables<"tokens">;
@@ -156,8 +157,8 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="text-4xl font-bold font-mono mb-4 animate-pulse">LOADING...</div>
-          <div className="text-sm uppercase tracking-widest text-muted-foreground">Initializing VisionFlow System</div>
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+          <div className="metric-label text-muted-foreground">Loading System</div>
         </div>
       </div>
     );
@@ -168,20 +169,27 @@ const Dashboard = () => {
       <Navigation />
       
       {/* Info Bar */}
-      <div className="border-b-2 border-border bg-card">
-        <div className="container mx-auto px-6 py-3 max-w-7xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-            <div className="border-r border-border pr-4">
-              <span className="font-bold uppercase tracking-wider">Status:</span> <span className="text-primary font-mono">● {isPaused ? 'PAUSED' : 'ACTIVE'}</span>
-            </div>
-            <div className="border-r border-border pr-4">
-              <span className="font-bold uppercase tracking-wider">Network:</span> <span className="font-mono">SOLANA</span>
-            </div>
-            <div className="border-r border-border pr-4">
-              <span className="font-bold uppercase tracking-wider">Tokens:</span> <span className="font-mono">{totalTokens}</span>
+      <div className="border-b border-border/30 bg-card/50 backdrop-blur-sm">
+        <div className="container mx-auto px-8 py-4 max-w-7xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="flex items-center gap-3">
+              <Circle className="w-2 h-2 fill-current" style={{ color: isPaused ? 'hsl(var(--destructive))' : 'hsl(var(--success-green))' }} />
+              <div>
+                <div className="metric-label text-muted-foreground">Status</div>
+                <div className="text-sm font-medium">{isPaused ? 'PAUSED' : 'ACTIVE'}</div>
+              </div>
             </div>
             <div>
-              <span className="font-bold uppercase tracking-wider">Treasury:</span> <span className="font-mono">{treasuryBalance.toLocaleString()} SOL</span>
+              <div className="metric-label text-muted-foreground">Network</div>
+              <div className="text-sm font-medium">SOLANA</div>
+            </div>
+            <div>
+              <div className="metric-label text-muted-foreground">Tokens</div>
+              <div className="text-sm metric-display">{totalTokens}</div>
+            </div>
+            <div>
+              <div className="metric-label text-muted-foreground">Treasury</div>
+              <div className="text-sm metric-display">{treasuryBalance.toLocaleString()} SOL</div>
             </div>
           </div>
         </div>
@@ -191,109 +199,72 @@ const Dashboard = () => {
       
       <main className="container mx-auto px-6 py-12 max-w-7xl">
         {/* Hero Section */}
-        <div className="mb-12 border-2 border-border p-8 bg-card">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex-1">
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-4 text-muted-foreground">
-                <Activity className="inline w-3 h-3 mr-1 animate-pulse" />
-                AUTONOMOUS AI SYSTEM
-              </div>
-              <pre className="text-sm md:text-xl font-bold mb-6 leading-none font-mono overflow-x-auto">
-{`███╗   ███╗██╗███╗   ██╗██████╗  █████╗ 
-████╗ ████║██║████╗  ██║██╔══██╗██╔══██╗
-██╔████╔██║██║██╔██╗ ██║██║  ██║╚██████║
-██║╚██╔╝██║██║██║╚██╗██║██║  ██║ ╚═══██║
-██║ ╚═╝ ██║██║██║ ╚████║██████╔╝ █████╔╝
-╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝  ╚════╝`}
-              </pre>
-              <p className="text-base md:text-lg uppercase tracking-wide font-medium mb-4">
-                Solana Token Generator — Artificial Intelligence
-              </p>
-              <p className="text-sm text-muted-foreground mb-6 max-w-2xl">
-                Fully autonomous AI system that generates and launches tokens every {settings?.launch_freq_hours || 12} hours. 
-                The AI handles distribution, fee collection, whale detection, and lucky wallet selection automatically.
-              </p>
-              <div className="flex gap-4">
-                <Button
-                  variant="outline"
-                  onClick={() => window.location.href = '/explorer'}
-                  className="border-2 border-black font-bold text-sm uppercase tracking-widest h-12 px-6"
-                >
-                  <TrendingUp className="mr-2 h-5 w-5" />
-                  EXPLORE_TOKENS
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => window.location.href = '/leaderboard'}
-                  className="border-2 border-black font-bold text-sm uppercase tracking-widest h-12 px-6"
-                >
-                  <Users className="mr-2 h-5 w-5" />
-                  LUCKY_WALLETS
-                </Button>
-              </div>
+        <div className="mb-16">
+          <div className="max-w-4xl">
+            <div className="metric-label mb-4 flex items-center gap-2">
+              <Activity className="w-3 h-3" />
+              AUTONOMOUS AI SYSTEM
             </div>
-            <div className="grid grid-cols-2 gap-4 text-xs">
-              <div className="border-2 border-border p-4 bg-background">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4" />
-                  <span className="font-bold uppercase tracking-wider">Status</span>
-                </div>
-                <div className="font-mono text-lg">● {isPaused ? 'PAUSED' : 'ACTIVE'}</div>
-              </div>
-              <div className="border-2 border-border p-4 bg-background">
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="w-4 h-4" />
-                  <span className="font-bold uppercase tracking-wider">Network</span>
-                </div>
-                <div className="font-mono text-lg">SOLANA</div>
-              </div>
-              <div className="border-2 border-border p-4 bg-background">
-                <div className="flex items-center gap-2 mb-2">
-                  <Users className="w-4 h-4" />
-                  <span className="font-bold uppercase tracking-wider">Uptime</span>
-                </div>
-                <div className="font-mono text-lg">99.9%</div>
-              </div>
-              <div className="border-2 border-border p-4 bg-background">
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="font-bold uppercase tracking-wider">Tokens</span>
-                </div>
-                <div className="font-mono text-lg">{totalTokens}</div>
-              </div>
+            <h1 className="text-7xl font-light tracking-tight mb-6">
+              MIND<span className="metric-display">9</span>
+            </h1>
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl font-light">
+              Fully autonomous AI system that generates and launches tokens every {settings?.launch_freq_hours || 12} hours with intelligent distribution and whale protection.
+            </p>
+            <div className="flex gap-4">
+              <Button
+                variant="default"
+                onClick={() => window.location.href = '/explorer'}
+                className="rounded-xl h-12 px-8 font-medium"
+              >
+                <TrendingUp className="mr-2 h-4 w-4" />
+                Explore Tokens
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/leaderboard'}
+                className="rounded-xl h-12 px-8 font-medium"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Lucky Wallets
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Next AI Launch Section */}
-        <div className="mb-8">
-          <TerminalCard title="NEXT_AI_AUTONOMOUS_LAUNCH">
-            <div className="text-center space-y-6">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <Activity className="w-6 h-6 animate-pulse text-primary" />
-                <span className="text-sm font-bold uppercase tracking-widest">
-                  AI SYSTEM GENERATING TOKEN
+        <div className="mb-12">
+          <TerminalCard>
+            <div className="text-center space-y-8 py-8">
+              <div className="flex items-center justify-center gap-3">
+                <div className="flex gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-pulse" style={{ animationDelay: '0.2s' }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/30 animate-pulse" style={{ animationDelay: '0.4s' }} />
+                </div>
+                <span className="metric-label">
+                  NEXT AUTONOMOUS LAUNCH
                 </span>
               </div>
-              <div className="text-7xl md:text-8xl font-extrabold font-mono">
+              <div className="metric-display text-8xl text-metric-primary">
                 <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs border-t-2 border-border pt-4">
-                <div className="border-r border-border pr-4">
-                  <div className="font-bold uppercase tracking-wider text-muted-foreground mb-1">Mode</div>
-                  <div className="font-mono">AUTONOMOUS</div>
-                </div>
-                <div className="border-r border-border pr-4">
-                  <div className="font-bold uppercase tracking-wider text-muted-foreground mb-1">Frequency</div>
-                  <div className="font-mono">{settings?.launch_freq_hours || 12}H</div>
-                </div>
-                <div className="border-r border-border pr-4">
-                  <div className="font-bold uppercase tracking-wider text-muted-foreground mb-1">Distribution</div>
-                  <div className="font-mono">AI:7% PUB:83%</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto pt-6">
+                <div>
+                  <div className="metric-label mb-2">Mode</div>
+                  <div className="text-sm font-medium">Autonomous</div>
                 </div>
                 <div>
-                  <div className="font-bold uppercase tracking-wider text-muted-foreground mb-1">Status</div>
-                  <div className="font-mono">{isPaused ? 'PAUSED' : 'ACTIVE'}</div>
+                  <div className="metric-label mb-2">Frequency</div>
+                  <div className="text-sm metric-display">{settings?.launch_freq_hours || 12}H</div>
+                </div>
+                <div>
+                  <div className="metric-label mb-2">Distribution</div>
+                  <div className="text-sm metric-display">AI:7% PUB:83%</div>
+                </div>
+                <div>
+                  <div className="metric-label mb-2">Status</div>
+                  <div className="text-sm font-medium">{isPaused ? 'Paused' : 'Active'}</div>
                 </div>
               </div>
             </div>
@@ -301,38 +272,45 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          <TerminalCard title="TREASURY">
-            <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-bold font-mono">{treasuryBalance.toLocaleString()}</div>
-              <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">SOLANA (SOL)</div>
-            </div>
-          </TerminalCard>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <MetricCard
+            label="Treasury Balance"
+            value={treasuryBalance.toLocaleString()}
+            unit="SOL"
+            subtitle="Total system reserves"
+          />
 
-          <TerminalCard title="LUCKY DISTRIBUTION (7D)">
-            <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-bold font-mono">{luckyDistribution.toFixed(2)}</div>
-              <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">SOLANA (SOL)</div>
-            </div>
-          </TerminalCard>
+          <MetricCard
+            label="Lucky Distribution"
+            value={luckyDistribution.toFixed(2)}
+            unit="SOL"
+            subtitle="Last 7 days"
+            trend="up"
+          />
 
-          <TerminalCard title="TOKENS MINTED">
-            <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-bold font-mono">{totalTokens}</div>
-              <div className="text-[10px] font-bold uppercase tracking-widest border-t border-border pt-2">TOTAL</div>
-            </div>
-          </TerminalCard>
+          <MetricCard
+            label="Tokens Minted"
+            value={totalTokens}
+            subtitle="Total AI-generated"
+          />
         </div>
 
         {/* Recent Tokens */}
-        <div className="mb-12 border-2 border-border p-6">
-          <div className="mb-6 flex items-center justify-between border-b-2 border-border pb-4">
-            <h2 className="text-2xl font-bold uppercase tracking-tight">Recent Tokens</h2>
-            <a href="/explorer" className="text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity border border-border px-3 py-1">
-              VIEW ALL →
-            </a>
+        <div className="mb-16">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-light tracking-tight mb-1">Recent Tokens</h2>
+              <div className="metric-label">Latest AI-generated assets</div>
+            </div>
+            <Button 
+              variant="ghost" 
+              onClick={() => window.location.href = '/explorer'}
+              className="rounded-xl metric-label"
+            >
+              View All →
+            </Button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {tokens.map((token) => (
               <TokenCard 
                 key={token.id} 
@@ -348,11 +326,11 @@ const Dashboard = () => {
         </div>
 
         {/* AI Console Log */}
-        <div className="bg-black text-white border-2 border-black p-6">
-          <div className="flex items-center gap-3 mb-6 border-b border-gray-800 pb-3">
-            <div className="w-2 h-2 bg-white"></div>
-            <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-              AI SYSTEM CONSOLE
+        <div className="bg-card border border-border rounded-2xl p-8">
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border/50">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <h3 className="metric-label">
+              System Activity Log
             </h3>
           </div>
           <ConsoleLog logs={formattedLogs} />
