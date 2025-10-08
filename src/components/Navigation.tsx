@@ -63,7 +63,7 @@ const Navigation = () => {
               }`}
             >
               DASHBOARD
-              {isActive('/') && <div className="absolute -bottom-5 left-0 right-0 h-0.5 bg-primary" />}
+              {isActive('/') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             <Link 
               to="/explorer" 
@@ -72,7 +72,7 @@ const Navigation = () => {
               }`}
             >
               EXPLORER
-              {isActive('/explorer') && <div className="absolute -bottom-5 left-0 right-0 h-0.5 bg-primary" />}
+              {isActive('/explorer') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             <Link 
               to="/leaderboard" 
@@ -81,7 +81,7 @@ const Navigation = () => {
               }`}
             >
               LEADERBOARD
-              {isActive('/leaderboard') && <div className="absolute -bottom-5 left-0 right-0 h-0.5 bg-primary" />}
+              {isActive('/leaderboard') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             <Link 
               to="/mint" 
@@ -90,7 +90,7 @@ const Navigation = () => {
               }`}
             >
               MINT
-              {isActive('/mint') && <div className="absolute -bottom-5 left-0 right-0 h-0.5 bg-primary" />}
+              {isActive('/mint') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             {connected && (
               <Link 
@@ -100,7 +100,7 @@ const Navigation = () => {
                 }`}
               >
                 WALLET
-                {isActive('/wallet') && <div className="absolute -bottom-5 left-0 right-0 h-0.5 bg-primary" />}
+                {isActive('/wallet') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
               </Link>
             )}
           </nav>
