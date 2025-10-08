@@ -15,8 +15,8 @@ import { BroadcastOverlayProvider } from "./components/AIMintBroadcast";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
+  <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BroadcastOverlayProvider>
           <Toaster />
@@ -33,8 +33,8 @@ const App = () => (
           </Routes>
         </BroadcastOverlayProvider>
       </TooltipProvider>
-    </BrowserRouter>
-  </QueryClientProvider>
+    </QueryClientProvider>
+  </BrowserRouter>
 );
 
 export default App;
