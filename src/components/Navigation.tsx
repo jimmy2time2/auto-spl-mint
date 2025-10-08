@@ -50,18 +50,10 @@ const Navigation = () => {
       <div className="container mx-auto px-8 py-5 flex items-center justify-between max-w-7xl">
         <div className="flex items-center gap-16">
           <Link to="/" className="flex items-center gap-3 group">
-            <div 
-              ref={logoRef}
-              className="w-8 h-8 border-2 border-primary flex items-center justify-center relative overflow-hidden"
-            >
-              <div 
-                className="w-4 h-4 bg-primary transition-transform duration-100 ease-out" 
-                style={{ 
-                  transform: `translate(${eyePosition.x}px, ${eyePosition.y}px)` 
-                }}
-              />
+            <div className="flex items-center gap-1 font-bold text-xl tracking-tight">
+              <span className="border-2 border-primary px-2 py-1">M9</span>
+              <span>MIND9</span>
             </div>
-            <span className="font-bold text-xl tracking-tight">MIND9</span>
           </Link>
           
           <nav className="hidden md:flex gap-10">
