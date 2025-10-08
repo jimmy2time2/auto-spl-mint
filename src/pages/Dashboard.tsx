@@ -224,9 +224,14 @@ const Dashboard = () => {
               <Activity className="w-3 h-3" />
               AUTONOMOUS AI SYSTEM
             </div>
-            <h1 className="text-7xl font-bold tracking-tight mb-6">
-              MIND<span className="metric-display">9</span>
-            </h1>
+            <pre className="text-2xl font-bold leading-none mb-6 tracking-tight">
+{`███╗   ███╗██╗███╗   ██╗██████╗  █████╗ 
+████╗ ████║██║████╗  ██║██╔══██╗██╔══██╗
+██╔████╔██║██║██╔██╗ ██║██║  ██║╚██████║
+██║╚██╔╝██║██║██║╚██╗██║██║  ██║ ╚═══██║
+██║ ╚═╝ ██║██║██║ ╚████║██████╔╝ █████╔╝
+╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝  ╚════╝`}
+            </pre>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl">
               Fully autonomous AI system that decides when to generate and launch tokens based on market conditions, with intelligent distribution and whale protection.
             </p>
