@@ -2,20 +2,55 @@ import { Link, useLocation } from "react-router-dom";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Button } from "@/components/ui/button";
+import { useState, useEffect, useRef } from "react";
 
 const Navigation = () => {
   const location = useLocation();
   const { connected } = useWallet();
+  const logoRef = useRef<HTMLDivElement>(null);
+  const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
   
   const isActive = (path: string) => location.pathname === path;
+  
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!logoRef.current) return;
+      
+      const logo = logoRef.current.getBoundingClientRect();
+      const logoCenterX = logo.left + logo.width / 2;
+      const logoCenterY = logo.top + logo.height / 2;
+      
+      const deltaX = e.clientX - logoCenterX;
+      const deltaY = e.clientY - logoCenterY;
+      
+      const angle = Math.atan2(deltaY, deltaX);
+      const distance = Math.min(Math.sqrt(deltaX ** 2 + deltaY ** 2), 6);
+      
+      const x = Math.cos(angle) * distance;
+      const y = Math.sin(angle) * distance;
+      
+      setEyePosition({ x, y });
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
   
   return (
     <header className="border-b border-border/50 bg-card/80 backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-8 py-5 flex items-center justify-between max-w-7xl">
         <div className="flex items-center gap-16">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-full bg-primary/5 border border-primary/20 flex items-center justify-center">
-              <div className="w-4 h-4 rounded-full bg-primary/80" />
+            <div 
+              ref={logoRef}
+              className="w-8 h-8 rounded-full bg-primary/5 border border-primary/20 flex items-center justify-center relative overflow-hidden"
+            >
+              <div 
+                className="w-4 h-4 rounded-full bg-primary/80 transition-transform duration-100 ease-out" 
+                style={{ 
+                  transform: `translate(${eyePosition.x}px, ${eyePosition.y}px)` 
+                }}
+              />
             </div>
             <span className="font-semibold text-xl tracking-tight">MIND9</span>
           </Link>
