@@ -45,6 +45,14 @@ const Navigation = () => {
               Explorer
             </Link>
             <Link 
+              to="/dao" 
+              className={`text-xs font-bold uppercase tracking-widest hover:text-foreground transition-colors ${
+                isActive('/dao') ? 'text-foreground border-b-2 border-foreground pb-1' : 'text-muted-foreground'
+              }`}
+            >
+              DAO
+            </Link>
+            <Link 
               to="/leaderboard" 
               className={`text-xs font-bold uppercase tracking-widest hover:text-foreground transition-colors ${
                 isActive('/leaderboard') ? 'text-foreground border-b-2 border-foreground pb-1' : 'text-muted-foreground'
