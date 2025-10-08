@@ -1,4 +1,4 @@
-import { useEffect, useState, createContext, useContext, ReactNode } from "react";
+import { useEffect, useState, createContext, useContext, ReactNode, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { X } from "lucide-react";
 import { Button } from "./ui/button";
@@ -18,6 +18,11 @@ const BroadcastContext = createContext<BroadcastContextType | null>(null);
 
 export function BroadcastOverlayProvider({ children }: { children: ReactNode }) {
   const [activeMint, setActiveMint] = useState<MintData | null>(null);
+
+  const triggerBroadcast = useCallback((mint: MintData) => {
+    setActiveMint(mint);
+    setTimeout(() => setActiveMint(null), 10000);
+  }, []);
 
   useEffect(() => {
     const channel = supabase
@@ -44,12 +49,7 @@ export function BroadcastOverlayProvider({ children }: { children: ReactNode }) 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
-
-  const triggerBroadcast = (mint: MintData) => {
-    setActiveMint(mint);
-    setTimeout(() => setActiveMint(null), 10000);
-  };
+  }, [triggerBroadcast]);
 
   if (!activeMint) {
     return (
