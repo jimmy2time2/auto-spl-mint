@@ -9,27 +9,10 @@ const Navigation = () => {
   const location = useLocation();
   const { connected } = useWallet();
   const logoRef = useRef<HTMLDivElement>(null);
-  const navRef = useRef<HTMLDivElement>(null);
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
-  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const { trackEvent } = useEngagementTracking();
   
   const isActive = (path: string) => location.pathname === path;
-  
-  // Update indicator position based on active link
-  useEffect(() => {
-    if (!navRef.current) return;
-    
-    const activeLink = navRef.current.querySelector('.active-nav-link');
-    if (activeLink) {
-      const navRect = navRef.current.getBoundingClientRect();
-      const linkRect = activeLink.getBoundingClientRect();
-      setIndicatorStyle({
-        left: linkRect.left - navRect.left,
-        width: linkRect.width
-      });
-    }
-  }, [location.pathname]);
   
   // Track wallet connections
   useEffect(() => {
@@ -72,56 +55,54 @@ const Navigation = () => {
             </div>
           </Link>
           
-          <nav ref={navRef} className="hidden md:flex gap-10 relative">
+          <nav className="hidden md:flex gap-10">
             <Link 
               to="/" 
-              className={`metric-label transition-all ${
-                isActive('/') ? 'text-foreground font-bold active-nav-link' : 'text-muted-foreground hover:text-foreground'
+              className={`metric-label transition-all relative ${
+                isActive('/') ? 'text-foreground font-bold' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               DASHBOARD
+              {isActive('/') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             <Link 
               to="/explorer" 
-              className={`metric-label transition-all ${
-                isActive('/explorer') ? 'text-foreground font-bold active-nav-link' : 'text-muted-foreground hover:text-foreground'
+              className={`metric-label transition-all relative ${
+                isActive('/explorer') ? 'text-foreground font-bold' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               EXPLORER
+              {isActive('/explorer') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             <Link 
               to="/leaderboard" 
-              className={`metric-label transition-all ${
-                isActive('/leaderboard') ? 'text-foreground font-bold active-nav-link' : 'text-muted-foreground hover:text-foreground'
+              className={`metric-label transition-all relative ${
+                isActive('/leaderboard') ? 'text-foreground font-bold' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               LEADERBOARD
+              {isActive('/leaderboard') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             <Link 
               to="/mint" 
-              className={`metric-label transition-all ${
-                isActive('/mint') ? 'text-foreground font-bold active-nav-link' : 'text-muted-foreground hover:text-foreground'
+              className={`metric-label transition-all relative ${
+                isActive('/mint') ? 'text-foreground font-bold' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               MINT
+              {isActive('/mint') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             {connected && (
               <Link 
                 to="/wallet" 
-                className={`metric-label transition-all ${
-                  isActive('/wallet') ? 'text-foreground font-bold active-nav-link' : 'text-muted-foreground hover:text-foreground'
+                className={`metric-label transition-all relative ${
+                  isActive('/wallet') ? 'text-foreground font-bold' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 WALLET
+                {isActive('/wallet') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
               </Link>
             )}
-            <div 
-              className="absolute -bottom-2 h-0.5 bg-primary transition-all duration-300 ease-out"
-              style={{ 
-                left: `${indicatorStyle.left}px`, 
-                width: `${indicatorStyle.width}px` 
-              }}
-            />
           </nav>
         </div>
 
