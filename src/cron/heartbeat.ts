@@ -25,8 +25,8 @@ export class AutonomousHeartbeat {
   private readonly MAX_RETRIES = 3;
   
   private config: HeartbeatConfig = {
-    minHours: 0.5, // 30 minutes
-    maxHours: 0.5, // 30 minutes (fixed interval)
+    minHours: 4, // 4 hours minimum
+    maxHours: 48, // 48 hours maximum (AI decides randomly)
     enabled: true
   };
 
