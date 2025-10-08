@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_governor_log: {
+        Row: {
+          action_taken: string
+          ai_score: number | null
+          error_message: string | null
+          execution_time_ms: number | null
+          id: string
+          market_signals: Json | null
+          prompt_input: string
+          result: Json
+          security_validated: boolean | null
+          timestamp: string
+        }
+        Insert: {
+          action_taken: string
+          ai_score?: number | null
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          market_signals?: Json | null
+          prompt_input: string
+          result: Json
+          security_validated?: boolean | null
+          timestamp?: string
+        }
+        Update: {
+          action_taken?: string
+          ai_score?: number | null
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          market_signals?: Json | null
+          prompt_input?: string
+          result?: Json
+          security_validated?: boolean | null
+          timestamp?: string
+        }
+        Relationships: []
+      }
+      ai_mood_state: {
+        Row: {
+          created_at: string
+          current_mood: string
+          decision_count: number
+          id: string
+          last_decision: string | null
+          last_mood_change: string
+          metadata: Json | null
+          mood_intensity: number
+          reasoning: string | null
+        }
+        Insert: {
+          created_at?: string
+          current_mood?: string
+          decision_count?: number
+          id?: string
+          last_decision?: string | null
+          last_mood_change?: string
+          metadata?: Json | null
+          mood_intensity?: number
+          reasoning?: string | null
+        }
+        Update: {
+          created_at?: string
+          current_mood?: string
+          decision_count?: number
+          id?: string
+          last_decision?: string | null
+          last_mood_change?: string
+          metadata?: Json | null
+          mood_intensity?: number
+          reasoning?: string | null
+        }
+        Relationships: []
+      }
       coin_distributions: {
         Row: {
           ai_wallet_amount: number
@@ -98,8 +173,13 @@ export type Database = {
       }
       dao_eligibility: {
         Row: {
+          active: boolean
+          ai_score: number
+          eligibility_date: string | null
+          eligibility_type: string
           flagged_reason: string | null
           id: string
+          invite_count: number
           is_eligible: boolean
           last_activity: string
           max_buy_percentage: number
@@ -111,8 +191,13 @@ export type Database = {
           whale_status: boolean
         }
         Insert: {
+          active?: boolean
+          ai_score?: number
+          eligibility_date?: string | null
+          eligibility_type?: string
           flagged_reason?: string | null
           id?: string
+          invite_count?: number
           is_eligible?: boolean
           last_activity?: string
           max_buy_percentage?: number
@@ -124,8 +209,13 @@ export type Database = {
           whale_status?: boolean
         }
         Update: {
+          active?: boolean
+          ai_score?: number
+          eligibility_date?: string | null
+          eligibility_type?: string
           flagged_reason?: string | null
           id?: string
+          invite_count?: number
           is_eligible?: boolean
           last_activity?: string
           max_buy_percentage?: number
@@ -146,27 +236,194 @@ export type Database = {
           },
         ]
       }
+      dao_proposals: {
+        Row: {
+          ai_vote: string | null
+          closes_at: string
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          is_ai_generated: boolean
+          payout_address: string | null
+          payout_amount: number | null
+          quorum_required: number
+          signature_hash: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          votes_abstain: number
+          votes_no: number
+          votes_yes: number
+        }
+        Insert: {
+          ai_vote?: string | null
+          closes_at?: string
+          created_at?: string
+          created_by: string
+          description: string
+          id?: string
+          is_ai_generated?: boolean
+          payout_address?: string | null
+          payout_amount?: number | null
+          quorum_required?: number
+          signature_hash?: string | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          votes_abstain?: number
+          votes_no?: number
+          votes_yes?: number
+        }
+        Update: {
+          ai_vote?: string | null
+          closes_at?: string
+          created_at?: string
+          created_by?: string
+          description?: string
+          id?: string
+          is_ai_generated?: boolean
+          payout_address?: string | null
+          payout_amount?: number | null
+          quorum_required?: number
+          signature_hash?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          votes_abstain?: number
+          votes_no?: number
+          votes_yes?: number
+        }
+        Relationships: []
+      }
       dao_treasury: {
         Row: {
+          amount: number | null
           balance: number
+          description: string | null
+          event_type: string | null
           id: string
           last_update: string
           total_distributed: number
           total_received: number
         }
         Insert: {
+          amount?: number | null
           balance?: number
+          description?: string | null
+          event_type?: string | null
           id?: string
           last_update?: string
           total_distributed?: number
           total_received?: number
         }
         Update: {
+          amount?: number | null
           balance?: number
+          description?: string | null
+          event_type?: string | null
           id?: string
           last_update?: string
           total_distributed?: number
           total_received?: number
+        }
+        Relationships: []
+      }
+      dao_votes: {
+        Row: {
+          id: string
+          locked_until: string
+          proposal_id: string
+          timestamp: string
+          vote: string
+          vote_power: number
+          wallet_address: string
+        }
+        Insert: {
+          id?: string
+          locked_until?: string
+          proposal_id: string
+          timestamp?: string
+          vote: string
+          vote_power?: number
+          wallet_address: string
+        }
+        Update: {
+          id?: string
+          locked_until?: string
+          proposal_id?: string
+          timestamp?: string
+          vote?: string
+          vote_power?: number
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dao_votes_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "dao_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      engagement_metrics: {
+        Row: {
+          created_at: string
+          engagement_score: number
+          id: string
+          last_token_launch: string | null
+          last_updated: string
+          page_views: number
+          trades_count: number
+          wallet_connections: number
+        }
+        Insert: {
+          created_at?: string
+          engagement_score?: number
+          id?: string
+          last_token_launch?: string | null
+          last_updated?: string
+          page_views?: number
+          trades_count?: number
+          wallet_connections?: number
+        }
+        Update: {
+          created_at?: string
+          engagement_score?: number
+          id?: string
+          last_token_launch?: string | null
+          last_updated?: string
+          page_views?: number
+          trades_count?: number
+          wallet_connections?: number
+        }
+        Relationships: []
+      }
+      invite_log: {
+        Row: {
+          id: string
+          invite_code: string
+          invitee_wallet: string
+          inviter_score: number
+          inviter_wallet: string
+          timestamp: string
+        }
+        Insert: {
+          id?: string
+          invite_code: string
+          invitee_wallet: string
+          inviter_score?: number
+          inviter_wallet: string
+          timestamp?: string
+        }
+        Update: {
+          id?: string
+          invite_code?: string
+          invitee_wallet?: string
+          inviter_score?: number
+          inviter_wallet?: string
+          timestamp?: string
         }
         Relationships: []
       }
@@ -239,6 +496,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      market_sentiment: {
+        Row: {
+          confidence: number
+          dao_participation_rate: number | null
+          id: string
+          recommendation: string
+          sentiment_score: number
+          solana_volume: number | null
+          timestamp: string
+          trending_tags: string[] | null
+          whale_activity_level: string | null
+        }
+        Insert: {
+          confidence: number
+          dao_participation_rate?: number | null
+          id?: string
+          recommendation: string
+          sentiment_score: number
+          solana_volume?: number | null
+          timestamp?: string
+          trending_tags?: string[] | null
+          whale_activity_level?: string | null
+        }
+        Update: {
+          confidence?: number
+          dao_participation_rate?: number | null
+          id?: string
+          recommendation?: string
+          sentiment_score?: number
+          solana_volume?: number | null
+          timestamp?: string
+          trending_tags?: string[] | null
+          whale_activity_level?: string | null
+        }
+        Relationships: []
       }
       profit_events: {
         Row: {
@@ -351,6 +644,53 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      token_profiles: {
+        Row: {
+          audio_url: string | null
+          bio: string
+          created_at: string
+          id: string
+          image_url: string | null
+          mint_reason: string
+          mood: Database["public"]["Enums"]["token_mood"]
+          social_text: string
+          style: string
+          token_id: string
+        }
+        Insert: {
+          audio_url?: string | null
+          bio: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          mint_reason: string
+          mood: Database["public"]["Enums"]["token_mood"]
+          social_text: string
+          style: string
+          token_id: string
+        }
+        Update: {
+          audio_url?: string | null
+          bio?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          mint_reason?: string
+          mood?: Database["public"]["Enums"]["token_mood"]
+          social_text?: string
+          style?: string
+          token_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_profiles_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: true
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tokens: {
         Row: {
@@ -526,9 +866,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_dao_eligibility: {
+        Args: { wallet: string }
+        Returns: boolean
+      }
+      close_expired_proposals: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
+      token_mood:
+        | "troll"
+        | "hype"
+        | "philosopher"
+        | "casino"
+        | "doomcore"
+        | "discofi"
+        | "cosmic"
+        | "glitch"
+        | "chaos"
+        | "zen"
       wallet_type:
         | "treasury"
         | "creator"
@@ -662,6 +1020,18 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      token_mood: [
+        "troll",
+        "hype",
+        "philosopher",
+        "casino",
+        "doomcore",
+        "discofi",
+        "cosmic",
+        "glitch",
+        "chaos",
+        "zen",
+      ],
       wallet_type: [
         "treasury",
         "creator",

@@ -3,14 +3,23 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
+import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 
 const Navigation = () => {
   const location = useLocation();
   const { connected } = useWallet();
   const logoRef = useRef<HTMLDivElement>(null);
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
+  const { trackEvent } = useEngagementTracking();
   
   const isActive = (path: string) => location.pathname === path;
+  
+  // Track wallet connections
+  useEffect(() => {
+    if (connected) {
+      trackEvent('wallet_connect');
+    }
+  }, [connected]);
   
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {

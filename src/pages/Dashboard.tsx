@@ -8,17 +8,21 @@ import ConsoleLog from "@/components/ConsoleLog";
 import AiMindTicker from "@/components/AiMindTicker";
 import MetricCard from "@/components/MetricCard";
 import { Button } from "@/components/ui/button";
-import { Sparkles, TrendingUp, Users, Zap, Activity, Circle } from "lucide-react";
+import { Sparkles, TrendingUp, Users, Zap, Activity, Circle, Brain } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 
 type Token = Tables<"tokens">;
 type Log = Tables<"logs">;
 type Settings = Tables<"settings">;
+type AiMood = Tables<"ai_mood_state">;
 
 const Dashboard = () => {
+  useEngagementTracking(); // Track page views
   const [tokens, setTokens] = useState<Token[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [aiMood, setAiMood] = useState<AiMood | null>(null);
   const [nextLaunch, setNextLaunch] = useState(new Date(Date.now() + 2 * 60 * 60 * 1000));
   const [isPaused, setIsPaused] = useState(false);
   const [treasuryBalance, setTreasuryBalance] = useState(0);
@@ -26,7 +30,7 @@ const Dashboard = () => {
   const [totalTokens, setTotalTokens] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Fetch settings
+  // Fetch settings and AI mood
   useEffect(() => {
     const fetchSettings = async () => {
       const { data } = await supabase
@@ -42,7 +46,22 @@ const Dashboard = () => {
         }
       }
     };
+
+    const fetchAiMood = async () => {
+      const { data } = await supabase
+        .from("ai_mood_state")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (data) {
+        setAiMood(data);
+      }
+    };
+
     fetchSettings();
+    fetchAiMood();
   }, []);
 
   // Fetch recent tokens
@@ -255,8 +274,13 @@ const Dashboard = () => {
                   <div className="text-sm font-medium">Autonomous</div>
                 </div>
                 <div>
-                  <div className="metric-label mb-2">Decision</div>
-                  <div className="text-sm metric-display">AI-Driven</div>
+                  <div className="metric-label mb-2 flex items-center gap-2">
+                    <Brain className="w-3 h-3" />
+                    AI Mood
+                  </div>
+                  <div className="text-sm metric-display capitalize">
+                    {aiMood?.current_mood || 'Neutral'}
+                  </div>
                 </div>
                 <div>
                   <div className="metric-label mb-2">Distribution</div>
