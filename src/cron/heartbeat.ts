@@ -8,7 +8,6 @@
 import { AIMindAgent } from "@/ai/agent";
 import { CoinGovernor } from "@/ai/coinGovernor";
 import { FundMonitor } from "@/ai/fundMonitor";
-import { HintGenerator } from "@/ai/hintGenerator";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface HeartbeatConfig {
@@ -21,7 +20,6 @@ export class AutonomousHeartbeat {
   private agent: AIMindAgent;
   private governor: CoinGovernor;
   private fundMonitor: FundMonitor;
-  private hintGenerator: HintGenerator;
   private isRunning: boolean = false;
   private retryCount: number = 0;
   private readonly MAX_RETRIES = 3;
@@ -36,7 +34,6 @@ export class AutonomousHeartbeat {
     this.agent = new AIMindAgent();
     this.governor = new CoinGovernor();
     this.fundMonitor = new FundMonitor();
-    this.hintGenerator = new HintGenerator();
   }
 
   /**
@@ -59,7 +56,6 @@ export class AutonomousHeartbeat {
       const decision = await this.agent.analyze();
       
       console.log('🎯 [HEARTBEAT] AI Decision:', decision.action);
-      console.log('⚡ [HEARTBEAT] AI Score:', decision.aiScore);
       console.log('📊 [HEARTBEAT] Confidence:', decision.confidence);
       console.log('💭 [HEARTBEAT] Reasoning:', decision.reasoning);
 
@@ -175,14 +171,12 @@ export class AutonomousHeartbeat {
    * Handle coin tease/clue
    */
   private async handleCoinTease(decision: any): Promise<void> {
-    console.log('🔮 [HEARTBEAT] Broadcasting cryptic hint...');
+    console.log('🔮 [HEARTBEAT] Broadcasting clue...');
 
-    await this.hintGenerator.generateHint({
-      type: 'tease',
-      intensity: decision.aiScore >= 6 ? 'high' : 'medium'
-    });
+    const clue = decision.data?.clue || await this.agent.generateClue();
+    await this.governor.broadcastClue(clue);
 
-    console.log('✅ [HEARTBEAT] Hint broadcast complete');
+    console.log('✅ [HEARTBEAT] Clue broadcast:', clue);
   }
 
   /**
