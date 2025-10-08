@@ -209,7 +209,7 @@ const Dashboard = () => {
               MIND<span className="metric-display">9</span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl font-light">
-              Fully autonomous AI system that generates and launches tokens every {settings?.launch_freq_hours || 12} hours with intelligent distribution and whale protection.
+              Fully autonomous AI system that decides when to generate and launch tokens based on market conditions, with intelligent distribution and whale protection.
             </p>
             <div className="flex gap-4">
               <Button
@@ -255,8 +255,8 @@ const Dashboard = () => {
                   <div className="text-sm font-medium">Autonomous</div>
                 </div>
                 <div>
-                  <div className="metric-label mb-2">Frequency</div>
-                  <div className="text-sm metric-display">{settings?.launch_freq_hours || 12}H</div>
+                  <div className="metric-label mb-2">Decision</div>
+                  <div className="text-sm metric-display">AI-Driven</div>
                 </div>
                 <div>
                   <div className="metric-label mb-2">Distribution</div>
