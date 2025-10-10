@@ -187,17 +187,6 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      {/* MIND9 ASCII Entity */}
-      <pre className="m9-ascii-entity" aria-hidden="true">{`
-   ▄▄   ▄▄ ▄▄▄ ▄▄    ▄ ▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄ 
-  █  █▄█  █   █  █  █ █       ██       █
-  █       █   █   █▄█ █   ▄▄▄▄██   ▄   █
-  █       █   █       █  █  ▄▄ █  █ █  █
-  █       █   █  ▄    █  █ █  ██  █▄█  █
-  █ ██▄██ █   █ █ █   █  █▄▄█ ██       █
-  █▄█   █▄█▄▄▄█▄█  █▄▄█▄▄▄▄▄▄▄██▄▄▄▄▄▄▄█
-      `}</pre>
-      
       {/* Top Info Bar */}
       <div className="border-b-2 border-border bg-card">
         <div className="container mx-auto px-8 py-3 max-w-7xl">
