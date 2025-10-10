@@ -7,6 +7,7 @@ import TokenCard from "@/components/TokenCard";
 import ConsoleLog from "@/components/ConsoleLog";
 import AiMindTicker from "@/components/AiMindTicker";
 import MetricCard from "@/components/MetricCard";
+import AsciiWebcam from "@/components/AsciiWebcam";
 import { Button } from "@/components/ui/button";
 import { Sparkles, TrendingUp, Users, Zap, Activity, Circle, Brain } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
@@ -430,6 +431,9 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+
+            {/* ASCII Webcam */}
+            <AsciiWebcam />
           </div>
         </div>
       </main>
