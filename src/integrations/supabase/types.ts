@@ -815,6 +815,54 @@ export type Database = {
         }
         Relationships: []
       }
+      token_decision_log: {
+        Row: {
+          confidence: number
+          decision: string
+          dev_mode: boolean
+          executed: boolean
+          execution_result: Json | null
+          id: string
+          market_signals: Json | null
+          randomness_factor: number | null
+          reasoning: string
+          scheduled_launch_time: string | null
+          timestamp: string
+          token_name: string | null
+          token_theme: string | null
+        }
+        Insert: {
+          confidence: number
+          decision: string
+          dev_mode?: boolean
+          executed?: boolean
+          execution_result?: Json | null
+          id?: string
+          market_signals?: Json | null
+          randomness_factor?: number | null
+          reasoning: string
+          scheduled_launch_time?: string | null
+          timestamp?: string
+          token_name?: string | null
+          token_theme?: string | null
+        }
+        Update: {
+          confidence?: number
+          decision?: string
+          dev_mode?: boolean
+          executed?: boolean
+          execution_result?: Json | null
+          id?: string
+          market_signals?: Json | null
+          randomness_factor?: number | null
+          reasoning?: string
+          scheduled_launch_time?: string | null
+          timestamp?: string
+          token_name?: string | null
+          token_theme?: string | null
+        }
+        Relationships: []
+      }
       token_profiles: {
         Row: {
           audio_url: string | null

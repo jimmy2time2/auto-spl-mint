@@ -3,6 +3,9 @@ project_id = "hrhklzusdctgrwpiacyq"
 [functions.ai-decision-engine]
 verify_jwt = false
 
+[functions.ai-token-decision]
+verify_jwt = false
+
 [functions.profit-rebalancer]
 verify_jwt = false
 
