@@ -13,12 +13,12 @@ const AsciiWebcam = () => {
   const streamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   
-  // ASCII characters from darkest to lightest
-  const asciiChars = ['█', '▓', '▒', '░', ' '];
+  // ASCII characters from darkest to lightest (high-contrast)
+  const asciiChars = ['@', '#', '*', '+', '.', ' '];
   
-  // Canvas dimensions (smaller = more pixelated)
+  // Canvas dimensions (square for visibility)
   const WIDTH = 80;
-  const HEIGHT = 60;
+  const HEIGHT = 80;
 
   const convertToAscii = () => {
     if (!isActive) {
@@ -227,9 +227,8 @@ const AsciiWebcam = () => {
           border: '3px solid #000', 
           padding: 10, 
           display: isActive ? 'block' : 'none',
-          maxWidth: 600,
-          width: '100%',
-          overflowX: 'auto'
+          width: 'fit-content',
+          overflow: 'auto'
         }}
       >
         <pre 
@@ -240,10 +239,12 @@ const AsciiWebcam = () => {
             color: '#000000', 
             fontFamily: 'Courier New, monospace',
             fontSize: '12px',
-            lineHeight: '12px',
+            lineHeight: '1',
             letterSpacing: '0px',
             whiteSpace: 'pre',
-            overflowX: 'auto',
+            width: `${WIDTH}ch`,
+            height: `${HEIGHT}em`,
+            overflow: 'hidden',
             padding: 10
           }}
         />
