@@ -9,6 +9,7 @@ import Explorer from "./pages/Explorer";
 import TokenDetail from "./pages/TokenDetail";
 import Leaderboard from "./pages/Leaderboard";
 import Wallet from "./pages/Wallet";
+import Logbook from "./pages/Logbook";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/token/:id" element={<TokenDetail />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/wallet" element={<Wallet />} />
+            <Route path="/logbook" element={<Logbook />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

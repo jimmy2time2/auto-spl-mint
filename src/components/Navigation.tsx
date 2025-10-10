@@ -85,6 +85,15 @@ const Navigation = () => {
               LEADERBOARD
               {isActive('/leaderboard') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
+            <Link 
+              to="/logbook" 
+              className={`metric-label transition-all relative ${
+                isActive('/logbook') ? 'text-foreground font-bold' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              LOGBOOK
+              {isActive('/logbook') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
+            </Link>
             {connected && (
               <Link 
                 to="/wallet" 
@@ -142,6 +151,15 @@ const Navigation = () => {
               }`}
             >
               LEADERBOARD
+            </Link>
+            <Link 
+              to="/logbook"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`metric-label transition-all py-2 ${
+                isActive('/logbook') ? 'text-foreground font-bold border-l-2 border-primary pl-2' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              LOGBOOK
             </Link>
             {connected && (
               <Link 
