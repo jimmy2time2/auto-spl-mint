@@ -104,12 +104,31 @@ export async function fetchMarketSignals(supabase: any): Promise<MarketSignals> 
 /**
  * Use AI to make a creative decision about token launch
  * Now uses the token theme generator for viral names
+ * Optionally enhanced with performance context
  */
 export async function makeAIDecision(
   signals: MarketSignals,
   randomnessFactor: number,
-  supabase: any
+  supabase: any,
+  aiContext?: any // Optional AI context from context-builder
 ): Promise<Omit<DecisionResult, 'market_signals' | 'randomness_factor'>> {
+  
+  // Build performance context section if available
+  let contextSection = '';
+  if (aiContext) {
+    contextSection = `
+PERFORMANCE CONTEXT:
+- Launch Success Rate: ${(aiContext.launch_success_rate * 100).toFixed(1)}% (last 20 tokens)
+- Average Volume: ${aiContext.avg_volume.toFixed(2)}
+- Total 24h Volume: ${aiContext.total_volume_24h.toFixed(2)}
+- Winner Diversity: ${aiContext.winner_diversity}
+- Recent Token Count: ${aiContext.recent_token_count}
+- Avg Holders per Token: ${aiContext.avg_holders_per_token.toFixed(0)}
+- Lottery Winners: ${aiContext.lottery_stats.total_winners} (${aiContext.lottery_stats.unique_wallets} unique)
+${aiContext.top_performing_tokens?.length > 0 ? `- Top Performers: ${aiContext.top_performing_tokens.map((t: any) => `${t.symbol} ($${t.volume})`).join(', ')}` : ''}
+`;
+  }
+
   const prompt = `You are an autonomous AI token launcher for Mind9, a Solana-based platform.
 
 MARKET SIGNALS:
@@ -122,16 +141,12 @@ MARKET SIGNALS:
 - DAO Participation: ${signals.dao_participation}
 
 RANDOMNESS FACTOR: ${randomnessFactor.toFixed(2)} (0=conservative, 1=aggressive)
-
+${contextSection}
 DECISION RULES:
 1. Launch if: engagement is high OR enough time passed OR randomness is high
 2. Hold if: recent token exists and low engagement
 3. Skip if: market is completely dead
-
-DECISION RULES:
-1. Launch if: engagement is high OR enough time passed OR randomness is high
-2. Hold if: recent token exists and low engagement
-3. Skip if: market is completely dead
+${aiContext ? '4. Consider historical performance - adjust strategy if success rate is low' : ''}
 
 Respond in JSON with your decision ONLY (no token details):
 {
