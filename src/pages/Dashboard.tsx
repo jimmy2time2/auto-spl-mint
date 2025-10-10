@@ -7,7 +7,6 @@ import TokenCard from "@/components/TokenCard";
 import ConsoleLog from "@/components/ConsoleLog";
 import AiMindTicker from "@/components/AiMindTicker";
 import MetricCard from "@/components/MetricCard";
-import AsciiWebcam from "@/components/AsciiWebcam";
 import { Button } from "@/components/ui/button";
 import { Sparkles, TrendingUp, Users, Zap, Activity, Circle, Brain } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
@@ -230,51 +229,44 @@ const Dashboard = () => {
         <div className="grid grid-cols-12 gap-4">
           
           {/* LEFT SIDEBAR */}
-          <div className="col-span-12 lg:col-span-3 space-y-4 flex flex-col">
-            <div className="space-y-4">
-              {/* Recent Tokens List */}
-              <div className="border-2 border-border bg-card p-4">
-                <h3 className="metric-label mb-4 font-bold">RECENT TOKENS</h3>
-                <div className="space-y-3">
-                  {tokens.slice(0, 5).map((token, idx) => (
-                    <div key={token.id} className="border-b-2 border-border pb-2 last:border-0">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="font-bold text-xs">{token.symbol}</div>
-                          <div className="text-[10px] metric-label">{token.name}</div>
-                        </div>
-                        <div className="text-xs font-bold metric-display">
-                          {Number(token.price).toFixed(4)}
-                        </div>
+          <div className="col-span-12 lg:col-span-3 space-y-4">
+            {/* Recent Tokens List */}
+            <div className="border-2 border-border bg-card p-4">
+              <h3 className="metric-label mb-4 font-bold">RECENT TOKENS</h3>
+              <div className="space-y-3">
+                {tokens.slice(0, 5).map((token, idx) => (
+                  <div key={token.id} className="border-b-2 border-border pb-2 last:border-0">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-xs">{token.symbol}</div>
+                        <div className="text-[10px] metric-label">{token.name}</div>
+                      </div>
+                      <div className="text-xs font-bold metric-display">
+                        {Number(token.price).toFixed(4)}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="border-2 border-border bg-card p-4">
-                <h3 className="metric-label mb-4 font-bold">PROTOCOL STATS</h3>
-                <div className="space-y-3 text-xs">
-                  <div className="flex justify-between">
-                    <span className="metric-label">TOTAL VOLUME</span>
-                    <span className="font-bold">--</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="metric-label">TOTAL HOLDERS</span>
-                    <span className="font-bold">--</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="metric-label">ACTIVE TRADES</span>
-                    <span className="font-bold">--</span>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* ASCII Webcam at bottom */}
-            <div className="mt-auto">
-              <AsciiWebcam />
+            {/* Quick Stats */}
+            <div className="border-2 border-border bg-card p-4">
+              <h3 className="metric-label mb-4 font-bold">PROTOCOL STATS</h3>
+              <div className="space-y-3 text-xs">
+                <div className="flex justify-between">
+                  <span className="metric-label">TOTAL VOLUME</span>
+                  <span className="font-bold">--</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="metric-label">TOTAL HOLDERS</span>
+                  <span className="font-bold">--</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="metric-label">ACTIVE TRADES</span>
+                  <span className="font-bold">--</span>
+                </div>
+              </div>
             </div>
           </div>
 
