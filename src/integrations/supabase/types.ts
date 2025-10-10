@@ -444,6 +444,72 @@ export type Database = {
         }
         Relationships: []
       }
+      governor_action_log: {
+        Row: {
+          action_payload: Json
+          action_type: string
+          confidence: number
+          created_at: string
+          decision: string
+          decision_source: string
+          entropy_factor: number | null
+          executed: boolean
+          executed_at: string | null
+          execution_result: Json | null
+          guardrails_triggered: string[] | null
+          id: string
+          market_signals: Json | null
+          modified_value: Json | null
+          original_value: Json | null
+          public_message: string | null
+          published: boolean
+          reasoning: string
+          timestamp: string
+        }
+        Insert: {
+          action_payload: Json
+          action_type: string
+          confidence: number
+          created_at?: string
+          decision: string
+          decision_source: string
+          entropy_factor?: number | null
+          executed?: boolean
+          executed_at?: string | null
+          execution_result?: Json | null
+          guardrails_triggered?: string[] | null
+          id?: string
+          market_signals?: Json | null
+          modified_value?: Json | null
+          original_value?: Json | null
+          public_message?: string | null
+          published?: boolean
+          reasoning: string
+          timestamp?: string
+        }
+        Update: {
+          action_payload?: Json
+          action_type?: string
+          confidence?: number
+          created_at?: string
+          decision?: string
+          decision_source?: string
+          entropy_factor?: number | null
+          executed?: boolean
+          executed_at?: string | null
+          execution_result?: Json | null
+          guardrails_triggered?: string[] | null
+          id?: string
+          market_signals?: Json | null
+          modified_value?: Json | null
+          original_value?: Json | null
+          public_message?: string | null
+          published?: boolean
+          reasoning?: string
+          timestamp?: string
+        }
+        Relationships: []
+      }
       invite_log: {
         Row: {
           id: string
@@ -967,7 +1033,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      governor_status_updates: {
+        Row: {
+          action_type: string | null
+          confidence: number | null
+          created_at: string | null
+          decision: string | null
+          id: string | null
+          public_message: string | null
+          timestamp: string | null
+        }
+        Insert: {
+          action_type?: string | null
+          confidence?: number | null
+          created_at?: string | null
+          decision?: string | null
+          id?: string | null
+          public_message?: string | null
+          timestamp?: string | null
+        }
+        Update: {
+          action_type?: string | null
+          confidence?: number | null
+          created_at?: string | null
+          decision?: string | null
+          id?: string | null
+          public_message?: string | null
+          timestamp?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_dao_eligibility: {
