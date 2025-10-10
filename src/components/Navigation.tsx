@@ -83,15 +83,6 @@ const Navigation = () => {
               LEADERBOARD
               {isActive('/leaderboard') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
-            <Link 
-              to="/mint" 
-              className={`metric-label transition-all relative ${
-                isActive('/mint') ? 'text-foreground font-bold' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              MINT
-              {isActive('/mint') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
-            </Link>
             {connected && (
               <Link 
                 to="/wallet" 

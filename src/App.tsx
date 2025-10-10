@@ -8,7 +8,6 @@ import Dashboard from "./pages/Dashboard";
 import Explorer from "./pages/Explorer";
 import TokenDetail from "./pages/TokenDetail";
 import Leaderboard from "./pages/Leaderboard";
-import Mint from "./pages/Mint";
 import Wallet from "./pages/Wallet";
 import NotFound from "./pages/NotFound";
 
@@ -26,7 +25,6 @@ const App = () => (
             <Route path="/explorer" element={<Explorer />} />
             <Route path="/token/:id" element={<TokenDetail />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/mint" element={<Mint />} />
             <Route path="/wallet" element={<Wallet />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

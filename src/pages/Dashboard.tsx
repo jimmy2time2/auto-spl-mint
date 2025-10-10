@@ -248,13 +248,6 @@ const Dashboard = () => {
                   </div>
                 ))}
               </div>
-              <Button 
-                variant="outline" 
-                onClick={() => window.location.href = '/explorer'}
-                className="w-full mt-4 text-xs"
-              >
-                VIEW ALL →
-              </Button>
             </div>
 
             {/* Quick Stats */}
