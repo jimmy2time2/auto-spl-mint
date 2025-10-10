@@ -14,11 +14,11 @@ const AsciiWebcam = () => {
   const animationFrameRef = useRef<number | null>(null);
   
   // ASCII characters from darkest to lightest
-  const asciiChars = ['@', '#', 'S', '%', '?', '*', '+', ';', ':', ',', '.', ' '];
+  const asciiChars = ['█', '▓', '▒', '░', ' '];
   
   // Canvas dimensions (smaller = more pixelated)
-  const WIDTH = 60;
-  const HEIGHT = 45;
+  const WIDTH = 80;
+  const HEIGHT = 60;
 
   const convertToAscii = () => {
     if (!isActive) return;
@@ -50,25 +50,32 @@ const AsciiWebcam = () => {
       const imageData = ctx.getImageData(0, 0, WIDTH, HEIGHT);
       
       let ascii = '';
-      for (let i = 0; i < imageData.data.length; i += 4) {
-        const r = imageData.data[i];
-        const g = imageData.data[i + 1];
-        const b = imageData.data[i + 2];
-        
-        // Convert to grayscale
-        const brightness = (r + g + b) / 3;
-        const charIndex = Math.floor((brightness / 255) * (asciiChars.length - 1));
-        
-        ascii += asciiChars[charIndex];
-        
-        // Add line breaks
-        if ((i / 4 + 1) % WIDTH === 0) {
-          ascii += '\n';
+      for (let y = 0; y < HEIGHT; y++) {
+        for (let x = 0; x < WIDTH; x++) {
+          const index = (y * WIDTH + x) * 4;
+          const r = imageData.data[index];
+          const g = imageData.data[index + 1];
+          const b = imageData.data[index + 2];
+          
+          // Convert to grayscale
+          const brightness = (r + g + b) / 3;
+          
+          // INVERTED MAPPING - darker parts of image = darker characters
+          const charIndex = asciiChars.length - 1 - Math.floor((brightness / 255) * (asciiChars.length - 1));
+          
+          ascii += asciiChars[charIndex];
         }
+        ascii += '\n';
       }
       
       asciiOutputRef.current.textContent = ascii;
       setStatus('Camera active');
+      
+      // Debug logging occasionally
+      if (Math.random() < 0.02) {
+        console.log('First 100 chars:', ascii.substring(0, 100));
+        console.log('Total ASCII length:', ascii.length);
+      }
       
     } catch (err) {
       console.error('Error converting to ASCII:', err);
@@ -211,13 +218,30 @@ const AsciiWebcam = () => {
       
       <div
         className="ascii-webcam-container mt-3"
-        style={{ backgroundColor: '#d4e7a1', border: '3px solid #000', padding: 20, display: isActive ? 'block' : 'none' }}
+        style={{ 
+          backgroundColor: '#ffffff', 
+          border: '3px solid #000', 
+          padding: 10, 
+          display: isActive ? 'block' : 'none',
+          maxWidth: 600,
+          width: '100%',
+          overflowX: 'auto'
+        }}
       >
         <pre 
           id="ascii-output"
           ref={asciiOutputRef}
-          className="font-mono text-[8px] leading-[8px] tracking-[2px] whitespace-pre overflow-hidden font-bold m-0"
-          style={{ color: '#000000', fontFamily: 'Courier New, monospace' }}
+          className="font-mono font-bold m-0"
+          style={{ 
+            color: '#000000', 
+            fontFamily: 'Courier New, monospace',
+            fontSize: '12px',
+            lineHeight: '12px',
+            letterSpacing: '0px',
+            whiteSpace: 'pre',
+            overflowX: 'auto',
+            padding: 10
+          }}
         />
       </div>
       
