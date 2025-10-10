@@ -7,6 +7,7 @@ const AsciiWebcam = () => {
   const [isActive, setIsActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [frameCount, setFrameCount] = useState(0);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,8 +15,8 @@ const AsciiWebcam = () => {
   const streamRef = useRef<MediaStream | null>(null);
   const animationRef = useRef<number | null>(null);
 
-  const WIDTH = 80;
-  const HEIGHT = 60;
+  const WIDTH = 60;  // Reduced for better visibility
+  const HEIGHT = 45; // Reduced for better visibility
 
   const brightnessToAscii = (brightness: number): string => {
     const index = Math.floor((brightness / 255) * (ASCII_CHARS.length - 1));
@@ -53,6 +54,7 @@ const AsciiWebcam = () => {
     }
 
     outputRef.current.textContent = ascii;
+    setFrameCount(prev => prev + 1);
     
     // Continue animation loop
     animationRef.current = requestAnimationFrame(processFrame);
@@ -76,14 +78,17 @@ const AsciiWebcam = () => {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
           videoRef.current?.play();
+          console.log('Webcam started, video dimensions:', videoRef.current?.videoWidth, videoRef.current?.videoHeight);
           setIsActive(true);
           setIsLoading(false);
+          setFrameCount(0);
           processFrame();
         };
       }
     } catch (err) {
       console.error('Webcam error:', err);
-      setError('Camera access denied or unavailable');
+      const errorMsg = err instanceof Error ? err.message : 'Camera access denied';
+      setError(`ERROR: ${errorMsg}`);
       setIsLoading(false);
       setIsActive(false);
     }
@@ -114,6 +119,7 @@ const AsciiWebcam = () => {
 
     setIsActive(false);
     setError(null);
+    setFrameCount(0);
   };
 
   const toggleWebcam = () => {
@@ -135,7 +141,10 @@ const AsciiWebcam = () => {
     <div className="border-2 border-black p-4 bg-background">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold tracking-wider">LIVE FEED</h3>
+        <div>
+          <h3 className="text-sm font-bold tracking-wider">LIVE FEED</h3>
+          {isActive && <div className="text-[10px] metric-label mt-1">FRAMES: {frameCount}</div>}
+        </div>
         <button
           onClick={toggleWebcam}
           disabled={isLoading}
@@ -173,36 +182,52 @@ const AsciiWebcam = () => {
       />
 
       {/* ASCII Output */}
-      <div className="relative">
+      <div className="relative min-h-[200px] bg-card">
         {isLoading && (
-          <div className="text-center py-8 text-sm font-mono">
+          <div className="text-center py-8 text-sm font-mono font-bold">
             REQUESTING CAMERA ACCESS...
           </div>
         )}
 
         {error && (
-          <div className="text-center py-8 text-sm font-mono text-destructive">
-            {error}
+          <div className="text-center py-8 px-4">
+            <div className="text-sm font-mono font-bold text-destructive mb-2">
+              {error}
+            </div>
+            <div className="text-xs metric-label">
+              Check browser permissions
+            </div>
           </div>
         )}
 
         {!isActive && !isLoading && !error && (
-          <div className="text-center py-8 text-sm font-mono">
-            CLICK ENABLE TO START LIVE FEED
+          <div className="text-center py-8">
+            <div className="text-sm font-mono font-bold mb-2">
+              CLICK ENABLE TO START LIVE FEED
+            </div>
+            <div className="text-xs metric-label">
+              Camera required
+            </div>
           </div>
         )}
 
         {isActive && (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto bg-background p-2">
             <pre
               ref={outputRef}
-              className="terminal-text text-[6px] sm:text-[8px] leading-[6px] sm:leading-[8px] tracking-[1px] sm:tracking-[2px]"
+              className="terminal-text text-[8px] sm:text-[10px] leading-[8px] sm:leading-[10px] tracking-[0px]"
               style={{
-                fontFamily: "'Courier New', monospace",
+                fontFamily: "'Courier New', 'Courier', monospace",
                 whiteSpace: 'pre',
                 color: '#000',
+                fontWeight: 'bold',
               }}
             />
+            {frameCount === 0 && (
+              <div className="text-center text-xs metric-label mt-2">
+                Initializing camera...
+              </div>
+            )}
           </div>
         )}
       </div>
