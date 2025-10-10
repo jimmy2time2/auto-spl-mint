@@ -3,6 +3,9 @@ project_id = "hrhklzusdctgrwpiacyq"
 [functions.check-autonomous-mint]
 verify_jwt = false
 
+[functions.wallet-executor]
+verify_jwt = false
+
 [functions.mint-token]
 verify_jwt = false
 
