@@ -21,8 +21,11 @@ const AsciiWebcam = () => {
   const HEIGHT = 45;
 
   const convertToAscii = () => {
-    if (!isActive || !videoRef.current || !canvasRef.current || !asciiOutputRef.current) {
-      console.log('convertToAscii stopped:', { isActive, hasVideo: !!videoRef.current, hasCanvas: !!canvasRef.current, hasOutput: !!asciiOutputRef.current });
+    if (!isActive) return;
+
+    if (!videoRef.current || !canvasRef.current || !asciiOutputRef.current) {
+      // Wait until all elements are mounted
+      animationFrameRef.current = requestAnimationFrame(convertToAscii);
       return;
     }
     
@@ -32,12 +35,12 @@ const AsciiWebcam = () => {
     
     if (!ctx) {
       console.error('No canvas context available');
+      animationFrameRef.current = requestAnimationFrame(convertToAscii);
       return;
     }
     
     // Check if video is ready
     if (video.readyState < 2) {
-      console.log('Video not ready yet, waiting...');
       animationFrameRef.current = requestAnimationFrame(convertToAscii);
       return;
     }
@@ -65,7 +68,7 @@ const AsciiWebcam = () => {
       }
       
       asciiOutputRef.current.textContent = ascii;
-      setStatus(`Active - Frame: ${Math.floor(performance.now())}`);
+      setStatus('Camera active');
       
     } catch (err) {
       console.error('Error converting to ASCII:', err);
@@ -196,7 +199,7 @@ const AsciiWebcam = () => {
         )}
       </Button>
       
-      <div className="text-[10px] metric-label mb-2">
+      <div id="webcam-status" className="text-[10px] metric-label mb-2">
         Status: {status}
       </div>
       
@@ -206,23 +209,21 @@ const AsciiWebcam = () => {
         </div>
       )}
       
-      {isActive && (
-        <div 
-          className="border-2 border-border p-2 min-h-[200px] overflow-hidden"
-          style={{ backgroundColor: '#d4e7a1' }}
-        >
-          <pre 
-            ref={asciiOutputRef}
-            className="font-mono text-[8px] sm:text-[10px] leading-[8px] sm:leading-[10px] tracking-[2px] whitespace-pre overflow-hidden font-bold m-0"
-            style={{ color: '#000000' }}
-          >
-            Initializing...
-          </pre>
-        </div>
-      )}
+      <div
+        className="ascii-webcam-container mt-3"
+        style={{ backgroundColor: '#d4e7a1', border: '3px solid #000', padding: 20, display: isActive ? 'block' : 'none' }}
+      >
+        <pre 
+          id="ascii-output"
+          ref={asciiOutputRef}
+          className="font-mono text-[8px] leading-[8px] tracking-[2px] whitespace-pre overflow-hidden font-bold m-0"
+          style={{ color: '#000000', fontFamily: 'Courier New, monospace' }}
+        />
+      </div>
       
       {/* Hidden video and canvas elements - MUST be rendered */}
       <video
+        id="webcam"
         ref={videoRef}
         style={{ display: 'none' }}
         playsInline
@@ -230,6 +231,7 @@ const AsciiWebcam = () => {
         autoPlay
       />
       <canvas
+        id="webcam-canvas"
         ref={canvasRef}
         style={{ display: 'none' }}
         width={WIDTH}
