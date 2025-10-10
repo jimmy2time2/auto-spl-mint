@@ -6,6 +6,9 @@ verify_jwt = false
 [functions.profit-rebalancer]
 verify_jwt = false
 
+[functions.ai-governor-brain]
+verify_jwt = false
+
 [functions.check-autonomous-mint]
 verify_jwt = false
 
