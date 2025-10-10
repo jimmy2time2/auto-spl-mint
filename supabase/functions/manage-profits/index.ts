@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { createAllocationManager } from "../_shared/allocation-manager.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -54,11 +55,18 @@ serve(async (req) => {
     const totalProfit = aiWallet.balance;
     console.log(`💵 Total unallocated profit: ${totalProfit}`);
 
-    // 2. Calculate distribution (80% reinvest, 15% DAO, 3% Lucky, 2% Creator)
-    const reinvestmentAmount = totalProfit * 0.80;
-    const daoAmount = totalProfit * 0.15;
-    const luckyAmount = totalProfit * 0.03;
-    const creatorAmount = totalProfit * 0.02;
+    // 2. Get current allocation split from allocation manager (dynamic)
+    const allocMgr = createAllocationManager(supabase);
+    const allocation = await allocMgr.getCurrentAllocation();
+    
+    console.log('📊 Using allocation split:', allocation);
+
+    // Calculate distribution using current allocation percentages
+    const amounts = allocMgr.calculateAmounts(totalProfit, allocation);
+    const reinvestmentAmount = amounts.reinvestment;
+    const daoAmount = amounts.dao;
+    const luckyAmount = amounts.lucky;
+    const creatorAmount = amounts.creator;
 
     console.log('📊 Distribution calculated:', {
       reinvestment: reinvestmentAmount,
@@ -164,12 +172,7 @@ serve(async (req) => {
           lucky: luckyAmount,
           creator: creatorAmount
         },
-        percentages: {
-          reinvestment: '80%',
-          dao: '15%',
-          lucky: '3%',
-          creator: '2%'
-        },
+        allocation_percentages: allocation,
         timestamp: new Date().toISOString()
       }
     });

@@ -577,6 +577,66 @@ export type Database = {
         }
         Relationships: []
       }
+      profit_allocation_log: {
+        Row: {
+          confidence: number
+          created_at: string
+          creator_pct: number
+          dao_pct: number
+          effective_from: string | null
+          effective_until: string | null
+          id: string
+          input_metrics: Json
+          lucky_pct: number
+          proposed_by: string
+          reasoning: string
+          reinvestment_pct: number
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          timestamp: string
+        }
+        Insert: {
+          confidence: number
+          created_at?: string
+          creator_pct: number
+          dao_pct: number
+          effective_from?: string | null
+          effective_until?: string | null
+          id?: string
+          input_metrics: Json
+          lucky_pct: number
+          proposed_by: string
+          reasoning: string
+          reinvestment_pct: number
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status: string
+          timestamp?: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          creator_pct?: number
+          dao_pct?: number
+          effective_from?: string | null
+          effective_until?: string | null
+          id?: string
+          input_metrics?: Json
+          lucky_pct?: number
+          proposed_by?: string
+          reasoning?: string
+          reinvestment_pct?: number
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          timestamp?: string
+        }
+        Relationships: []
+      }
       profit_events: {
         Row: {
           creator_amount: number
