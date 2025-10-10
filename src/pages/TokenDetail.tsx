@@ -127,36 +127,36 @@ const TokenDetail = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-6 py-12 max-w-7xl">
+      <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-7xl">
         {/* Token Header */}
-        <div className="mb-8">
-          <div className="flex items-baseline gap-4 mb-2">
-            <h1 className="text-6xl font-bold font-mono">${token.symbol}</h1>
-            <span className="text-2xl opacity-70">{token.name}</span>
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-4 mb-2">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold font-mono">${token.symbol}</h1>
+            <span className="text-lg sm:text-xl md:text-2xl opacity-70">{token.name}</span>
           </div>
-          <div className="text-xs uppercase tracking-widest opacity-70">
+          <div className="text-[10px] md:text-xs uppercase tracking-widest opacity-70">
             Launched: {new Date(token.launch_timestamp).toLocaleString()}
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           <TerminalCard title="SUPPLY">
-            <div className="text-3xl font-bold font-mono">{Number(token.supply).toLocaleString()}</div>
+            <div className="text-xl md:text-3xl font-bold font-mono">{Number(token.supply).toLocaleString()}</div>
           </TerminalCard>
           <TerminalCard title="PRICE">
-            <div className="text-3xl font-bold font-mono">${Number(token.price).toFixed(6)}</div>
+            <div className="text-xl md:text-3xl font-bold font-mono">${Number(token.price).toFixed(6)}</div>
           </TerminalCard>
           <TerminalCard title="LIQUIDITY">
-            <div className="text-3xl font-bold font-mono">{Number(token.liquidity)} SOL</div>
+            <div className="text-xl md:text-3xl font-bold font-mono">{Number(token.liquidity)} SOL</div>
           </TerminalCard>
           <TerminalCard title="HOLDERS">
-            <div className="text-3xl font-bold font-mono">{token.holders}</div>
+            <div className="text-xl md:text-3xl font-bold font-mono">{token.holders}</div>
           </TerminalCard>
         </div>
 
         {/* Chart and Trading */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 mb-6 md:mb-8">
           <div className="lg:col-span-2">
             <TradingChart 
               data={chartData} 

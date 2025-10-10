@@ -4,12 +4,14 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
+import { Menu, X } from "lucide-react";
 
 const Navigation = () => {
   const location = useLocation();
   const { connected } = useWallet();
   const logoRef = useRef<HTMLDivElement>(null);
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { trackEvent } = useEngagementTracking();
   
   const isActive = (path: string) => location.pathname === path;
@@ -47,15 +49,15 @@ const Navigation = () => {
   
   return (
     <header className="border-b-2 border-border bg-card backdrop-blur-md sticky top-0 z-50">
-      <div className="container mx-auto px-8 py-2 flex items-center justify-between max-w-7xl">
-        <div className="flex items-center gap-16">
+      <div className="container mx-auto px-4 md:px-8 py-2 flex items-center justify-between max-w-7xl">
+        <div className="flex items-center gap-4 md:gap-16">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="border-2 border-primary px-2 py-1 font-bold text-xl tracking-tight">
+            <div className="border-2 border-primary px-2 py-1 font-bold text-lg md:text-xl tracking-tight">
               M9
             </div>
           </Link>
           
-          <nav className="hidden md:flex gap-10">
+          <nav className="hidden md:flex gap-6 lg:gap-10">
             <Link 
               to="/" 
               className={`metric-label transition-all relative ${
@@ -97,8 +99,64 @@ const Navigation = () => {
           </nav>
         </div>
 
-        <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/80 !border-2 !border-primary !font-bold !text-xs !h-10 !px-6 !transition-all uppercase" />
+        <div className="flex items-center gap-2">
+          <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/80 !border-2 !border-primary !font-bold !text-[10px] md:!text-xs !h-8 md:!h-10 !px-3 md:!px-6 !transition-all uppercase" />
+          
+          <button
+            className="md:hidden border-2 border-primary p-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t-2 border-border bg-card">
+          <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
+            <Link 
+              to="/" 
+              onClick={() => setMobileMenuOpen(false)}
+              className={`metric-label transition-all py-2 ${
+                isActive('/') ? 'text-foreground font-bold border-l-2 border-primary pl-2' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              DASHBOARD
+            </Link>
+            <Link 
+              to="/explorer"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`metric-label transition-all py-2 ${
+                isActive('/explorer') ? 'text-foreground font-bold border-l-2 border-primary pl-2' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              EXPLORER
+            </Link>
+            <Link 
+              to="/leaderboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`metric-label transition-all py-2 ${
+                isActive('/leaderboard') ? 'text-foreground font-bold border-l-2 border-primary pl-2' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              LEADERBOARD
+            </Link>
+            {connected && (
+              <Link 
+                to="/wallet"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`metric-label transition-all py-2 ${
+                  isActive('/wallet') ? 'text-foreground font-bold border-l-2 border-primary pl-2' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                WALLET
+              </Link>
+            )}
+          </nav>
+        </div>
+      )}
     </header>
   );
 };

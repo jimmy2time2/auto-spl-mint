@@ -52,10 +52,10 @@ const Wallet = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-6 py-12 max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold uppercase tracking-tight mb-2">Wallet</h1>
-          <p className="text-xs uppercase tracking-widest opacity-70">Your trading activity & holdings</p>
+      <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-6xl">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-4xl font-bold uppercase tracking-tight mb-2">Wallet</h1>
+          <p className="text-[10px] md:text-xs uppercase tracking-widest opacity-70">Your trading activity & holdings</p>
         </div>
 
         {!connected ? (
@@ -69,23 +69,23 @@ const Wallet = () => {
           </TerminalCard>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
               <TerminalCard title="WALLET ADDRESS">
-                <div className="font-mono text-sm break-all">
+                <div className="font-mono text-[10px] md:text-sm break-all">
                   {publicKey?.toString()}
                 </div>
               </TerminalCard>
 
               <TerminalCard title="TOTAL TRADES">
-                <div className="text-4xl font-bold font-mono">
+                <div className="text-2xl md:text-4xl font-bold font-mono">
                   {activities.length}
                 </div>
               </TerminalCard>
 
               <TerminalCard title="STATUS">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
-                  <span className="text-xl font-bold font-mono">ACTIVE</span>
+                  <div className="w-2 md:w-3 h-2 md:h-3 bg-primary rounded-full animate-pulse" />
+                  <span className="text-lg md:text-xl font-bold font-mono">ACTIVE</span>
                 </div>
               </TerminalCard>
             </div>
@@ -99,15 +99,15 @@ const Wallet = () => {
                   <p className="text-sm uppercase">No activity yet</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full font-mono text-xs">
+                <div className="overflow-x-auto -mx-2 md:mx-0">
+                  <table className="w-full font-mono text-xs min-w-[500px]">
                     <thead>
                       <tr className="border-b-2 border-border">
-                        <th className="text-left py-3 px-2">TYPE</th>
-                        <th className="text-left py-3 px-2">TOKEN</th>
-                        <th className="text-right py-3 px-2">AMOUNT</th>
-                        <th className="text-right py-3 px-2">% OF SUPPLY</th>
-                        <th className="text-right py-3 px-2">TIME</th>
+                        <th className="text-left py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs">TYPE</th>
+                        <th className="text-left py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs">TOKEN</th>
+                        <th className="text-right py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs">AMOUNT</th>
+                        <th className="text-right py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs hidden sm:table-cell">% OF SUPPLY</th>
+                        <th className="text-right py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs hidden md:table-cell">TIME</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -118,29 +118,30 @@ const Wallet = () => {
                             index % 2 === 0 ? 'bg-card' : ''
                           }`}
                         >
-                          <td className="py-3 px-2">
+                          <td className="py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs">
                             <span className={`uppercase font-bold ${
                               activity.activity_type === 'buy' ? 'text-green-600' : 'text-red-600'
                             }`}>
                               {activity.activity_type}
                             </span>
                           </td>
-                          <td className="py-3 px-2">
+                          <td className="py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs">
                             <Link 
                               to={`/token/${activity.token_id}`}
                               className="hover:opacity-70 flex items-center gap-1"
                             >
                               <TrendingUp className="w-3 h-3" />
-                              View Token
+                              <span className="hidden sm:inline">View Token</span>
+                              <span className="sm:hidden">View</span>
                             </Link>
                           </td>
-                          <td className="py-3 px-2 text-right">
+                          <td className="py-2 md:py-3 px-1 md:px-2 text-right text-[10px] md:text-xs">
                             {Number(activity.amount).toLocaleString()}
                           </td>
-                          <td className="py-3 px-2 text-right">
+                          <td className="py-2 md:py-3 px-1 md:px-2 text-right text-[10px] md:text-xs hidden sm:table-cell">
                             {Number(activity.percentage_of_supply).toFixed(2)}%
                           </td>
-                          <td className="py-3 px-2 text-right opacity-70">
+                          <td className="py-2 md:py-3 px-1 md:px-2 text-right opacity-70 text-[10px] md:text-xs hidden md:table-cell">
                             {new Date(activity.timestamp).toLocaleString()}
                           </td>
                         </tr>

@@ -189,8 +189,8 @@ const Dashboard = () => {
       
       {/* Top Info Bar */}
       <div className="border-b-2 border-border bg-card">
-        <div className="container mx-auto px-8 py-3 max-w-7xl">
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-xs">
+        <div className="container mx-auto px-4 md:px-8 py-3 max-w-7xl">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4 text-[10px] md:text-xs">
             <div>
               <div className="metric-label">STATUS</div>
               <div className="font-bold flex items-center gap-2">
@@ -224,7 +224,7 @@ const Dashboard = () => {
       
       <AiMindTicker />
       
-      <main className="container mx-auto px-8 py-6 max-w-7xl">
+      <main className="container mx-auto px-4 md:px-8 py-4 md:py-6 max-w-7xl">
         {/* 3-Column Grid Layout */}
         <div className="grid grid-cols-12 gap-4">
           
@@ -273,8 +273,8 @@ const Dashboard = () => {
           {/* MAIN CONTENT */}
           <div className="col-span-12 lg:col-span-6 space-y-4">
             {/* ASCII Logo Header */}
-            <div className="border-2 border-border bg-card p-8 text-center">
-              <pre className="text-lg font-bold leading-none mb-4 tracking-tight inline-block">
+            <div className="border-2 border-border bg-card p-4 md:p-8 text-center">
+              <pre className="text-[8px] sm:text-xs md:text-sm lg:text-base font-bold leading-none mb-4 tracking-tight inline-block overflow-x-auto">
 {`███╗   ███╗██╗███╗   ██╗██████╗  █████╗ 
 ████╗ ████║██║████╗  ██║██╔══██╗██╔══██╗
 ██╔████╔██║██║██╔██╗ ██║██║  ██║╚██████║
@@ -282,19 +282,19 @@ const Dashboard = () => {
 ██║ ╚═╝ ██║██║██║ ╚████║██████╔╝ █████╔╝
 ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝  ╚════╝`}
               </pre>
-              <p className="text-sm mt-4 max-w-2xl mx-auto">
+              <p className="text-xs md:text-sm mt-4 max-w-2xl mx-auto px-2">
                 Fully autonomous AI system that decides when to generate and launch tokens based on market conditions.
               </p>
             </div>
 
             {/* Next Launch Timer */}
-            <div className="border-2 border-border bg-card p-6">
-              <div className="text-center space-y-6">
-                <div className="metric-label">NEXT AUTONOMOUS LAUNCH</div>
-                <div className="metric-display text-6xl text-metric-primary">
+            <div className="border-2 border-border bg-card p-4 md:p-6">
+              <div className="text-center space-y-4 md:space-y-6">
+                <div className="metric-label text-[10px] md:text-xs">NEXT AUTONOMOUS LAUNCH</div>
+                <div className="metric-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-metric-primary">
                   <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
                 </div>
-                <div className="grid grid-cols-3 gap-4 text-xs pt-4 border-t-2 border-border">
+                <div className="grid grid-cols-3 gap-2 md:gap-4 text-[10px] md:text-xs pt-4 border-t-2 border-border">
                   <div>
                     <div className="metric-label mb-1">MODE</div>
                     <div className="font-bold">AUTONOMOUS</div>
@@ -317,41 +317,43 @@ const Dashboard = () => {
             </div>
 
             {/* Key Metrics Grid */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="border-2 border-border bg-card p-4 text-center">
-                <div className="metric-label mb-2">TREASURY</div>
-                <div className="text-2xl font-bold metric-display">{treasuryBalance.toFixed(0)}</div>
-                <div className="text-xs mt-1">SOL</div>
+            <div className="grid grid-cols-3 gap-2 md:gap-4">
+              <div className="border-2 border-border bg-card p-2 md:p-4 text-center">
+                <div className="metric-label mb-1 md:mb-2 text-[9px] md:text-[10px]">TREASURY</div>
+                <div className="text-lg md:text-2xl font-bold metric-display">{treasuryBalance.toFixed(0)}</div>
+                <div className="text-[10px] md:text-xs mt-1">SOL</div>
               </div>
-              <div className="border-2 border-border bg-card p-4 text-center">
-                <div className="metric-label mb-2">LUCKY (7D)</div>
-                <div className="text-2xl font-bold metric-display">{luckyDistribution.toFixed(2)}</div>
-                <div className="text-xs mt-1">SOL</div>
+              <div className="border-2 border-border bg-card p-2 md:p-4 text-center">
+                <div className="metric-label mb-1 md:mb-2 text-[9px] md:text-[10px]">LUCKY (7D)</div>
+                <div className="text-lg md:text-2xl font-bold metric-display">{luckyDistribution.toFixed(2)}</div>
+                <div className="text-[10px] md:text-xs mt-1">SOL</div>
               </div>
-              <div className="border-2 border-border bg-card p-4 text-center">
-                <div className="metric-label mb-2">TOKENS</div>
-                <div className="text-2xl font-bold metric-display">{totalTokens}</div>
-                <div className="text-xs mt-1">MINTED</div>
+              <div className="border-2 border-border bg-card p-2 md:p-4 text-center">
+                <div className="metric-label mb-1 md:mb-2 text-[9px] md:text-[10px]">TOKENS</div>
+                <div className="text-lg md:text-2xl font-bold metric-display">{totalTokens}</div>
+                <div className="text-[10px] md:text-xs mt-1">MINTED</div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
               <Button
                 variant="default"
                 onClick={() => window.location.href = '/explorer'}
-                className="h-12 font-bold uppercase tracking-wide"
+                className="h-10 md:h-12 font-bold uppercase tracking-wide text-xs md:text-sm"
               >
-                <TrendingUp className="mr-2 h-4 w-4" />
-                EXPLORE
+                <TrendingUp className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">EXPLORE</span>
+                <span className="sm:hidden">EXPL</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => window.location.href = '/leaderboard'}
-                className="h-12 font-bold uppercase tracking-wide"
+                className="h-10 md:h-12 font-bold uppercase tracking-wide text-xs md:text-sm"
               >
-                <Users className="mr-2 h-4 w-4" />
-                LEADERBOARD
+                <Users className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">LEADERBOARD</span>
+                <span className="sm:hidden">BOARD</span>
               </Button>
             </div>
           </div>
