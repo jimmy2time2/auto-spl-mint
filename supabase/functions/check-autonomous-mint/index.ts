@@ -24,7 +24,7 @@ serve(async (req) => {
       supabase.from('tokens').select('*').order('created_at', { ascending: false }).limit(10),
       supabase.from('wallets').select('*'),
       supabase.from('trade_fees_log').select('*').order('timestamp', { ascending: false }).limit(20),
-      supabase.from('engagement_metrics').select('*').order('created_at', { ascending: false }).limit(1).single(),
+      supabase.from('engagement_metrics').select('*').order('created_at', { ascending: false }).limit(1).maybeSingle(),
       supabase.from('market_sentiment').select('*').order('timestamp', { ascending: false }).limit(1).maybeSingle()
     ]);
 
@@ -171,8 +171,9 @@ Respond with ONLY a JSON object in this exact format:
 
   } catch (error) {
     console.error('Autonomous mint check error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
