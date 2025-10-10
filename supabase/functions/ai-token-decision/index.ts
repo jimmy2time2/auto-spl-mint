@@ -24,15 +24,6 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-
-    if (!openaiApiKey) {
-      return new Response(
-        JSON.stringify({ error: 'OPENAI_API_KEY not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Parse request
@@ -50,9 +41,9 @@ serve(async (req) => {
     const randomnessFactor = calculateRandomnessFactor();
     console.log(`🎲 Randomness factor: ${randomnessFactor.toFixed(2)}`);
 
-    // Step 3: Make AI decision
+    // Step 3: Make AI decision (now uses Lovable AI + token theme generator)
     console.log('🧠 Consulting AI for decision...');
-    const aiDecision = await makeAIDecision(marketSignals, randomnessFactor, openaiApiKey);
+    const aiDecision = await makeAIDecision(marketSignals, randomnessFactor, supabase);
     console.log(`Decision: ${aiDecision.decision} (confidence: ${aiDecision.confidence})`);
     console.log(`Reasoning: ${aiDecision.reasoning}`);
 

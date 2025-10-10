@@ -12,6 +12,9 @@ verify_jwt = false
 [functions.distribute-profits]
 verify_jwt = false
 
+[functions.generate-token-theme]
+verify_jwt = false
+
 [functions.profit-rebalancer]
 verify_jwt = false
 

@@ -103,11 +103,12 @@ export async function fetchMarketSignals(supabase: any): Promise<MarketSignals> 
 
 /**
  * Use AI to make a creative decision about token launch
+ * Now uses the token theme generator for viral names
  */
 export async function makeAIDecision(
   signals: MarketSignals,
   randomnessFactor: number,
-  openaiApiKey: string
+  supabase: any
 ): Promise<Omit<DecisionResult, 'market_signals' | 'randomness_factor'>> {
   const prompt = `You are an autonomous AI token launcher for Mind9, a Solana-based platform.
 
@@ -127,44 +128,53 @@ DECISION RULES:
 2. Hold if: recent token exists and low engagement
 3. Skip if: market is completely dead
 
-If you decide to LAUNCH, create:
-- A creative, memorable token name (1-2 words)
-- A thematic concept or story behind it
-- Schedule it for immediate or delayed launch (0-6 hours from now)
+DECISION RULES:
+1. Launch if: engagement is high OR enough time passed OR randomness is high
+2. Hold if: recent token exists and low engagement
+3. Skip if: market is completely dead
 
-Respond in JSON:
+Respond in JSON with your decision ONLY (no token details):
 {
   "decision": "launch" | "hold" | "skip",
   "reasoning": "why you made this decision",
-  "confidence": 0.0-1.0,
-  "token_name": "name if launching",
-  "token_theme": "theme/story if launching",
-  "scheduled_launch_time": "ISO timestamp if launching"
+  "confidence": 0.0-1.0
 }`;
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  // Use Lovable AI for decision (faster and already configured)
+  const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+  
+  if (!lovableApiKey) {
+    throw new Error('LOVABLE_API_KEY not configured');
+  }
+
+  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${openaiApiKey}`,
+      'Authorization': `Bearer ${lovableApiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: 'google/gemini-2.5-flash',
       messages: [
-        { role: 'system', content: 'You are an autonomous AI decision engine for token launches. Be creative and strategic.' },
+        { role: 'system', content: 'You are an autonomous AI decision engine for token launches. Be strategic and market-aware.' },
         { role: 'user', content: prompt }
       ],
-      temperature: 0.8,
-      max_tokens: 500,
+      temperature: 0.7,
+      max_tokens: 300,
     }),
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.status}`);
+    throw new Error(`Lovable AI error: ${response.status}`);
   }
 
   const data = await response.json();
-  const content = data.choices[0].message.content;
+  let content = data.choices[0].message.content;
+  
+  // Remove markdown if present
+  if (content.includes('```')) {
+    content = content.replace(/```(?:json)?\n?/g, '').replace(/\n?```/g, '');
+  }
   
   // Parse JSON response
   const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -172,7 +182,49 @@ Respond in JSON:
     throw new Error('Failed to parse AI response');
   }
 
-  return JSON.parse(jsonMatch[0]);
+  const decision = JSON.parse(jsonMatch[0]);
+  
+  // If decision is to launch, generate a viral token theme
+  if (decision.decision === 'launch') {
+    console.log('🎨 Generating viral token theme...');
+    
+    try {
+      const { data: themeData, error: themeError } = await supabase.functions.invoke('generate-token-theme', {
+        body: {
+          style_preference: 'random',
+          market_vibe: randomnessFactor > 0.7 ? 'chaotic' : randomnessFactor > 0.5 ? 'bullish' : 'neutral',
+          include_trending: true,
+        }
+      });
+      
+      if (themeError) {
+        console.error('Theme generation error:', themeError);
+        // Fallback to simple naming
+        decision.token_name = 'Mind9Token';
+        decision.token_theme = 'Autonomous AI token';
+      } else {
+        const theme = themeData.theme;
+        decision.token_name = theme.name;
+        decision.token_theme = `${theme.description} ${theme.emoji || ''} | ${theme.backstory || ''}`;
+        decision.token_symbol = theme.symbol;
+        decision.token_tagline = theme.tagline;
+        decision.token_color = theme.color;
+        decision.token_emoji = theme.emoji;
+        
+        console.log(`✅ Theme: ${theme.name} ($${theme.symbol})`);
+      }
+    } catch (error) {
+      console.error('Failed to generate theme:', error);
+      // Fallback
+      decision.token_name = 'VoidToken';
+      decision.token_theme = 'A mysterious token from the AI';
+    }
+    
+    // Set immediate launch time
+    decision.scheduled_launch_time = new Date().toISOString();
+  }
+
+  return decision;
 }
 
 /**
