@@ -5,10 +5,11 @@ import { Video, VideoOff } from 'lucide-react';
 const AsciiWebcam = () => {
   const [isActive, setIsActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [frameCount, setFrameCount] = useState(0);
+  const [status, setStatus] = useState<string>('Click to enable webcam');
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const asciiOutputRef = useRef<HTMLPreElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   
@@ -20,67 +21,127 @@ const AsciiWebcam = () => {
   const HEIGHT = 45;
 
   const convertToAscii = () => {
-    if (!isActive || !videoRef.current || !canvasRef.current) return;
+    if (!isActive || !videoRef.current || !canvasRef.current || !asciiOutputRef.current) {
+      console.log('convertToAscii stopped:', { isActive, hasVideo: !!videoRef.current, hasCanvas: !!canvasRef.current, hasOutput: !!asciiOutputRef.current });
+      return;
+    }
     
+    const video = videoRef.current;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
     
-    ctx.drawImage(videoRef.current, 0, 0, WIDTH, HEIGHT);
-    const imageData = ctx.getImageData(0, 0, WIDTH, HEIGHT);
+    if (!ctx) {
+      console.error('No canvas context available');
+      return;
+    }
     
-    let ascii = '';
-    for (let i = 0; i < imageData.data.length; i += 4) {
-      const r = imageData.data[i];
-      const g = imageData.data[i + 1];
-      const b = imageData.data[i + 2];
+    // Check if video is ready
+    if (video.readyState < 2) {
+      console.log('Video not ready yet, waiting...');
+      animationFrameRef.current = requestAnimationFrame(convertToAscii);
+      return;
+    }
+    
+    try {
+      ctx.drawImage(video, 0, 0, WIDTH, HEIGHT);
+      const imageData = ctx.getImageData(0, 0, WIDTH, HEIGHT);
       
-      // Convert to grayscale
-      const brightness = (r + g + b) / 3;
-      const charIndex = Math.floor((brightness / 255) * (asciiChars.length - 1));
-      
-      ascii += asciiChars[charIndex];
-      
-      // Add line breaks
-      if ((i / 4 + 1) % WIDTH === 0) {
-        ascii += '\n';
+      let ascii = '';
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        const r = imageData.data[i];
+        const g = imageData.data[i + 1];
+        const b = imageData.data[i + 2];
+        
+        // Convert to grayscale
+        const brightness = (r + g + b) / 3;
+        const charIndex = Math.floor((brightness / 255) * (asciiChars.length - 1));
+        
+        ascii += asciiChars[charIndex];
+        
+        // Add line breaks
+        if ((i / 4 + 1) % WIDTH === 0) {
+          ascii += '\n';
+        }
       }
+      
+      asciiOutputRef.current.textContent = ascii;
+      setStatus(`Active - Frame: ${Math.floor(performance.now())}`);
+      
+    } catch (err) {
+      console.error('Error converting to ASCII:', err);
+      setError(`Processing error: ${err instanceof Error ? err.message : 'Unknown'}`);
+      return;
     }
     
-    const output = document.getElementById('ascii-output');
-    if (output) {
-      output.textContent = ascii;
-    }
-    
-    setFrameCount(prev => prev + 1);
     animationFrameRef.current = requestAnimationFrame(convertToAscii);
   };
 
   const startWebcam = async () => {
+    console.log('Starting webcam...');
+    console.log('Refs available:', { video: !!videoRef.current, canvas: !!canvasRef.current, output: !!asciiOutputRef.current });
+    
     try {
       setError(null);
+      setStatus('Requesting camera access...');
+      
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: 640, height: 480 } 
+        video: { 
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          facingMode: 'user'
+        } 
       });
       
+      console.log('Stream obtained:', stream.getTracks());
       streamRef.current = stream;
       
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-        console.log('Webcam started, video dimensions:', videoRef.current.videoWidth, videoRef.current.videoHeight);
+      if (!videoRef.current) {
+        throw new Error('Video element not found');
       }
       
+      if (!canvasRef.current) {
+        throw new Error('Canvas element not found');
+      }
+      
+      const video = videoRef.current;
+      video.srcObject = stream;
+      
+      // Wait for video to be ready
+      await new Promise<void>((resolve, reject) => {
+        video.onloadedmetadata = () => {
+          console.log('Video metadata loaded:', video.videoWidth, 'x', video.videoHeight);
+          video.play()
+            .then(() => {
+              console.log('Video playing');
+              resolve();
+            })
+            .catch(reject);
+        };
+        
+        video.onerror = () => {
+          reject(new Error('Video failed to load'));
+        };
+        
+        // Timeout after 5 seconds
+        setTimeout(() => reject(new Error('Video load timeout')), 5000);
+      });
+      
       setIsActive(true);
-      setFrameCount(0);
+      setStatus('Camera active');
+      console.log('Starting ASCII conversion...');
       convertToAscii();
+      
     } catch (err) {
       console.error('Webcam error:', err);
-      setError(`Camera access denied: ${err instanceof Error ? err.message : 'Unknown error'}. Check browser permissions.`);
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Camera error: ${errorMsg}`);
+      setStatus('Error - check console');
     }
   };
 
   const stopWebcam = () => {
+    console.log('Stopping webcam...');
+    
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
@@ -91,8 +152,12 @@ const AsciiWebcam = () => {
       animationFrameRef.current = null;
     }
     
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    
     setIsActive(false);
-    setFrameCount(0);
+    setStatus('Click to enable webcam');
   };
 
   const toggleWebcam = () => {
@@ -131,40 +196,42 @@ const AsciiWebcam = () => {
         )}
       </Button>
       
-      {error && (
-        <div className="text-[10px] text-destructive mb-2 p-2 border border-destructive">
-          {error}
-        </div>
-      )}
+      <div className="text-[10px] metric-label mb-2">
+        Status: {status}
+      </div>
       
-      {!isActive && !error && (
-        <div className="text-[10px] metric-label mb-2">
-          Click to enable webcam
+      {error && (
+        <div className="text-[10px] text-destructive mb-2 p-2 border border-destructive bg-destructive/10">
+          ERROR: {error}
         </div>
       )}
       
       {isActive && (
-        <div className="border-2 border-border bg-card p-2 min-h-[200px]">
+        <div 
+          className="border-2 border-border p-2 min-h-[200px] overflow-hidden"
+          style={{ backgroundColor: '#d4e7a1' }}
+        >
           <pre 
-            id="ascii-output"
-            className="font-mono text-[8px] sm:text-[10px] leading-[8px] sm:leading-[10px] tracking-[2px] whitespace-pre overflow-hidden font-bold"
+            ref={asciiOutputRef}
+            className="font-mono text-[8px] sm:text-[10px] leading-[8px] sm:leading-[10px] tracking-[2px] whitespace-pre overflow-hidden font-bold m-0"
             style={{ color: '#000000' }}
           >
-            {frameCount === 0 ? 'Initializing camera...' : ''}
+            Initializing...
           </pre>
         </div>
       )}
       
-      {/* Hidden video and canvas elements */}
+      {/* Hidden video and canvas elements - MUST be rendered */}
       <video
         ref={videoRef}
-        className="hidden"
+        style={{ display: 'none' }}
         playsInline
         muted
+        autoPlay
       />
       <canvas
         ref={canvasRef}
-        className="hidden"
+        style={{ display: 'none' }}
         width={WIDTH}
         height={HEIGHT}
       />
