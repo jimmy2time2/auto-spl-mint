@@ -1,5 +1,8 @@
 project_id = "hrhklzusdctgrwpiacyq"
 
+[functions.ai-decision-engine]
+verify_jwt = false
+
 [functions.check-autonomous-mint]
 verify_jwt = false
 

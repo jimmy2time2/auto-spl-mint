@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_action_log: {
+        Row: {
+          action: string
+          confidence: number
+          created_at: string
+          execution_result: Json | null
+          id: string
+          input_data: Json
+          reasoning: string
+          timestamp: string
+          token_id: string | null
+        }
+        Insert: {
+          action: string
+          confidence: number
+          created_at?: string
+          execution_result?: Json | null
+          id?: string
+          input_data: Json
+          reasoning: string
+          timestamp?: string
+          token_id?: string | null
+        }
+        Update: {
+          action?: string
+          confidence?: number
+          created_at?: string
+          execution_result?: Json | null
+          id?: string
+          input_data?: Json
+          reasoning?: string
+          timestamp?: string
+          token_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_action_log_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_governor_log: {
         Row: {
           action_taken: string
