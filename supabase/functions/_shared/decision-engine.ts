@@ -260,7 +260,7 @@ export async function logDecision(
 }
 
 /**
- * Execute token mint via wallet executor
+ * Execute token mint via governor brain approval + wallet executor
  */
 export async function executeTokenMint(
   supabase: any,
@@ -268,34 +268,91 @@ export async function executeTokenMint(
   tokenTheme: string,
   decisionId: string
 ): Promise<any> {
-  console.log(`Executing token mint: ${tokenName}`);
+  console.log(`🎯 Executing token mint: ${tokenName}`);
   
-  // Call mint-token edge function
-  const { data, error } = await supabase.functions.invoke('mint-token', {
-    body: {
+  // 1. Prepare mint action for governor review
+  const mintAction = {
+    action: 'token_mint',
+    source: 'ai_token_decision',
+    data: {
       name: tokenName,
       symbol: tokenName.substring(0, 4).toUpperCase(),
-      supply: 1000000000, // 1B tokens
+      supply: 1000000000,
       creator_address: 'AI_AUTONOMOUS_SYSTEM',
       metadata: {
         theme: tokenTheme,
         decision_id: decisionId,
       }
     }
+  };
+
+  // 2. Submit to governor brain for approval
+  console.log('🧠 Submitting to Governor Brain for approval...');
+  const { data: governorResponse, error: governorError } = await supabase.functions.invoke('ai-governor-brain', {
+    body: mintAction
+  });
+
+  if (governorError) {
+    console.error('❌ Governor review failed:', governorError);
+    throw new Error(`Governor review failed: ${governorError.message}`);
+  }
+
+  // 3. Check governor decision
+  if (!governorResponse.success || governorResponse.decision === 'rejected') {
+    console.log('⛔ Governor rejected mint:', governorResponse.reasoning);
+    
+    // Log rejection
+    await supabase.from('token_decision_log').update({
+      executed: false,
+      execution_result: {
+        rejected: true,
+        reason: governorResponse.reasoning,
+        governor_decision: governorResponse.decision
+      }
+    }).eq('id', decisionId);
+    
+    throw new Error(`Governor rejected: ${governorResponse.reasoning}`);
+  }
+
+  if (governorResponse.decision === 'deferred') {
+    console.log('⏸️ Governor deferred mint:', governorResponse.reasoning);
+    
+    await supabase.from('token_decision_log').update({
+      executed: false,
+      execution_result: {
+        deferred: true,
+        reason: governorResponse.reasoning
+      }
+    }).eq('id', decisionId);
+    
+    throw new Error(`Governor deferred: ${governorResponse.reasoning}`);
+  }
+
+  // 4. Use approved/modified payload
+  const approvedPayload = governorResponse.execution_payload || mintAction.data;
+  console.log(`✅ Governor approved mint (${governorResponse.decision})`);
+
+  // 5. Execute via mint-token edge function
+  const { data, error } = await supabase.functions.invoke('mint-token', {
+    body: approvedPayload
   });
 
   if (error) {
     throw new Error(`Failed to mint token: ${error.message}`);
   }
 
-  // Update decision log with execution result
-  await supabase
-    .from('token_decision_log')
-    .update({
-      executed: true,
-      execution_result: data,
-    })
-    .eq('id', decisionId);
+  // 6. Update decision log with execution result
+  await supabase.from('token_decision_log').update({
+    executed: true,
+    execution_result: {
+      ...data,
+      governor_approval: {
+        decision: governorResponse.decision,
+        confidence: governorResponse.confidence,
+        log_id: governorResponse.log_id
+      }
+    }
+  }).eq('id', decisionId);
 
   return data;
 }

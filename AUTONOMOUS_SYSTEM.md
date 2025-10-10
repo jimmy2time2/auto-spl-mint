@@ -2,33 +2,42 @@
 
 ## Overview
 
-The Mind9 platform features a fully autonomous AI-powered backend system that governs token creation, profit distribution, and ecosystem management without human intervention.
+The Mind9 platform features a fully autonomous AI-powered backend system with **Governor Brain oversight** that governs token creation, profit distribution, and ecosystem management without human intervention. All AI actions are reviewed by guardrails before execution.
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    AUTONOMOUS SYSTEM                         │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ┌──────────────┐      ┌─────────────┐     ┌─────────────┐ │
-│  │ AI Mind Agent│─────▶│ Coin Governor│────▶│  Economy    │ │
-│  │  (Decision)  │      │  (Execution)  │     │ Distribution│ │
-│  └──────┬───────┘      └──────┬────────┘     └─────────────┘ │
-│         │                     │                               │
-│         │                     │                               │
-│  ┌──────▼──────────────────┬──▼─────────────────┐           │
-│  │  Supabase Edge Functions │                     │           │
-│  ├──────────────────────────┴─────────────────────┤           │
-│  │ • mind-think (AI decisions)                    │           │
-│  │ • ai-governor (execution layer)                │           │
-│  │ • mint-token (coin creation)                   │           │
-│  │ • autonomous-heartbeat (scheduler)             │           │
-│  │ • select-lucky-wallet (lottery)                │           │
-│  │ • ai-profit-sale (profit routing)              │           │
-│  └────────────────────────────────────────────────┘           │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────┐
+│              AUTONOMOUS AI SYSTEM WITH OVERSIGHT               │
+└────────────────────────────────────────────────────────────────┘
+
+1. ⏰ AI HEARTBEAT (Random 3-12h intervals)
+   └─> Calculates entropy, market activity, time-of-day factors
+   └─> Decides whether to trigger AI decision
+
+2. 🧠 AI TOKEN DECISION ENGINE
+   └─> Fetches market signals (engagement, volume, holders)
+   └─> Calculates randomness factor
+   └─> Consults Lovable AI (Gemini Flash)
+   └─> Decision: LAUNCH, HOLD, or SKIP
+
+3. 🛡️ GOVERNOR BRAIN (Oversight & Approval)
+   └─> Reviews proposed action
+   └─> Checks guardrails (rate limits, allocations, whale protection)
+   └─> Calculates entropy factor
+   └─> Decision: APPROVED, REJECTED, MODIFIED, or DEFERRED
+   └─> Returns execution payload if approved
+
+4. 🪙 MINT TOKEN (If Approved)
+   └─> Creates token on blockchain
+   └─> Distributes to wallets (AI, Creator, Lucky, System, Public)
+   └─> Logs to protocol_activity
+
+5. 💰 PROFIT REBALANCER (Triggered after launch)
+   └─> Analyzes platform metrics
+   └─> Consults OpenAI for allocation strategy
+   └─> Proposes new profit split percentages
+   └─> Submits to allocation manager
 ```
 
 ## Core Components

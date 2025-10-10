@@ -12,42 +12,117 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { action, data, prompt } = await req.json();
-    console.log(`[AI GOVERNOR] Action: ${action}`);
+    console.log(`🎯 AI Governor received action: ${action}`);
 
-    let result;
+    let result = null;
+    let targetFunction = null;
 
-    // Route to appropriate handler
-    if (action === 'token_mint') {
-      result = await handleTokenMint(supabase, data);
-    } else if (action === 'trade') {
-      result = await handleTrade(supabase, data);
-    } else if (action === 'ai_profit') {
-      result = await handleAIProfit(supabase, data);
-    } else if (action === 'detect_whale') {
-      result = await detectWhale(supabase, data);
-    } else if (action === 'update_dao') {
-      result = await updateDAO(supabase, data);
-    } else if (action === 'lucky_lottery') {
-      result = await luckyLottery(supabase, data);
-    } else if (action === 'evaluate_market') {
-      result = await evaluateMarket(supabase);
-    } else if (action === 'decide_creation') {
-      result = await decideCoinCreation(supabase);
-    } else if (action === 'process_command') {
-      result = await processCommand(supabase, prompt, data);
-    } else {
-      result = { success: false, error: `Unknown action: ${action}` };
+    // Route action to appropriate edge function
+    switch (action) {
+      case 'decide_creation':
+      case 'token_mint':
+        console.log('🪙 Routing to AI Token Decision Engine...');
+        targetFunction = 'ai-token-decision';
+        break;
+
+      case 'ai_profit':
+      case 'process_profit':
+        console.log('💰 Routing to Profit Sale Processor...');
+        targetFunction = 'ai-profit-sale';
+        break;
+
+      case 'profit_rebalance':
+      case 'allocation_change':
+        console.log('⚖️ Routing to Profit Rebalancer...');
+        targetFunction = 'profit-rebalancer';
+        break;
+
+      case 'lucky_lottery':
+        console.log('🎰 Routing to Lucky Wallet Selector...');
+        targetFunction = 'select-lucky-wallet';
+        break;
+
+      case 'wallet_action':
+        console.log('👛 Routing to Wallet Executor...');
+        targetFunction = 'wallet-executor';
+        break;
+
+      case 'trade':
+        // Handle trade logic directly
+        result = await handleTrade(supabase, data);
+        break;
+
+      case 'detect_whale':
+        result = await detectWhale(supabase, data);
+        break;
+
+      case 'update_dao':
+        result = await updateDAO(supabase, data);
+        break;
+
+      case 'evaluate_market':
+        result = await evaluateMarket(supabase);
+        break;
+
+      default:
+        console.log('⚠️ Unknown action, logging only...');
+        result = { success: false, error: `Unknown action: ${action}` };
     }
 
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    // Execute routed function if applicable
+    if (targetFunction) {
+      const startTime = Date.now();
+      
+      const { data: funcData, error: funcError } = await supabase.functions.invoke(targetFunction, {
+        body: data || {}
+      });
+
+      const executionTime = Date.now() - startTime;
+
+      if (funcError) {
+        console.error(`❌ Function ${targetFunction} error:`, funcError);
+        result = { success: false, error: funcError.message, target_function: targetFunction };
+      } else {
+        result = funcData;
+        console.log(`✅ Executed ${targetFunction}`);
+      }
+
+      // Log execution
+      await supabase.from('ai_governor_log').insert({
+        action_taken: action,
+        prompt_input: prompt || '',
+        result: funcError || funcData,
+        error_message: funcError?.message,
+        execution_time_ms: executionTime
+      });
+    }
+
+    // Log to protocol activity
+    await supabase.from('protocol_activity').insert({
+      activity_type: 'ai_governor_action',
+      description: `Governor executed: ${action}`,
+      metadata: {
+        action,
+        target_function: targetFunction,
+        result,
+        prompt: prompt?.substring(0, 200)
+      }
     });
+
+    return new Response(
+      JSON.stringify({ 
+        success: result?.success !== false,
+        action,
+        target_function: targetFunction,
+        result
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
 
   } catch (error) {
     console.error('[AI GOVERNOR ERROR]:', error);

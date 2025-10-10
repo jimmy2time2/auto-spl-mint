@@ -217,6 +217,21 @@ export async function executeHeartbeat(supabase: any): Promise<HeartbeatResult> 
       decisionTriggered = true;
       decisionResult = aiDecision?.decision || 'unknown';
       console.log(`✅ AI decided: ${decisionResult}`);
+      
+      // If token was launched, trigger profit rebalancer
+      if (aiDecision?.decision === 'launch' && aiDecision?.execution_result) {
+        console.log('💰 Token launched! Triggering profit rebalancer...');
+        try {
+          const { error: rebalanceError } = await supabase.functions.invoke('profit-rebalancer');
+          if (rebalanceError) {
+            console.error('❌ Rebalancer error:', rebalanceError);
+          } else {
+            console.log('✅ Profit rebalancer executed');
+          }
+        } catch (rebalanceErr) {
+          console.error('Failed to trigger rebalancer:', rebalanceErr);
+        }
+      }
     }
   } catch (error) {
     console.error('Failed to trigger AI Decision Engine:', error);
