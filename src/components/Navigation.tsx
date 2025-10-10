@@ -77,6 +77,15 @@ const Navigation = () => {
               {isActive('/explorer') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
             </Link>
             <Link 
+              to="/trade" 
+              className={`metric-label transition-all relative ${
+                isActive('/trade') ? 'text-foreground font-bold' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              TRADE
+              {isActive('/trade') && <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary" />}
+            </Link>
+            <Link 
               to="/leaderboard" 
               className={`metric-label transition-all relative ${
                 isActive('/leaderboard') ? 'text-foreground font-bold' : 'text-muted-foreground hover:text-foreground'
@@ -142,6 +151,15 @@ const Navigation = () => {
               }`}
             >
               EXPLORER
+            </Link>
+            <Link 
+              to="/trade"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`metric-label transition-all py-2 ${
+                isActive('/trade') ? 'text-foreground font-bold border-l-2 border-primary pl-2' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              TRADE
             </Link>
             <Link 
               to="/leaderboard"
