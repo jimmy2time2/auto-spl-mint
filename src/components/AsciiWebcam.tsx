@@ -21,7 +21,11 @@ const AsciiWebcam = () => {
   const HEIGHT = 60;
 
   const convertToAscii = () => {
-    if (!isActive) return;
+    if (!isActive) {
+      // Keep trying until the state commits after click
+      animationFrameRef.current = requestAnimationFrame(convertToAscii);
+      return;
+    }
 
     if (!videoRef.current || !canvasRef.current || !asciiOutputRef.current) {
       // Wait until all elements are mounted
