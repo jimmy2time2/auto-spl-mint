@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 
 const CONFIG = {
-  asciiWidth: 80,
-  asciiHeight: 60,
+  asciiWidth: 30,
+  asciiHeight: 30,
   videoWidth: 640,
   videoHeight: 480,
   frameRate: 30,
@@ -169,20 +169,11 @@ const AsciiWebcam = () => {
   return (
     <div style={{ 
       backgroundColor: '#d4e7a1', 
-      border: '3px solid #000', 
-      padding: '20px',
-      fontFamily: "'Courier New', monospace"
+      border: '2px solid #000', 
+      padding: '8px',
+      fontFamily: "'Courier New', monospace",
+      width: '120px'
     }}>
-      <div style={{
-        margin: '0 0 15px 0',
-        fontSize: '14px',
-        fontWeight: 'bold',
-        letterSpacing: '1px',
-        color: '#000'
-      }}>
-        LIVE FEED
-      </div>
-
       <button
         onClick={handleToggle}
         disabled={false}
@@ -190,85 +181,48 @@ const AsciiWebcam = () => {
           backgroundColor: '#000',
           color: '#d4e7a1',
           border: '2px solid #000',
-          padding: '12px 20px',
+          padding: '6px',
           fontFamily: "'Courier New', monospace",
-          fontSize: '12px',
+          fontSize: '10px',
           cursor: 'pointer',
           width: '100%',
-          marginBottom: '10px',
+          marginBottom: '6px',
           fontWeight: 'bold',
           transition: 'all 0.2s',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '8px'
+          gap: '4px'
         }}
       >
-        <span style={{ fontSize: '16px' }}>
+        <span style={{ fontSize: '12px' }}>
           {isActive ? '⏸' : '📷'}
         </span>
-        {isActive ? 'DISABLE WEBCAM' : 'ENABLE WEBCAM'}
       </button>
 
-      {showStatus && (
-        <div style={{
+      <div style={{
+        backgroundColor: '#000',
+        border: '2px solid #000',
+        width: '104px',
+        height: '104px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden'
+      }}>
+        <pre style={{
+          color: '#d4e7a1',
           fontFamily: "'Courier New', monospace",
-          fontSize: '11px',
-          marginBottom: '10px',
-          color: '#000',
-          textAlign: 'center',
-          padding: '8px',
-          backgroundColor: 'rgba(0, 0, 0, 0.05)',
-          border: '1px solid #000'
+          fontSize: '3.4px',
+          lineHeight: '3.4px',
+          letterSpacing: '0px',
+          margin: 0,
+          whiteSpace: 'pre',
+          fontWeight: 'normal'
         }}>
-          {status}
-        </div>
-      )}
-
-      {isActive && (
-        <div style={{
-          backgroundColor: '#000',
-          padding: '15px',
-          border: '3px solid #000',
-          marginTop: '10px',
-          overflow: 'auto',
-          maxHeight: '500px'
-        }}>
-          <pre style={{
-            color: '#d4e7a1',
-            fontFamily: "'Courier New', monospace",
-            fontSize: '8px',
-            lineHeight: '8px',
-            letterSpacing: '1px',
-            margin: 0,
-            whiteSpace: 'pre',
-            fontWeight: 'normal'
-          }}>
-            {asciiText}
-          </pre>
-        </div>
-      )}
-
-      {!isActive && (
-        <div style={{
-          backgroundColor: '#000',
-          padding: '15px',
-          border: '3px solid #000',
-          marginTop: '10px'
-        }}>
-          <pre style={{
-            color: '#d4e7a1',
-            fontFamily: "'Courier New', monospace",
-            fontSize: '11px',
-            lineHeight: '1.4',
-            margin: 0,
-            whiteSpace: 'pre',
-            textAlign: 'center'
-          }}>
-            {asciiText}
-          </pre>
-        </div>
-      )}
+          {asciiText}
+        </pre>
+      </div>
 
       <video
         ref={videoRef}
