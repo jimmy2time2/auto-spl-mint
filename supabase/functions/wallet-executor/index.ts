@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { getWalletSigner, requireBackendAuth, type WalletType, type TransactionInstruction } from "../_shared/wallet-signer.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,53 +13,52 @@ serve(async (req) => {
   }
 
   try {
+    // SECURITY: Only allow backend functions to call this
+    requireBackendAuth(req);
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const body = await req.json();
-    const { instruction_type, params } = body;
+    const { wallet_type, instruction_type, params } = body;
 
-    console.log('🔐 Wallet Executor received:', instruction_type);
+    console.log('🔐 Wallet Executor received:', { wallet_type, instruction_type });
 
-    // Validate input
-    if (!instruction_type || typeof instruction_type !== 'string') {
-      throw new Error('Invalid instruction_type');
+    // Validate wallet type
+    const validWallets: WalletType[] = ['ai', 'system', 'treasury', 'creator', 'lucky'];
+    if (!wallet_type || !validWallets.includes(wallet_type)) {
+      throw new Error(`Invalid wallet_type. Must be one of: ${validWallets.join(', ')}`);
     }
 
+    // Validate instruction type
+    const validInstructions = ['transfer', 'mint', 'burn', 'swap'];
+    if (!instruction_type || !validInstructions.includes(instruction_type)) {
+      throw new Error(`Invalid instruction_type. Must be one of: ${validInstructions.join(', ')}`);
+    }
+
+    // Validate params
     if (!params || typeof params !== 'object') {
-      throw new Error('Invalid params');
-    }
-
-    // Validate instruction types
-    const validInstructions = ['transfer', 'reinvest', 'burn', 'swap'];
-    if (!validInstructions.includes(instruction_type)) {
-      throw new Error(`Unknown instruction type: ${instruction_type}`);
+      throw new Error('Invalid params object');
     }
 
     // Schema validation per instruction type
     switch (instruction_type) {
       case 'transfer':
-        if (!params.to_address || !params.amount || !params.token_mint) {
-          throw new Error('Transfer requires: to_address, amount, token_mint');
+        if (!params.to || !params.amount) {
+          throw new Error('Transfer requires: to (address), amount');
         }
         if (typeof params.amount !== 'number' || params.amount <= 0) {
           throw new Error('Amount must be a positive number');
         }
         break;
 
-      case 'reinvest':
-        if (!params.token_id || !params.amount) {
-          throw new Error('Reinvest requires: token_id, amount');
-        }
-        if (typeof params.amount !== 'number' || params.amount <= 0) {
-          throw new Error('Amount must be a positive number');
-        }
-        break;
+      case 'mint':
+        throw new Error('Mint instruction should use mint-token function directly');
 
       case 'burn':
-        if (!params.token_mint || !params.amount) {
-          throw new Error('Burn requires: token_mint, amount');
+        if (!params.tokenMint || !params.amount) {
+          throw new Error('Burn requires: tokenMint, amount');
         }
         if (typeof params.amount !== 'number' || params.amount <= 0) {
           throw new Error('Amount must be a positive number');
@@ -66,8 +66,8 @@ serve(async (req) => {
         break;
 
       case 'swap':
-        if (!params.from_token || !params.to_token || !params.amount) {
-          throw new Error('Swap requires: from_token, to_token, amount');
+        if (!params.fromToken || !params.toToken || !params.amount) {
+          throw new Error('Swap requires: fromToken, toToken, amount');
         }
         if (typeof params.amount !== 'number' || params.amount <= 0) {
           throw new Error('Amount must be a positive number');
@@ -75,30 +75,57 @@ serve(async (req) => {
         break;
     }
 
-    // Generate mock transaction ID (in real implementation, this would be actual Solana tx)
-    const txId = `TX_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    console.log('✅ Transaction signed and submitted:', txId);
+    // Get secure wallet signer
+    const signer = getWalletSigner();
+
+    // Check if wallet is configured
+    if (!signer.isWalletConfigured(wallet_type)) {
+      throw new Error(`Wallet ${wallet_type} is not configured. Add WALLET_PRIVATE_KEY_${wallet_type.toUpperCase()} to Supabase secrets.`);
+    }
+
+    // Build transaction instruction
+    const instruction: TransactionInstruction = {
+      type: instruction_type as any,
+      params: params
+    };
+
+    console.log('🔒 Signing transaction securely...');
+
+    // Sign and send transaction using secure signer
+    const result = await signer.signAndSendTransaction(wallet_type, instruction, {
+      commitment: 'confirmed'
+    });
+
+    if (!result.success) {
+      throw new Error(`Transaction failed: ${result.error}`);
+    }
+
+    console.log('✅ Transaction confirmed:', result.signature);
 
     // Log to protocol_activity
     await supabase.from('protocol_activity').insert({
       activity_type: 'wallet_execution',
-      description: `Executed ${instruction_type} transaction`,
+      description: `Executed ${instruction_type} transaction from ${wallet_type} wallet`,
       metadata: {
+        wallet_type,
         instruction_type,
         params,
-        transaction_id: txId,
+        transaction_signature: result.signature,
+        blockhash: result.blockhash,
+        slot: result.slot,
         timestamp: new Date().toISOString()
       }
     });
 
     // Log to system logs
     await supabase.from('logs').insert({
-      action: `WALLET_EXECUTOR: ${instruction_type.toUpperCase()}`,
+      action: `WALLET_EXECUTOR: ${wallet_type.toUpperCase()} ${instruction_type.toUpperCase()}`,
       details: {
+        wallet_type,
         instruction_type,
         params,
-        transaction_id: txId
+        transaction_signature: result.signature,
+        blockhash: result.blockhash
       }
     });
 
@@ -107,10 +134,13 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true,
-        transaction_id: txId,
+        transaction_signature: result.signature,
+        blockhash: result.blockhash,
+        slot: result.slot,
+        wallet_type,
         instruction_type,
         params,
-        message: 'Transaction executed successfully'
+        message: 'Transaction executed and confirmed on Solana'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
