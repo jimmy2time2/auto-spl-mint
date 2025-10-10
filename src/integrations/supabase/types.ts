@@ -510,6 +510,75 @@ export type Database = {
         }
         Relationships: []
       }
+      heartbeat_log: {
+        Row: {
+          decision_result: string | null
+          decision_triggered: boolean
+          entropy_factor: number
+          id: string
+          interval_hours: number
+          market_activity_score: number | null
+          metadata: Json | null
+          next_heartbeat_at: string
+          time_of_day_factor: number | null
+          timestamp: string
+        }
+        Insert: {
+          decision_result?: string | null
+          decision_triggered?: boolean
+          entropy_factor: number
+          id?: string
+          interval_hours: number
+          market_activity_score?: number | null
+          metadata?: Json | null
+          next_heartbeat_at: string
+          time_of_day_factor?: number | null
+          timestamp?: string
+        }
+        Update: {
+          decision_result?: string | null
+          decision_triggered?: boolean
+          entropy_factor?: number
+          id?: string
+          interval_hours?: number
+          market_activity_score?: number | null
+          metadata?: Json | null
+          next_heartbeat_at?: string
+          time_of_day_factor?: number | null
+          timestamp?: string
+        }
+        Relationships: []
+      }
+      heartbeat_settings: {
+        Row: {
+          active: boolean
+          entropy_weight: number
+          id: string
+          last_updated: string
+          max_interval_hours: number
+          min_interval_hours: number
+          volume_threshold: number
+        }
+        Insert: {
+          active?: boolean
+          entropy_weight?: number
+          id?: string
+          last_updated?: string
+          max_interval_hours?: number
+          min_interval_hours?: number
+          volume_threshold?: number
+        }
+        Update: {
+          active?: boolean
+          entropy_weight?: number
+          id?: string
+          last_updated?: string
+          max_interval_hours?: number
+          min_interval_hours?: number
+          volume_threshold?: number
+        }
+        Relationships: []
+      }
       invite_log: {
         Row: {
           id: string
