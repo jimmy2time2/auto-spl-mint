@@ -191,15 +191,26 @@ const AsciiBrain = ({
       });
     }
 
-    // Render the blob
-    const resolution = 2;
-    const imageData = ctx.createImageData(size, size);
+    // PIXELATION: Render at lower resolution
+    const pixelSize = 4; // Size of each "pixel"
+    const lowResWidth = Math.floor(size / pixelSize);
+    const lowResHeight = Math.floor(size / pixelSize);
+
+    // Create temporary low-res image data
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = lowResWidth;
+    tempCanvas.height = lowResHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    if (!tempCtx) return;
+
+    const imageData = tempCtx.createImageData(lowResWidth, lowResHeight);
     const data = imageData.data;
 
-    for (let py = 0; py < size; py += resolution) {
-      for (let px = 0; px < size; px += resolution) {
-        const x = px - centerX;
-        const y = py - centerY;
+    for (let py = 0; py < lowResHeight; py++) {
+      for (let px = 0; px < lowResWidth; px++) {
+        // Scale back to original coordinates
+        const x = (px * pixelSize) - centerX;
+        const y = (py * pixelSize) - centerY;
         
         // Calculate metaball field
         const field = metaballField(x, y, blobs);
@@ -215,36 +226,36 @@ const AsciiBrain = ({
           
           // Calculate iridescent color based on angle and noise
           const colorT = (angle / (Math.PI * 2)) + (noiseValue * 0.2) + (time * 0.1);
-          const [r, g, b] = getGradientColor(colorT, colorStops);
+          let [r, g, b] = getGradientColor(colorT, colorStops);
           
           // Edge glow effect
           const edgeFactor = Math.max(0, 1 - Math.abs(field - threshold) * 5);
           const brightness = 0.7 + edgeFactor * 0.3 + (intensity / 100) * 0.3;
           
+          // THRESHOLD EFFECT: Posterize colors to fewer levels
+          const colorLevels = 4; // Number of color steps (retro look)
+          r = Math.round((r * brightness) / 255 * colorLevels) * (255 / colorLevels);
+          g = Math.round((g * brightness) / 255 * colorLevels) * (255 / colorLevels);
+          b = Math.round((b * brightness) / 255 * colorLevels) * (255 / colorLevels);
+          
           // Apply color with falloff
           const falloff = Math.max(0, 1 - (dist / (baseRadius * 1.5)));
           const alpha = Math.min(255, falloff * 255 * brightness);
           
-          // Fill resolution block
-          for (let dy = 0; dy < resolution && py + dy < size; dy++) {
-            for (let dx = 0; dx < resolution && px + dx < size; dx++) {
-              const idx = ((py + dy) * size + (px + dx)) * 4;
-              data[idx] = r * brightness;
-              data[idx + 1] = g * brightness;
-              data[idx + 2] = b * brightness;
-              data[idx + 3] = alpha;
-            }
-          }
+          const idx = (py * lowResWidth + px) * 4;
+          data[idx] = r;
+          data[idx + 1] = g;
+          data[idx + 2] = b;
+          data[idx + 3] = alpha;
         }
       }
     }
 
-    ctx.putImageData(imageData, 0, 0);
+    tempCtx.putImageData(imageData, 0, 0);
 
-    // Apply blur for smooth liquid effect
-    ctx.filter = 'blur(4px)';
-    ctx.drawImage(canvas, 0, 0);
-    ctx.filter = 'none';
+    // Scale up the pixelated result with nearest-neighbor (no smoothing)
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(tempCanvas, 0, 0, lowResWidth, lowResHeight, 0, 0, size, size);
 
     animationFrameRef.current = requestAnimationFrame(renderFrame);
   };
