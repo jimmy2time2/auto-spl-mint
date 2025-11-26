@@ -13,248 +13,233 @@ const AsciiBrain = ({
   size = 300,
   activity = "idle"
 }: AsciiBrainProps) => {
-  const preRef = useRef<HTMLPreElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>();
   const timeRef = useRef(0);
-  const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
-  const rippleRef = useRef({ active: false, time: 0, x: 0, y: 0 });
-  
+  const mouseRef = useRef({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
 
-  // ASCII character gradient for shading (dark to light)
-  const ASCII_CHARS = " .:-=+*#%@";
-  
-  // Resolution - very high density to fill the circle completely
-  const cols = Math.floor(size / 2.5);
-  const rows = Math.floor(size / 5);
-  
-  // Mood color mapping (HSL format for design system)
-  const moodColors = {
-    neutral: "hsl(var(--metric-neutral))",
-    frenzied: "hsl(var(--metric-danger))",
-    protective: "hsl(var(--metric-info))",
-    cosmic: "hsl(var(--primary))",
-    zen: "hsl(var(--metric-success))"
+  // Mood-based color schemes (iridescent rainbow gradients)
+  const moodColorStops = {
+    neutral: [
+      { stop: 0.0, color: [120, 200, 255] },   // cyan
+      { stop: 0.33, color: [180, 120, 255] },  // purple
+      { stop: 0.66, color: [255, 120, 180] },  // pink
+      { stop: 1.0, color: [120, 200, 255] }    // cyan
+    ],
+    frenzied: [
+      { stop: 0.0, color: [255, 50, 50] },     // red
+      { stop: 0.33, color: [255, 150, 50] },   // orange
+      { stop: 0.66, color: [255, 255, 50] },   // yellow
+      { stop: 1.0, color: [255, 50, 50] }      // red
+    ],
+    protective: [
+      { stop: 0.0, color: [50, 150, 255] },    // blue
+      { stop: 0.5, color: [100, 255, 200] },   // cyan
+      { stop: 1.0, color: [50, 150, 255] }     // blue
+    ],
+    cosmic: [
+      { stop: 0.0, color: [255, 100, 255] },   // magenta
+      { stop: 0.25, color: [100, 100, 255] },  // blue
+      { stop: 0.5, color: [100, 255, 255] },   // cyan
+      { stop: 0.75, color: [255, 100, 200] },  // pink
+      { stop: 1.0, color: [255, 100, 255] }    // magenta
+    ],
+    zen: [
+      { stop: 0.0, color: [100, 255, 150] },   // green
+      { stop: 0.5, color: [150, 255, 200] },   // mint
+      { stop: 1.0, color: [100, 255, 150] }    // green
+    ]
   };
 
-  const color = moodColors[mood];
-  
-  // Lerp function for smooth interpolation
-  const lerp = (start: number, end: number, factor: number) => {
-    return start + (end - start) * factor;
+  const colorStops = moodColorStops[mood];
+
+  // Simple noise function (Perlin-like)
+  const noise = (x: number, y: number, time: number): number => {
+    const value = Math.sin(x * 2.5 + time) * 
+                  Math.cos(y * 2.5 - time * 0.5) +
+                  Math.sin((x + y) * 1.3 + time * 0.7) * 0.5 +
+                  Math.cos((x - y) * 2.1 - time * 0.3) * 0.3;
+    return value;
   };
 
-  // 3D rotation matrix
-  const rotateX = (y: number, z: number, angle: number) => {
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-    return {
-      y: y * cos - z * sin,
-      z: y * sin + z * cos
-    };
+  // Metaball field calculation
+  const metaballField = (x: number, y: number, blobs: Array<{x: number, y: number, r: number}>): number => {
+    let sum = 0;
+    for (const blob of blobs) {
+      const dx = x - blob.x;
+      const dy = y - blob.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 0.001) continue;
+      sum += blob.r / dist;
+    }
+    return sum;
   };
 
-  const rotateY = (x: number, z: number, angle: number) => {
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-    return {
-      x: x * cos + z * sin,
-      z: -x * sin + z * cos
-    };
+  // Interpolate color from gradient stops
+  const getGradientColor = (t: number, stops: typeof colorStops): [number, number, number] => {
+    // Normalize t to 0-1
+    t = ((t % 1) + 1) % 1;
+    
+    for (let i = 0; i < stops.length - 1; i++) {
+      const curr = stops[i];
+      const next = stops[i + 1];
+      
+      if (t >= curr.stop && t <= next.stop) {
+        const localT = (t - curr.stop) / (next.stop - curr.stop);
+        return [
+          curr.color[0] + (next.color[0] - curr.color[0]) * localT,
+          curr.color[1] + (next.color[1] - curr.color[1]) * localT,
+          curr.color[2] + (next.color[2] - curr.color[2]) * localT
+        ];
+      }
+    }
+    
+    return stops[0].color as [number, number, number];
   };
 
-  // Render ASCII sphere
   const renderFrame = () => {
-    if (!preRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    timeRef.current += 0.016; // ~60fps
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    timeRef.current += 0.016;
     const time = timeRef.current;
-    
-    // Smooth mouse interpolation
-    mouseRef.current.x = lerp(mouseRef.current.x, mouseRef.current.targetX, 0.05);
-    mouseRef.current.y = lerp(mouseRef.current.y, mouseRef.current.targetY, 0.05);
-    
-    // Activity-based animation parameters
-    let baseRotSpeed = 0.3 + (intensity / 100) * 0.5;
-    let breathScale = 1 + Math.sin(time * 0.5) * 0.05;
-    let pulse = Math.sin(time * 2 + intensity / 50) * 0.1;
-    let vortexStrength = 0;
-    let spiralSpeed = 0;
-    
+
+    // Clear with transparency
+    ctx.clearRect(0, 0, size, size);
+
+    const centerX = size / 2;
+    const centerY = size / 2;
+    const baseRadius = size * 0.35;
+
+    // Activity-based parameters
+    let morphSpeed = 0.5;
+    let morphIntensity = 0.15;
+    let rotationSpeed = 0.3;
+    let numBlobs = 5;
+    let blobSpread = 0.3;
+
     switch (activity) {
       case "minting":
-        // Fast spiral vortex pulling inward
-        baseRotSpeed = 2.0 + (intensity / 100);
-        spiralSpeed = 3;
-        vortexStrength = 0.3;
-        pulse = Math.sin(time * 6) * 0.2;
-        breathScale = 1 + Math.sin(time * 2) * 0.1;
+        morphSpeed = 2.0;
+        morphIntensity = 0.3;
+        rotationSpeed = 1.5;
+        numBlobs = 8;
+        blobSpread = 0.5;
         break;
       case "analyzing":
-        // Scanning wave pattern
-        baseRotSpeed = 0.8;
-        pulse = Math.sin(time * 4 + intensity / 30) * 0.15;
-        breathScale = 1 + Math.sin(time * 1.5) * 0.08;
+        morphSpeed = 1.2;
+        morphIntensity = 0.2;
+        rotationSpeed = 0.8;
+        numBlobs = 6;
+        blobSpread = 0.4;
         break;
       case "executing":
-        // Sharp pulsing with fast rotation
-        baseRotSpeed = 1.5;
-        pulse = Math.abs(Math.sin(time * 5)) * 0.25;
-        breathScale = 1 + Math.abs(Math.sin(time * 3)) * 0.12;
+        morphSpeed = 1.8;
+        morphIntensity = 0.25;
+        rotationSpeed = 1.2;
+        numBlobs = 7;
+        blobSpread = 0.45;
         break;
       case "thinking":
-        // Slow wave oscillation
-        baseRotSpeed = 0.4;
-        pulse = Math.sin(time * 1.5) * 0.12;
-        breathScale = 1 + Math.sin(time * 0.8) * 0.06;
+        morphSpeed = 0.6;
+        morphIntensity = 0.18;
+        rotationSpeed = 0.4;
+        numBlobs = 5;
+        blobSpread = 0.35;
         break;
-      default: // idle
-        baseRotSpeed = 0.3 + (intensity / 100) * 0.5;
-        pulse = Math.sin(time * 2 + intensity / 50) * 0.1;
-        breathScale = 1 + Math.sin(time * 0.5) * 0.05;
     }
-    
-    const rotX = mouseRef.current.y * 0.5 + Math.sin(time * 0.3) * 0.2;
-    const rotY = mouseRef.current.x * 0.5 + time * baseRotSpeed;
-    
-    let output = "";
-    
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        // Normalize screen coordinates to -1 to 1
-        let screenX = (col / cols) * 2 - 1;
-        let screenY = (row / rows) * 2 - 1;
+
+    // Create metaballs for organic blob shape
+    const blobs: Array<{x: number, y: number, r: number}> = [];
+    for (let i = 0; i < numBlobs; i++) {
+      const angle = (i / numBlobs) * Math.PI * 2 + time * rotationSpeed;
+      const offset = Math.sin(time * morphSpeed + i) * blobSpread;
+      const bx = Math.cos(angle) * baseRadius * offset;
+      const by = Math.sin(angle) * baseRadius * offset;
+      blobs.push({
+        x: bx,
+        y: by,
+        r: baseRadius * (0.8 + Math.sin(time * morphSpeed * 1.5 + i * 1.3) * 0.3)
+      });
+    }
+
+    // Render the blob
+    const resolution = 2;
+    const imageData = ctx.createImageData(size, size);
+    const data = imageData.data;
+
+    for (let py = 0; py < size; py += resolution) {
+      for (let px = 0; px < size; px += resolution) {
+        const x = px - centerX;
+        const y = py - centerY;
         
-        // Aspect ratio correction in screen space
-        screenX *= cols / rows;
-        
-        // Distance from center in screen space
-        const distFromCenter = Math.sqrt(screenX * screenX + screenY * screenY);
-        
-        // Map to sphere coordinates (clamped to radius 1)
-        let x = screenX;
-        let y = screenY;
-        let r = distFromCenter;
-        if (r > 1) {
-          const scale = 1 / r;
-          x *= scale;
-          y *= scale;
-          r = 1;
-        }
-        
-        // Calculate Z depth (sphere surface)
-        let z = Math.sqrt(Math.max(0, 1 - x * x - y * y)) * breathScale;
-        
-        // Apply vortex effect for minting
-        if (vortexStrength > 0) {
+        // Calculate metaball field
+        const field = metaballField(x, y, blobs);
+        const threshold = 1.2 + Math.sin(time * morphSpeed) * morphIntensity;
+
+        if (field > threshold) {
+          // Inside the blob
+          const dist = Math.sqrt(x * x + y * y);
           const angle = Math.atan2(y, x);
-          const spiralFactor = r * spiralSpeed + time * 2;
-          const vortex = Math.sin(angle * 3 + spiralFactor) * vortexStrength * (1 - r);
-          z += vortex;
-        }
-        
-        // Apply wave distortion (activity-based)
-        const waveSpeed = activity === "analyzing" ? 4 : 1 + (intensity / 100) * 3;
-        const waveFreq = activity === "analyzing" ? 5 : 3 + (intensity / 50);
-        const wave = Math.sin(x * waveFreq + time * waveSpeed) * 
-                     Math.cos(y * waveFreq + time * waveSpeed) * 
-                     (activity === "analyzing" ? 0.08 : 0.15);
-        z += wave;
-        
-        // Apply pulse (strongest at center, fades to edge)
-        const pulseAmount = (1 - Math.min(1, r)) * pulse;
-        z += pulseAmount;
-        
-        // Apply ripple effect on click (in screen space)
-        if (rippleRef.current.active) {
-          const rippleTime = time - rippleRef.current.time;
-          const rippleRadius = rippleTime * 3;
-          const distFromRipple = Math.sqrt(
-            Math.pow(screenX - rippleRef.current.x, 2) + 
-            Math.pow(screenY - rippleRef.current.y, 2)
-          );
           
-          if (Math.abs(distFromRipple - rippleRadius) < 0.3) {
-            const rippleStrength = Math.max(0, 1 - rippleTime * 0.5);
-            z += rippleStrength * 0.3;
-          }
+          // Add noise for liquid texture
+          const noiseValue = noise(x * 0.01, y * 0.01, time * morphSpeed * 0.5);
           
-          // Deactivate ripple after 2 seconds
-          if (rippleTime > 2) {
-            rippleRef.current.active = false;
+          // Calculate iridescent color based on angle and noise
+          const colorT = (angle / (Math.PI * 2)) + (noiseValue * 0.2) + (time * 0.1);
+          const [r, g, b] = getGradientColor(colorT, colorStops);
+          
+          // Edge glow effect
+          const edgeFactor = Math.max(0, 1 - Math.abs(field - threshold) * 5);
+          const brightness = 0.7 + edgeFactor * 0.3 + (intensity / 100) * 0.3;
+          
+          // Apply color with falloff
+          const falloff = Math.max(0, 1 - (dist / (baseRadius * 1.5)));
+          const alpha = Math.min(255, falloff * 255 * brightness);
+          
+          // Fill resolution block
+          for (let dy = 0; dy < resolution && py + dy < size; dy++) {
+            for (let dx = 0; dx < resolution && px + dx < size; dx++) {
+              const idx = ((py + dy) * size + (px + dx)) * 4;
+              data[idx] = r * brightness;
+              data[idx + 1] = g * brightness;
+              data[idx + 2] = b * brightness;
+              data[idx + 3] = alpha;
+            }
           }
         }
-        
-        // Apply 3D rotations
-        let point = { x, y, z };
-        const rotatedX = rotateX(point.y, point.z, rotX);
-        point.y = rotatedX.y;
-        point.z = rotatedX.z;
-        
-        const rotatedY = rotateY(point.x, point.z, rotY);
-        point.x = rotatedY.x;
-        point.z = rotatedY.z;
-        
-        // Calculate shading based on Z-depth and lighting
-        const lightX = Math.cos(time * 0.5);
-        const lightY = Math.sin(time * 0.5);
-        const lightZ = 0.5;
-        
-        // Normal vector (simplified)
-        const normalX = point.x;
-        const normalY = point.y;
-        const normalZ = point.z;
-        
-        // Dot product for lighting
-        const lighting = Math.max(0, 
-          normalX * lightX + 
-          normalY * lightY + 
-          normalZ * lightZ
-        );
-        
-        // Map lighting to ASCII character
-        const charIndex = Math.floor(lighting * (ASCII_CHARS.length - 1));
-        const char = ASCII_CHARS[Math.max(0, Math.min(ASCII_CHARS.length - 1, charIndex))];
-        
-        output += char;
       }
-      output += "\n";
     }
-    
-    preRef.current.textContent = output;
+
+    ctx.putImageData(imageData, 0, 0);
+
+    // Apply blur for smooth liquid effect
+    ctx.filter = 'blur(4px)';
+    ctx.drawImage(canvas, 0, 0);
+    ctx.filter = 'none';
+
     animationFrameRef.current = requestAnimationFrame(renderFrame);
   };
 
-  // Mouse move handler
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
-    
     const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-    
-    mouseRef.current.targetX = x;
-    mouseRef.current.targetY = y;
-  };
-
-  // Click handler for ripple effect
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-    
-    rippleRef.current = {
-      active: true,
-      time: timeRef.current,
-      x: x * (cols / rows),
-      y: y
-    };
+    mouseRef.current.x = e.clientX - rect.left;
+    mouseRef.current.y = e.clientY - rect.top;
   };
 
   useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.width = size;
+      canvas.height = size;
+    }
+    
     animationFrameRef.current = requestAnimationFrame(renderFrame);
     
     return () => {
@@ -262,12 +247,8 @@ const AsciiBrain = ({
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [intensity, mood, size]);
+  }, [intensity, mood, size, activity]);
 
-  // Calculate glow intensity
-  const glowIntensity = 0.5 + (intensity / 100) * 1.5;
-  const glowSpeed = 0.5 + (intensity / 100) * 1.5;
-  
   return (
     <div
       ref={containerRef}
@@ -276,31 +257,22 @@ const AsciiBrain = ({
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClick}
     >
       <div 
-        className="absolute inset-0 rounded-full overflow-hidden border-2 border-border"
+        className="absolute inset-0 rounded-full overflow-hidden"
         style={{
-          backgroundColor: color,
+          background: 'radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%)',
           boxShadow: isHovered 
-            ? `0 0 ${20 + intensity / 5}px ${color}` 
-            : `0 0 10px ${color}`,
-          opacity: 0.15 + (intensity / 100) * 0.25
+            ? `0 0 30px rgba(120, 200, 255, 0.6), inset 0 0 20px rgba(120, 200, 255, 0.3)` 
+            : `0 0 15px rgba(120, 200, 255, 0.4), inset 0 0 10px rgba(120, 200, 255, 0.2)`
         }}
       >
-        <pre
-          ref={preRef}
-          className="absolute inset-0 flex items-center justify-center font-mono text-[7px] leading-[0.8] whitespace-pre"
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0"
           style={{
-            color: "hsl(var(--foreground))",
-            textShadow: `
-              0 0 ${2 * glowIntensity}px hsl(var(--foreground)),
-              0 0 ${4 * glowIntensity}px hsl(var(--foreground))
-            `,
-            animation: `ascii-pulse ${2 / glowSpeed}s ease-in-out infinite`,
-            letterSpacing: "0.02em",
-            transform: "scale(1.15)",
-            transformOrigin: "center center"
+            filter: isHovered ? 'brightness(1.2) saturate(1.3)' : 'brightness(1) saturate(1)',
+            transition: 'filter 0.3s ease'
           }}
         />
       </div>
