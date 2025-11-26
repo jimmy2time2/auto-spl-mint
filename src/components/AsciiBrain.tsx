@@ -34,55 +34,55 @@ const AsciiBrain = ({
     return [255 * f(0), 255 * f(8), 255 * f(4)];
   };
 
-  // Design system colors (from index.css)
+  // Design system colors (black shades)
   const designSystemColors = {
-    black: hslToRgb(0, 0, 0),           // --foreground / --primary
-    lime: hslToRgb(75, 100, 82),        // --background / --metric-neutral
-    danger: hslToRgb(0, 84, 60),        // --metric-danger
-    info: hslToRgb(200, 80, 50),        // --metric-info
-    success: hslToRgb(142, 76, 36),     // --metric-success
-    amber: hslToRgb(38, 92, 50),        // --warning-amber
-    darkGray: hslToRgb(0, 0, 20),       // --metric-secondary
-    brightLime: hslToRgb(75, 100, 70),  // brighter lime variant
-    darkGreen: hslToRgb(142, 76, 25),   // darker green variant
+    black: hslToRgb(0, 0, 0),           // Pure black
+    darkGray: hslToRgb(0, 0, 15),       // Very dark gray
+    gray: hslToRgb(0, 0, 30),           // Dark gray
+    mediumGray: hslToRgb(0, 0, 45),     // Medium gray
+    lightGray: hslToRgb(0, 0, 60),      // Light gray
+    charcoal: hslToRgb(0, 0, 10),       // Charcoal
+    slate: hslToRgb(0, 0, 25),          // Slate gray
+    graphite: hslToRgb(0, 0, 35),       // Graphite
+    ash: hslToRgb(0, 0, 50),            // Ash gray
   };
 
-  // Mood-based color schemes using design system with MORE colors
+  // Mood-based color schemes using black shades
   const moodColorStops = {
     neutral: [
-      { stop: 0.0, color: designSystemColors.lime },
-      { stop: 0.2, color: designSystemColors.brightLime },
-      { stop: 0.4, color: designSystemColors.info },
-      { stop: 0.6, color: designSystemColors.success },
-      { stop: 0.8, color: designSystemColors.amber },
-      { stop: 1.0, color: designSystemColors.lime }
+      { stop: 0.0, color: designSystemColors.black },
+      { stop: 0.2, color: designSystemColors.darkGray },
+      { stop: 0.4, color: designSystemColors.gray },
+      { stop: 0.6, color: designSystemColors.mediumGray },
+      { stop: 0.8, color: designSystemColors.gray },
+      { stop: 1.0, color: designSystemColors.black }
     ],
     frenzied: [
-      { stop: 0.0, color: designSystemColors.danger },
-      { stop: 0.25, color: designSystemColors.amber },
-      { stop: 0.5, color: designSystemColors.lime },
-      { stop: 0.75, color: designSystemColors.amber },
-      { stop: 1.0, color: designSystemColors.danger }
+      { stop: 0.0, color: designSystemColors.black },
+      { stop: 0.25, color: designSystemColors.charcoal },
+      { stop: 0.5, color: designSystemColors.slate },
+      { stop: 0.75, color: designSystemColors.charcoal },
+      { stop: 1.0, color: designSystemColors.black }
     ],
     protective: [
-      { stop: 0.0, color: designSystemColors.info },
-      { stop: 0.33, color: designSystemColors.success },
-      { stop: 0.66, color: designSystemColors.brightLime },
-      { stop: 1.0, color: designSystemColors.info }
+      { stop: 0.0, color: designSystemColors.darkGray },
+      { stop: 0.33, color: designSystemColors.gray },
+      { stop: 0.66, color: designSystemColors.graphite },
+      { stop: 1.0, color: designSystemColors.darkGray }
     ],
     cosmic: [
-      { stop: 0.0, color: designSystemColors.lime },
-      { stop: 0.2, color: designSystemColors.amber },
-      { stop: 0.4, color: designSystemColors.danger },
-      { stop: 0.6, color: designSystemColors.info },
-      { stop: 0.8, color: designSystemColors.success },
-      { stop: 1.0, color: designSystemColors.lime }
+      { stop: 0.0, color: designSystemColors.black },
+      { stop: 0.2, color: designSystemColors.darkGray },
+      { stop: 0.4, color: designSystemColors.slate },
+      { stop: 0.6, color: designSystemColors.gray },
+      { stop: 0.8, color: designSystemColors.graphite },
+      { stop: 1.0, color: designSystemColors.black }
     ],
     zen: [
-      { stop: 0.0, color: designSystemColors.success },
-      { stop: 0.33, color: designSystemColors.darkGreen },
-      { stop: 0.66, color: designSystemColors.brightLime },
-      { stop: 1.0, color: designSystemColors.success }
+      { stop: 0.0, color: designSystemColors.charcoal },
+      { stop: 0.33, color: designSystemColors.darkGray },
+      { stop: 0.66, color: designSystemColors.mediumGray },
+      { stop: 1.0, color: designSystemColors.charcoal }
     ]
   };
 
