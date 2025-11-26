@@ -14,11 +14,14 @@ const AsciiBrain = ({
   activity = "idle"
 }: AsciiBrainProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const noiseCanvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>();
+  const noiseAnimationRef = useRef<number>();
   const timeRef = useRef(0);
   const mouseRef = useRef({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
+  const [showNoise, setShowNoise] = useState(false);
 
   // Helper to convert HSL to RGB
   const hslToRgb = (h: number, s: number, l: number): [number, number, number] => {
@@ -253,6 +256,67 @@ const AsciiBrain = ({
     mouseRef.current.y = e.clientY - rect.top;
   };
 
+  // Generate static noise
+  const renderNoise = () => {
+    const noiseCanvas = noiseCanvasRef.current;
+    if (!noiseCanvas) return;
+
+    const ctx = noiseCanvas.getContext('2d');
+    if (!ctx) return;
+
+    const imageData = ctx.createImageData(size, size);
+    const data = imageData.data;
+
+    // Generate random grayscale noise
+    for (let i = 0; i < data.length; i += 4) {
+      const value = Math.random() * 255;
+      data[i] = value;     // R
+      data[i + 1] = value; // G
+      data[i + 2] = value; // B
+      data[i + 3] = Math.random() > 0.5 ? 100 : 0; // A - sporadic
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+
+    if (showNoise) {
+      noiseAnimationRef.current = requestAnimationFrame(renderNoise);
+    }
+  };
+
+  // Random interference effect
+  useEffect(() => {
+    const triggerInterference = () => {
+      // Random chance to trigger static (5% chance every check)
+      if (Math.random() < 0.05) {
+        setShowNoise(true);
+        // Static lasts 50-200ms
+        const duration = 50 + Math.random() * 150;
+        setTimeout(() => setShowNoise(false), duration);
+      }
+      
+      // Check again in 500-2000ms
+      const nextCheck = 500 + Math.random() * 1500;
+      setTimeout(triggerInterference, nextCheck);
+    };
+
+    triggerInterference();
+  }, []);
+
+  // Render noise when active
+  useEffect(() => {
+    if (showNoise && noiseCanvasRef.current) {
+      noiseCanvasRef.current.width = size;
+      noiseCanvasRef.current.height = size;
+      renderNoise();
+    }
+
+    return () => {
+      if (noiseAnimationRef.current) {
+        cancelAnimationFrame(noiseAnimationRef.current);
+      }
+    };
+  }, [showNoise, size]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -295,6 +359,18 @@ const AsciiBrain = ({
             transition: 'filter 0.3s ease'
           }}
         />
+        
+        {/* Static noise interference */}
+        {showNoise && (
+          <canvas
+            ref={noiseCanvasRef}
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              mixBlendMode: 'overlay',
+              opacity: 0.4
+            }}
+          />
+        )}
         
         {/* CRT Scanlines Effect */}
         <div 
