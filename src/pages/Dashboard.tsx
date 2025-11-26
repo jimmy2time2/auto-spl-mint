@@ -272,10 +272,6 @@ const Dashboard = () => {
 
             {/* AI Mind Visualization */}
             <div className="bg-background p-4">
-              <h3 className="metric-label mb-4 font-bold flex items-center gap-2">
-                <Brain className="w-3 h-3" />
-                AI MIND STATE
-              </h3>
               <div className="flex justify-center">
                 <AsciiBrain 
                   mood={aiMood?.current_mood === "frenzied" ? "frenzied" : 
