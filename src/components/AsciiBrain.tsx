@@ -20,36 +20,56 @@ const AsciiBrain = ({
   const mouseRef = useRef({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
 
-  // Mood-based color schemes (iridescent rainbow gradients)
+  // Helper to convert HSL to RGB
+  const hslToRgb = (h: number, s: number, l: number): [number, number, number] => {
+    s /= 100;
+    l /= 100;
+    const k = (n: number) => (n + h / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = (n: number) =>
+      l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+    return [255 * f(0), 255 * f(8), 255 * f(4)];
+  };
+
+  // Design system colors (from index.css)
+  const designSystemColors = {
+    black: hslToRgb(0, 0, 0),           // --foreground / --primary
+    lime: hslToRgb(75, 100, 82),        // --background / --metric-neutral
+    danger: hslToRgb(0, 84, 60),        // --metric-danger
+    info: hslToRgb(200, 80, 50),        // --metric-info
+    success: hslToRgb(142, 76, 36),     // --metric-success
+    darkGray: hslToRgb(0, 0, 20),       // --metric-secondary
+  };
+
+  // Mood-based color schemes using design system
   const moodColorStops = {
     neutral: [
-      { stop: 0.0, color: [120, 200, 255] },   // cyan
-      { stop: 0.33, color: [180, 120, 255] },  // purple
-      { stop: 0.66, color: [255, 120, 180] },  // pink
-      { stop: 1.0, color: [120, 200, 255] }    // cyan
+      { stop: 0.0, color: designSystemColors.lime },
+      { stop: 0.33, color: designSystemColors.info },
+      { stop: 0.66, color: designSystemColors.success },
+      { stop: 1.0, color: designSystemColors.lime }
     ],
     frenzied: [
-      { stop: 0.0, color: [255, 50, 50] },     // red
-      { stop: 0.33, color: [255, 150, 50] },   // orange
-      { stop: 0.66, color: [255, 255, 50] },   // yellow
-      { stop: 1.0, color: [255, 50, 50] }      // red
+      { stop: 0.0, color: designSystemColors.danger },
+      { stop: 0.5, color: hslToRgb(38, 92, 50) },  // warning amber
+      { stop: 1.0, color: designSystemColors.danger }
     ],
     protective: [
-      { stop: 0.0, color: [50, 150, 255] },    // blue
-      { stop: 0.5, color: [100, 255, 200] },   // cyan
-      { stop: 1.0, color: [50, 150, 255] }     // blue
+      { stop: 0.0, color: designSystemColors.info },
+      { stop: 0.5, color: designSystemColors.success },
+      { stop: 1.0, color: designSystemColors.info }
     ],
     cosmic: [
-      { stop: 0.0, color: [255, 100, 255] },   // magenta
-      { stop: 0.25, color: [100, 100, 255] },  // blue
-      { stop: 0.5, color: [100, 255, 255] },   // cyan
-      { stop: 0.75, color: [255, 100, 200] },  // pink
-      { stop: 1.0, color: [255, 100, 255] }    // magenta
+      { stop: 0.0, color: designSystemColors.lime },
+      { stop: 0.25, color: designSystemColors.info },
+      { stop: 0.5, color: designSystemColors.success },
+      { stop: 0.75, color: designSystemColors.danger },
+      { stop: 1.0, color: designSystemColors.lime }
     ],
     zen: [
-      { stop: 0.0, color: [100, 255, 150] },   // green
-      { stop: 0.5, color: [150, 255, 200] },   // mint
-      { stop: 1.0, color: [100, 255, 150] }    // green
+      { stop: 0.0, color: designSystemColors.success },
+      { stop: 0.5, color: hslToRgb(160, 70, 45) },  // teal
+      { stop: 1.0, color: designSystemColors.success }
     ]
   };
 
@@ -259,19 +279,19 @@ const AsciiBrain = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div 
-        className="absolute inset-0 rounded-full overflow-hidden"
+        className="absolute inset-0 rounded-full overflow-hidden border-2 border-foreground"
         style={{
-          background: 'radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%)',
+          background: 'hsl(var(--background))',
           boxShadow: isHovered 
-            ? `0 0 30px rgba(120, 200, 255, 0.6), inset 0 0 20px rgba(120, 200, 255, 0.3)` 
-            : `0 0 15px rgba(120, 200, 255, 0.4), inset 0 0 10px rgba(120, 200, 255, 0.2)`
+            ? `0 0 30px hsl(var(--foreground) / 0.3), inset 0 0 20px hsl(var(--foreground) / 0.1)` 
+            : `0 0 15px hsl(var(--foreground) / 0.2), inset 0 0 10px hsl(var(--foreground) / 0.05)`
         }}
       >
         <canvas
           ref={canvasRef}
           className="absolute inset-0"
           style={{
-            filter: isHovered ? 'brightness(1.2) saturate(1.3)' : 'brightness(1) saturate(1)',
+            filter: isHovered ? 'brightness(1.1) saturate(1.2) contrast(1.1)' : 'brightness(1) saturate(1)',
             transition: 'filter 0.3s ease'
           }}
         />
