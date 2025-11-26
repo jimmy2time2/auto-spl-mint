@@ -295,6 +295,38 @@ const AsciiBrain = ({
             transition: 'filter 0.3s ease'
           }}
         />
+        
+        {/* CRT Scanlines Effect */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `repeating-linear-gradient(
+              0deg,
+              transparent 0px,
+              transparent 2px,
+              hsl(var(--foreground) / 0.03) 2px,
+              hsl(var(--foreground) / 0.03) 3px
+            )`,
+            animation: 'crt-flicker 0.15s infinite'
+          }}
+        />
+        
+        {/* Subtle vignette */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle, transparent 40%, hsl(var(--foreground) / 0.15) 100%)',
+          }}
+        />
+        
+        {/* CRT glow effect */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle, hsl(var(--background) / 0.1) 0%, transparent 70%)',
+            mixBlendMode: 'screen'
+          }}
+        />
       </div>
     </div>
   );

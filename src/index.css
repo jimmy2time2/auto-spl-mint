@@ -142,6 +142,19 @@ All colors MUST be HSL.
     }
   }
 
+  /* CRT flicker effect */
+  @keyframes crt-flicker {
+    0% {
+      opacity: 0.98;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.97;
+    }
+  }
+
   /* Ticker animation */
   @keyframes ticker-scroll {
     0% { transform: translateX(0); }
