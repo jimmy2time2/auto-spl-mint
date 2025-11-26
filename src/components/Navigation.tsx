@@ -123,18 +123,6 @@ const Navigation = () => {
                 M9
               </div>
             </Link>
-            
-            {/* AI Mind Minimap */}
-            <div className="hidden sm:block" title={`AI: ${aiActivity} | Mood: ${aiMood?.current_mood || 'neutral'}`}>
-              <AsciiBrain 
-                mood={aiMood?.current_mood === "frenzied" ? "frenzied" : 
-                      aiMood?.current_mood === "zen" ? "zen" : 
-                      aiMood?.current_mood === "cosmic" ? "cosmic" : "neutral"}
-                intensity={aiMood?.mood_intensity || 50}
-                activity={aiActivity}
-                size={48}
-              />
-            </div>
           </div>
           
           <nav className="hidden md:flex gap-6 lg:gap-10">
