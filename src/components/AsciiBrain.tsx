@@ -23,9 +23,9 @@ const AsciiBrain = ({
   // ASCII character gradient for shading (dark to light)
   const ASCII_CHARS = " .:-=+*#%@";
   
-  // Resolution - higher density to fill the circle
-  const cols = Math.floor(size / 3.5);
-  const rows = Math.floor(size / 7);
+  // Resolution - very high density to fill the circle completely
+  const cols = Math.floor(size / 2.5);
+  const rows = Math.floor(size / 5);
   
   // Mood color mapping (HSL format for design system)
   const moodColors = {
@@ -241,7 +241,7 @@ const AsciiBrain = ({
       >
         <pre
           ref={preRef}
-          className="absolute inset-0 flex items-center justify-center font-mono text-[7px] leading-[0.85] whitespace-pre"
+          className="absolute inset-0 flex items-center justify-center font-mono text-[6px] leading-[0.7] whitespace-pre"
           style={{
             color: 'hsl(var(--foreground))',
             textShadow: `
@@ -249,7 +249,7 @@ const AsciiBrain = ({
               0 0 ${4 * glowIntensity}px hsl(var(--foreground))
             `,
             animation: `ascii-pulse ${2 / glowSpeed}s ease-in-out infinite`,
-            letterSpacing: '0.05em'
+            letterSpacing: '0.02em'
           }}
         />
       </div>
