@@ -7,6 +7,7 @@ import TokenCard from "@/components/TokenCard";
 import ConsoleLog from "@/components/ConsoleLog";
 import AiMindTicker from "@/components/AiMindTicker";
 import MetricCard from "@/components/MetricCard";
+import AsciiBrain from "@/components/AsciiBrain";
 import { Button } from "@/components/ui/button";
 import { Sparkles, TrendingUp, Users, Zap, Activity, Circle, Brain } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
@@ -272,7 +273,7 @@ const Dashboard = () => {
 
           {/* MAIN CONTENT */}
           <div className="col-span-12 lg:col-span-6 space-y-4">
-            {/* ASCII Logo Header */}
+            {/* ASCII Logo Header with Brain */}
             <div className="border-2 border-border bg-card p-4 md:p-8 text-center">
               <pre className="text-[8px] sm:text-xs md:text-sm lg:text-base font-bold leading-none mb-4 tracking-tight inline-block overflow-x-auto">
 {`███╗   ███╗██╗███╗   ██╗██████╗  █████╗ 
@@ -282,9 +283,20 @@ const Dashboard = () => {
 ██║ ╚═╝ ██║██║██║ ╚████║██████╔╝ █████╔╝
 ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝  ╚════╝`}
               </pre>
-              <p className="text-xs md:text-sm mt-4 max-w-2xl mx-auto px-2">
+              <p className="text-xs md:text-sm mt-4 mb-6 max-w-2xl mx-auto px-2">
                 Fully autonomous AI system that decides when to generate and launch tokens based on market conditions.
               </p>
+              
+              {/* ASCII Brain Visualization */}
+              <div className="flex justify-center">
+                <AsciiBrain 
+                  mood={aiMood?.current_mood === "frenzied" ? "frenzied" : 
+                        aiMood?.current_mood === "zen" ? "zen" : 
+                        aiMood?.current_mood === "cosmic" ? "cosmic" : "neutral"}
+                  intensity={aiMood?.mood_intensity || 50}
+                  size={240}
+                />
+              </div>
             </div>
 
             {/* Next Launch Timer */}
