@@ -271,7 +271,7 @@ const Dashboard = () => {
             </div>
 
             {/* AI Mind Visualization */}
-            <div className="border-2 border-border bg-card p-4">
+            <div className="bg-card p-4">
               <h3 className="metric-label mb-4 font-bold flex items-center gap-2">
                 <Brain className="w-3 h-3" />
                 AI MIND STATE
