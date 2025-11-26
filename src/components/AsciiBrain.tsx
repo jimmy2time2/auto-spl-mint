@@ -230,22 +230,23 @@ const AsciiBrain = ({
       onClick={handleClick}
     >
       <div 
-        className="absolute inset-0 rounded-full overflow-hidden bg-background border-2 border-border"
+        className="absolute inset-0 rounded-full overflow-hidden border-2 border-border"
         style={{
+          backgroundColor: color,
           boxShadow: isHovered 
             ? `0 0 ${20 + intensity / 5}px ${color}` 
-            : `0 0 10px ${color}`
+            : `0 0 10px ${color}`,
+          opacity: 0.15 + (intensity / 100) * 0.25
         }}
       >
         <pre
           ref={preRef}
           className="absolute inset-0 flex items-center justify-center font-mono text-[7px] leading-[0.85] whitespace-pre"
           style={{
-            color: color,
+            color: 'hsl(var(--foreground))',
             textShadow: `
-              0 0 ${3 * glowIntensity}px ${color},
-              0 0 ${6 * glowIntensity}px ${color},
-              0 0 ${9 * glowIntensity}px ${color}
+              0 0 ${2 * glowIntensity}px hsl(var(--foreground)),
+              0 0 ${4 * glowIntensity}px hsl(var(--foreground))
             `,
             animation: `ascii-pulse ${2 / glowSpeed}s ease-in-out infinite`,
             letterSpacing: '0.05em'
