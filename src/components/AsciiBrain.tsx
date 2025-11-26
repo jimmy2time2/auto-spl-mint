@@ -88,23 +88,29 @@ const AsciiBrain = ({
     
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
-        // Normalize coordinates to -1 to 1
-        let x = (col / cols) * 2 - 1;
-        let y = (row / rows) * 2 - 1;
+        // Normalize screen coordinates to -1 to 1
+        let screenX = (col / cols) * 2 - 1;
+        let screenY = (row / rows) * 2 - 1;
         
-        // Aspect ratio correction
-        x *= cols / rows;
+        // Aspect ratio correction in screen space
+        screenX *= cols / rows;
         
-        // Check if inside circle
-        const distFromCenter = Math.sqrt(x * x + y * y);
+        // Distance from center in screen space
+        const distFromCenter = Math.sqrt(screenX * screenX + screenY * screenY);
         
-        if (distFromCenter > 1) {
-          output += " ";
-          continue;
+        // Map to sphere coordinates (clamped to radius 1)
+        let x = screenX;
+        let y = screenY;
+        let r = distFromCenter;
+        if (r > 1) {
+          const scale = 1 / r;
+          x *= scale;
+          y *= scale;
+          r = 1;
         }
         
         // Calculate Z depth (sphere surface)
-        let z = Math.sqrt(1 - x * x - y * y) * breathScale;
+        let z = Math.sqrt(Math.max(0, 1 - x * x - y * y)) * breathScale;
         
         // Apply wave distortion (thinking animation)
         const waveSpeed = 1 + (intensity / 100) * 3;
@@ -113,17 +119,17 @@ const AsciiBrain = ({
                      Math.cos(y * waveFreq + time * waveSpeed) * 0.15;
         z += wave;
         
-        // Apply pulse
-        const pulseAmount = (1 - distFromCenter) * pulse;
+        // Apply pulse (strongest at center, fades to edge)
+        const pulseAmount = (1 - Math.min(1, r)) * pulse;
         z += pulseAmount;
         
-        // Apply ripple effect on click
+        // Apply ripple effect on click (in screen space)
         if (rippleRef.current.active) {
           const rippleTime = time - rippleRef.current.time;
           const rippleRadius = rippleTime * 3;
           const distFromRipple = Math.sqrt(
-            Math.pow(x - rippleRef.current.x, 2) + 
-            Math.pow(y - rippleRef.current.y, 2)
+            Math.pow(screenX - rippleRef.current.x, 2) + 
+            Math.pow(screenY - rippleRef.current.y, 2)
           );
           
           if (Math.abs(distFromRipple - rippleRadius) < 0.3) {
