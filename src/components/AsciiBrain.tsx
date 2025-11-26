@@ -230,7 +230,7 @@ const AsciiBrain = ({
       onClick={handleClick}
     >
       <div 
-        className="absolute inset-0 rounded-full overflow-hidden bg-black border-2 border-border"
+        className="absolute inset-0 rounded-full overflow-hidden bg-background border-2 border-border"
         style={{
           boxShadow: isHovered 
             ? `0 0 ${20 + intensity / 5}px ${color}` 

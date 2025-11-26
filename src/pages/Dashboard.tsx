@@ -269,11 +269,28 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+
+            {/* AI Mind Visualization */}
+            <div className="border-2 border-border bg-card p-4">
+              <h3 className="metric-label mb-4 font-bold flex items-center gap-2">
+                <Brain className="w-3 h-3" />
+                AI MIND STATE
+              </h3>
+              <div className="flex justify-center">
+                <AsciiBrain 
+                  mood={aiMood?.current_mood === "frenzied" ? "frenzied" : 
+                        aiMood?.current_mood === "zen" ? "zen" : 
+                        aiMood?.current_mood === "cosmic" ? "cosmic" : "neutral"}
+                  intensity={aiMood?.mood_intensity || 50}
+                  size={200}
+                />
+              </div>
+            </div>
           </div>
 
           {/* MAIN CONTENT */}
           <div className="col-span-12 lg:col-span-6 space-y-4">
-            {/* ASCII Logo Header with Brain */}
+            {/* ASCII Logo Header */}
             <div className="border-2 border-border bg-card p-4 md:p-8 text-center">
               <pre className="text-[8px] sm:text-xs md:text-sm lg:text-base font-bold leading-none mb-4 tracking-tight inline-block overflow-x-auto">
 {`███╗   ███╗██╗███╗   ██╗██████╗  █████╗ 
@@ -283,20 +300,9 @@ const Dashboard = () => {
 ██║ ╚═╝ ██║██║██║ ╚████║██████╔╝ █████╔╝
 ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝  ╚════╝`}
               </pre>
-              <p className="text-xs md:text-sm mt-4 mb-6 max-w-2xl mx-auto px-2">
+              <p className="text-xs md:text-sm mt-4 max-w-2xl mx-auto px-2">
                 Fully autonomous AI system that decides when to generate and launch tokens based on market conditions.
               </p>
-              
-              {/* ASCII Brain Visualization */}
-              <div className="flex justify-center">
-                <AsciiBrain 
-                  mood={aiMood?.current_mood === "frenzied" ? "frenzied" : 
-                        aiMood?.current_mood === "zen" ? "zen" : 
-                        aiMood?.current_mood === "cosmic" ? "cosmic" : "neutral"}
-                  intensity={aiMood?.mood_intensity || 50}
-                  size={240}
-                />
-              </div>
             </div>
 
             {/* Next Launch Timer */}
