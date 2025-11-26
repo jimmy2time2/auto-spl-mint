@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 import { Menu, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import AsciiBrain from "./AsciiBrain";
+import type { Tables } from "@/integrations/supabase/types";
+
+type AiMood = Tables<"ai_mood_state">;
 
 const Navigation = () => {
   const location = useLocation();
@@ -12,9 +17,32 @@ const Navigation = () => {
   const logoRef = useRef<HTMLDivElement>(null);
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [aiMood, setAiMood] = useState<AiMood | null>(null);
   const { trackEvent } = useEngagementTracking();
   
   const isActive = (path: string) => location.pathname === path;
+  
+  // Fetch AI mood state
+  useEffect(() => {
+    const fetchAiMood = async () => {
+      const { data } = await supabase
+        .from("ai_mood_state")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (data) {
+        setAiMood(data);
+      }
+    };
+
+    fetchAiMood();
+    
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchAiMood, 30000);
+    return () => clearInterval(interval);
+  }, []);
   
   // Track wallet connections
   useEffect(() => {
@@ -51,11 +79,24 @@ const Navigation = () => {
     <header className="border-b-2 border-border bg-card backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-4 md:px-8 py-2 flex items-center justify-between max-w-7xl">
         <div className="flex items-center gap-4 md:gap-16">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="border-2 border-primary px-2 py-1 font-bold text-lg md:text-xl tracking-tight">
-              M9
+          <div className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="border-2 border-primary px-2 py-1 font-bold text-lg md:text-xl tracking-tight">
+                M9
+              </div>
+            </Link>
+            
+            {/* AI Mind Minimap */}
+            <div className="hidden sm:block" title={`AI Mood: ${aiMood?.current_mood || 'neutral'}`}>
+              <AsciiBrain 
+                mood={aiMood?.current_mood === "frenzied" ? "frenzied" : 
+                      aiMood?.current_mood === "zen" ? "zen" : 
+                      aiMood?.current_mood === "cosmic" ? "cosmic" : "neutral"}
+                intensity={aiMood?.mood_intensity || 50}
+                size={48}
+              />
             </div>
-          </Link>
+          </div>
           
           <nav className="hidden md:flex gap-6 lg:gap-10">
             <Link 
