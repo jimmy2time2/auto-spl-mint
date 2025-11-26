@@ -41,37 +41,47 @@ const AsciiBrain = ({
     danger: hslToRgb(0, 84, 60),        // --metric-danger
     info: hslToRgb(200, 80, 50),        // --metric-info
     success: hslToRgb(142, 76, 36),     // --metric-success
+    amber: hslToRgb(38, 92, 50),        // --warning-amber
     darkGray: hslToRgb(0, 0, 20),       // --metric-secondary
+    brightLime: hslToRgb(75, 100, 70),  // brighter lime variant
+    darkGreen: hslToRgb(142, 76, 25),   // darker green variant
   };
 
-  // Mood-based color schemes using design system
+  // Mood-based color schemes using design system with MORE colors
   const moodColorStops = {
     neutral: [
       { stop: 0.0, color: designSystemColors.lime },
-      { stop: 0.33, color: designSystemColors.info },
-      { stop: 0.66, color: designSystemColors.success },
+      { stop: 0.2, color: designSystemColors.brightLime },
+      { stop: 0.4, color: designSystemColors.info },
+      { stop: 0.6, color: designSystemColors.success },
+      { stop: 0.8, color: designSystemColors.amber },
       { stop: 1.0, color: designSystemColors.lime }
     ],
     frenzied: [
       { stop: 0.0, color: designSystemColors.danger },
-      { stop: 0.5, color: hslToRgb(38, 92, 50) },  // warning amber
+      { stop: 0.25, color: designSystemColors.amber },
+      { stop: 0.5, color: designSystemColors.lime },
+      { stop: 0.75, color: designSystemColors.amber },
       { stop: 1.0, color: designSystemColors.danger }
     ],
     protective: [
       { stop: 0.0, color: designSystemColors.info },
-      { stop: 0.5, color: designSystemColors.success },
+      { stop: 0.33, color: designSystemColors.success },
+      { stop: 0.66, color: designSystemColors.brightLime },
       { stop: 1.0, color: designSystemColors.info }
     ],
     cosmic: [
       { stop: 0.0, color: designSystemColors.lime },
-      { stop: 0.25, color: designSystemColors.info },
-      { stop: 0.5, color: designSystemColors.success },
-      { stop: 0.75, color: designSystemColors.danger },
+      { stop: 0.2, color: designSystemColors.amber },
+      { stop: 0.4, color: designSystemColors.danger },
+      { stop: 0.6, color: designSystemColors.info },
+      { stop: 0.8, color: designSystemColors.success },
       { stop: 1.0, color: designSystemColors.lime }
     ],
     zen: [
       { stop: 0.0, color: designSystemColors.success },
-      { stop: 0.5, color: hslToRgb(160, 70, 45) },  // teal
+      { stop: 0.33, color: designSystemColors.darkGreen },
+      { stop: 0.66, color: designSystemColors.brightLime },
       { stop: 1.0, color: designSystemColors.success }
     ]
   };
