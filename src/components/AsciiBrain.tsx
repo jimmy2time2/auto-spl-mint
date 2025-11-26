@@ -366,10 +366,7 @@ const AsciiBrain = ({
       <div 
         className="absolute inset-0 rounded-full overflow-hidden border-2 border-foreground"
         style={{
-          background: 'hsl(var(--background))',
-          boxShadow: isHovered 
-            ? `0 0 30px hsl(var(--foreground) / 0.3), inset 0 0 20px hsl(var(--foreground) / 0.1)` 
-            : `0 0 15px hsl(var(--foreground) / 0.2), inset 0 0 10px hsl(var(--foreground) / 0.05)`
+          background: 'hsl(var(--background))'
         }}
       >
         <canvas
