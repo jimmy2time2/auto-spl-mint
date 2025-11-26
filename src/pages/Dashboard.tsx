@@ -231,6 +231,20 @@ const Dashboard = () => {
           
           {/* LEFT SIDEBAR */}
           <div className="col-span-12 lg:col-span-3 space-y-4">
+            {/* AI Mind Visualization */}
+            <div className="bg-background p-4">
+              <div className="flex justify-center">
+                <AsciiBrain 
+                  mood={aiMood?.current_mood === "frenzied" ? "frenzied" : 
+                        aiMood?.current_mood === "zen" ? "zen" : 
+                        aiMood?.current_mood === "cosmic" ? "cosmic" : "neutral"}
+                  intensity={aiMood?.mood_intensity || 50}
+                  activity="idle"
+                  size={200}
+                />
+              </div>
+            </div>
+
             {/* Recent Tokens List */}
             <div className="border-2 border-border bg-card p-4">
               <h3 className="metric-label mb-4 font-bold">RECENT TOKENS</h3>
@@ -267,20 +281,6 @@ const Dashboard = () => {
                   <span className="metric-label">ACTIVE TRADES</span>
                   <span className="font-bold">--</span>
                 </div>
-              </div>
-            </div>
-
-            {/* AI Mind Visualization */}
-            <div className="bg-background p-4">
-              <div className="flex justify-center">
-                <AsciiBrain 
-                  mood={aiMood?.current_mood === "frenzied" ? "frenzied" : 
-                        aiMood?.current_mood === "zen" ? "zen" : 
-                        aiMood?.current_mood === "cosmic" ? "cosmic" : "neutral"}
-                  intensity={aiMood?.mood_intensity || 50}
-                  activity="idle"
-                  size={200}
-                />
               </div>
             </div>
           </div>
