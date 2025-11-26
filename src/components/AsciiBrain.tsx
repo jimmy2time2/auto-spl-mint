@@ -247,15 +247,17 @@ const AsciiBrain = ({
       >
         <pre
           ref={preRef}
-          className="absolute inset-0 flex items-center justify-center font-mono text-[6px] leading-[0.7] whitespace-pre"
+          className="absolute inset-0 flex items-center justify-center font-mono text-[7px] leading-[0.8] whitespace-pre"
           style={{
-            color: 'hsl(var(--foreground))',
+            color: "hsl(var(--foreground))",
             textShadow: `
               0 0 ${2 * glowIntensity}px hsl(var(--foreground)),
               0 0 ${4 * glowIntensity}px hsl(var(--foreground))
             `,
             animation: `ascii-pulse ${2 / glowSpeed}s ease-in-out infinite`,
-            letterSpacing: '0.02em'
+            letterSpacing: "0.02em",
+            transform: "scale(1.15)",
+            transformOrigin: "center center"
           }}
         />
       </div>
