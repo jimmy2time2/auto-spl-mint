@@ -18,29 +18,67 @@ const Navigation = () => {
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [aiMood, setAiMood] = useState<AiMood | null>(null);
+  const [aiActivity, setAiActivity] = useState<"idle" | "minting" | "analyzing" | "executing" | "thinking">("idle");
   const { trackEvent } = useEngagementTracking();
   
   const isActive = (path: string) => location.pathname === path;
   
-  // Fetch AI mood state
+  // Fetch AI mood state and recent activity
   useEffect(() => {
-    const fetchAiMood = async () => {
-      const { data } = await supabase
+    const fetchAiState = async () => {
+      // Get mood
+      const { data: moodData } = await supabase
         .from("ai_mood_state")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(1)
         .single();
       
-      if (data) {
-        setAiMood(data);
+      if (moodData) {
+        setAiMood(moodData);
+      }
+
+      // Get most recent action to determine activity state
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      
+      // Check token decision log
+      const { data: tokenDecision } = await supabase
+        .from("token_decision_log")
+        .select("*")
+        .gte("timestamp", fiveMinutesAgo)
+        .order("timestamp", { ascending: false })
+        .limit(1)
+        .single();
+
+      // Check governor actions
+      const { data: governorAction } = await supabase
+        .from("governor_action_log")
+        .select("*")
+        .gte("timestamp", fiveMinutesAgo)
+        .order("timestamp", { ascending: false })
+        .limit(1)
+        .single();
+
+      // Determine activity based on recent actions
+      if (tokenDecision && tokenDecision.decision === "MINT") {
+        setAiActivity("minting");
+      } else if (governorAction) {
+        if (governorAction.action_type === "EXECUTE_TRADE") {
+          setAiActivity("executing");
+        } else if (governorAction.action_type === "ANALYZE_MARKET") {
+          setAiActivity("analyzing");
+        } else {
+          setAiActivity("thinking");
+        }
+      } else {
+        setAiActivity("idle");
       }
     };
 
-    fetchAiMood();
+    fetchAiState();
     
-    // Refresh every 30 seconds
-    const interval = setInterval(fetchAiMood, 30000);
+    // Refresh every 10 seconds for more responsive activity tracking
+    const interval = setInterval(fetchAiState, 10000);
     return () => clearInterval(interval);
   }, []);
   
@@ -87,12 +125,13 @@ const Navigation = () => {
             </Link>
             
             {/* AI Mind Minimap */}
-            <div className="hidden sm:block" title={`AI Mood: ${aiMood?.current_mood || 'neutral'}`}>
+            <div className="hidden sm:block" title={`AI: ${aiActivity} | Mood: ${aiMood?.current_mood || 'neutral'}`}>
               <AsciiBrain 
                 mood={aiMood?.current_mood === "frenzied" ? "frenzied" : 
                       aiMood?.current_mood === "zen" ? "zen" : 
                       aiMood?.current_mood === "cosmic" ? "cosmic" : "neutral"}
                 intensity={aiMood?.mood_intensity || 50}
+                activity={aiActivity}
                 size={48}
               />
             </div>

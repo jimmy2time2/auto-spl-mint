@@ -4,12 +4,14 @@ interface AsciiBrainProps {
   mood?: "neutral" | "frenzied" | "protective" | "cosmic" | "zen";
   intensity?: number; // 0-100
   size?: number; // container size in pixels
+  activity?: "idle" | "minting" | "analyzing" | "executing" | "thinking";
 }
 
 const AsciiBrain = ({ 
   mood = "neutral", 
   intensity = 50,
-  size = 300 
+  size = 300,
+  activity = "idle"
 }: AsciiBrainProps) => {
   const preRef = useRef<HTMLPreElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -73,16 +75,48 @@ const AsciiBrain = ({
     mouseRef.current.x = lerp(mouseRef.current.x, mouseRef.current.targetX, 0.05);
     mouseRef.current.y = lerp(mouseRef.current.y, mouseRef.current.targetY, 0.05);
     
-    // Rotation angles based on mouse and time
-    const baseRotSpeed = 0.3 + (intensity / 100) * 0.5;
+    // Activity-based animation parameters
+    let baseRotSpeed = 0.3 + (intensity / 100) * 0.5;
+    let breathScale = 1 + Math.sin(time * 0.5) * 0.05;
+    let pulse = Math.sin(time * 2 + intensity / 50) * 0.1;
+    let vortexStrength = 0;
+    let spiralSpeed = 0;
+    
+    switch (activity) {
+      case "minting":
+        // Fast spiral vortex pulling inward
+        baseRotSpeed = 2.0 + (intensity / 100);
+        spiralSpeed = 3;
+        vortexStrength = 0.3;
+        pulse = Math.sin(time * 6) * 0.2;
+        breathScale = 1 + Math.sin(time * 2) * 0.1;
+        break;
+      case "analyzing":
+        // Scanning wave pattern
+        baseRotSpeed = 0.8;
+        pulse = Math.sin(time * 4 + intensity / 30) * 0.15;
+        breathScale = 1 + Math.sin(time * 1.5) * 0.08;
+        break;
+      case "executing":
+        // Sharp pulsing with fast rotation
+        baseRotSpeed = 1.5;
+        pulse = Math.abs(Math.sin(time * 5)) * 0.25;
+        breathScale = 1 + Math.abs(Math.sin(time * 3)) * 0.12;
+        break;
+      case "thinking":
+        // Slow wave oscillation
+        baseRotSpeed = 0.4;
+        pulse = Math.sin(time * 1.5) * 0.12;
+        breathScale = 1 + Math.sin(time * 0.8) * 0.06;
+        break;
+      default: // idle
+        baseRotSpeed = 0.3 + (intensity / 100) * 0.5;
+        pulse = Math.sin(time * 2 + intensity / 50) * 0.1;
+        breathScale = 1 + Math.sin(time * 0.5) * 0.05;
+    }
+    
     const rotX = mouseRef.current.y * 0.5 + Math.sin(time * 0.3) * 0.2;
     const rotY = mouseRef.current.x * 0.5 + time * baseRotSpeed;
-    
-    // Breathing effect
-    const breathScale = 1 + Math.sin(time * 0.5) * 0.05;
-    
-    // Pulse effect (central modulation)
-    const pulse = Math.sin(time * 2 + intensity / 50) * 0.1;
     
     let output = "";
     
@@ -112,11 +146,20 @@ const AsciiBrain = ({
         // Calculate Z depth (sphere surface)
         let z = Math.sqrt(Math.max(0, 1 - x * x - y * y)) * breathScale;
         
-        // Apply wave distortion (thinking animation)
-        const waveSpeed = 1 + (intensity / 100) * 3;
-        const waveFreq = 3 + (intensity / 50);
+        // Apply vortex effect for minting
+        if (vortexStrength > 0) {
+          const angle = Math.atan2(y, x);
+          const spiralFactor = r * spiralSpeed + time * 2;
+          const vortex = Math.sin(angle * 3 + spiralFactor) * vortexStrength * (1 - r);
+          z += vortex;
+        }
+        
+        // Apply wave distortion (activity-based)
+        const waveSpeed = activity === "analyzing" ? 4 : 1 + (intensity / 100) * 3;
+        const waveFreq = activity === "analyzing" ? 5 : 3 + (intensity / 50);
         const wave = Math.sin(x * waveFreq + time * waveSpeed) * 
-                     Math.cos(y * waveFreq + time * waveSpeed) * 0.15;
+                     Math.cos(y * waveFreq + time * waveSpeed) * 
+                     (activity === "analyzing" ? 0.08 : 0.15);
         z += wave;
         
         // Apply pulse (strongest at center, fades to edge)

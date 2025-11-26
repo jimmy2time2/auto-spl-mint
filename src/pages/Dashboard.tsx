@@ -282,6 +282,7 @@ const Dashboard = () => {
                         aiMood?.current_mood === "zen" ? "zen" : 
                         aiMood?.current_mood === "cosmic" ? "cosmic" : "neutral"}
                   intensity={aiMood?.mood_intensity || 50}
+                  activity="idle"
                   size={200}
                 />
               </div>
