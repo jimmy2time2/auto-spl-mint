@@ -34,55 +34,55 @@ const AsciiBrain = ({
     return [255 * f(0), 255 * f(8), 255 * f(4)];
   };
 
-  // Design system colors (black shades)
+  // Design system colors (bright green/lime for sphere effect)
   const designSystemColors = {
-    black: hslToRgb(0, 0, 0),           // Pure black
-    darkGray: hslToRgb(0, 0, 15),       // Very dark gray
-    gray: hslToRgb(0, 0, 30),           // Dark gray
-    mediumGray: hslToRgb(0, 0, 45),     // Medium gray
-    lightGray: hslToRgb(0, 0, 60),      // Light gray
-    charcoal: hslToRgb(0, 0, 10),       // Charcoal
-    slate: hslToRgb(0, 0, 25),          // Slate gray
-    graphite: hslToRgb(0, 0, 35),       // Graphite
-    ash: hslToRgb(0, 0, 50),            // Ash gray
+    brightGreen: hslToRgb(142, 100, 50),    // Bright green
+    neonGreen: hslToRgb(142, 100, 60),      // Neon green
+    limeGreen: hslToRgb(75, 100, 50),       // Lime green
+    emerald: hslToRgb(142, 90, 45),         // Emerald
+    mint: hslToRgb(142, 100, 70),           // Light mint
+    darkGreen: hslToRgb(142, 100, 20),      // Dark green (center)
+    forestGreen: hslToRgb(142, 90, 30),     // Forest green
+    glowGreen: hslToRgb(142, 100, 55),      // Glow green
+    black: hslToRgb(0, 0, 0),               // Black (background)
   };
 
-  // Mood-based color schemes using black shades
+  // Mood-based color schemes using bright greens
   const moodColorStops = {
     neutral: [
-      { stop: 0.0, color: designSystemColors.black },
-      { stop: 0.2, color: designSystemColors.darkGray },
-      { stop: 0.4, color: designSystemColors.gray },
-      { stop: 0.6, color: designSystemColors.mediumGray },
-      { stop: 0.8, color: designSystemColors.gray },
-      { stop: 1.0, color: designSystemColors.black }
+      { stop: 0.0, color: designSystemColors.darkGreen },
+      { stop: 0.2, color: designSystemColors.forestGreen },
+      { stop: 0.4, color: designSystemColors.emerald },
+      { stop: 0.6, color: designSystemColors.brightGreen },
+      { stop: 0.8, color: designSystemColors.neonGreen },
+      { stop: 1.0, color: designSystemColors.glowGreen }
     ],
     frenzied: [
-      { stop: 0.0, color: designSystemColors.black },
-      { stop: 0.25, color: designSystemColors.charcoal },
-      { stop: 0.5, color: designSystemColors.slate },
-      { stop: 0.75, color: designSystemColors.charcoal },
-      { stop: 1.0, color: designSystemColors.black }
+      { stop: 0.0, color: designSystemColors.darkGreen },
+      { stop: 0.25, color: designSystemColors.emerald },
+      { stop: 0.5, color: designSystemColors.brightGreen },
+      { stop: 0.75, color: designSystemColors.neonGreen },
+      { stop: 1.0, color: designSystemColors.glowGreen }
     ],
     protective: [
-      { stop: 0.0, color: designSystemColors.darkGray },
-      { stop: 0.33, color: designSystemColors.gray },
-      { stop: 0.66, color: designSystemColors.graphite },
-      { stop: 1.0, color: designSystemColors.darkGray }
+      { stop: 0.0, color: designSystemColors.forestGreen },
+      { stop: 0.33, color: designSystemColors.emerald },
+      { stop: 0.66, color: designSystemColors.brightGreen },
+      { stop: 1.0, color: designSystemColors.neonGreen }
     ],
     cosmic: [
-      { stop: 0.0, color: designSystemColors.black },
-      { stop: 0.2, color: designSystemColors.darkGray },
-      { stop: 0.4, color: designSystemColors.slate },
-      { stop: 0.6, color: designSystemColors.gray },
-      { stop: 0.8, color: designSystemColors.graphite },
-      { stop: 1.0, color: designSystemColors.black }
+      { stop: 0.0, color: designSystemColors.darkGreen },
+      { stop: 0.2, color: designSystemColors.emerald },
+      { stop: 0.4, color: designSystemColors.brightGreen },
+      { stop: 0.6, color: designSystemColors.limeGreen },
+      { stop: 0.8, color: designSystemColors.neonGreen },
+      { stop: 1.0, color: designSystemColors.mint }
     ],
     zen: [
-      { stop: 0.0, color: designSystemColors.charcoal },
-      { stop: 0.33, color: designSystemColors.darkGray },
-      { stop: 0.66, color: designSystemColors.mediumGray },
-      { stop: 1.0, color: designSystemColors.charcoal }
+      { stop: 0.0, color: designSystemColors.forestGreen },
+      { stop: 0.33, color: designSystemColors.emerald },
+      { stop: 0.66, color: designSystemColors.brightGreen },
+      { stop: 1.0, color: designSystemColors.neonGreen }
     ]
   };
 
@@ -238,9 +238,9 @@ const AsciiBrain = ({
           const colorT = (angle / (Math.PI * 2)) + (noiseValue * 0.2) + (time * 0.1);
           let [r, g, b] = getGradientColor(colorT, colorStops);
           
-          // Edge glow effect
+          // Edge glow effect - stronger brightness at edges
           const edgeFactor = Math.max(0, 1 - Math.abs(field - threshold) * 5);
-          const brightness = 0.7 + edgeFactor * 0.3 + (intensity / 100) * 0.3;
+          const brightness = 0.4 + edgeFactor * 0.8 + (intensity / 100) * 0.5;
           
           // THRESHOLD EFFECT: Posterize colors to fewer levels
           const colorLevels = 4; // Number of color steps (retro look)
@@ -248,9 +248,9 @@ const AsciiBrain = ({
           g = Math.round((g * brightness) / 255 * colorLevels) * (255 / colorLevels);
           b = Math.round((b * brightness) / 255 * colorLevels) * (255 / colorLevels);
           
-          // Apply color with falloff
-          const falloff = Math.max(0, 1 - (dist / (baseRadius * 1.5)));
-          const alpha = Math.min(255, falloff * 255 * brightness);
+          // Apply color with stronger falloff for sphere depth
+          const falloff = Math.max(0, 1 - (dist / (baseRadius * 1.2)));
+          const alpha = Math.min(255, falloff * 255 * brightness * 1.2);
           
           const idx = (py * lowResWidth + px) * 4;
           data[idx] = r;
@@ -364,16 +364,19 @@ const AsciiBrain = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div 
-        className="absolute inset-0 rounded-full overflow-hidden border-2 border-foreground"
+        className="absolute inset-0 rounded-full overflow-hidden"
         style={{
-          background: 'hsl(var(--background))'
+          background: 'hsl(0, 0%, 0%)',
+          boxShadow: isHovered 
+            ? `0 0 60px rgba(0, 255, 100, 0.6), 0 0 100px rgba(0, 255, 100, 0.4), inset 0 0 30px rgba(0, 255, 100, 0.2)` 
+            : `0 0 40px rgba(0, 255, 100, 0.5), 0 0 80px rgba(0, 255, 100, 0.3), inset 0 0 20px rgba(0, 255, 100, 0.15)`
         }}
       >
         <canvas
           ref={canvasRef}
           className="absolute inset-0"
           style={{
-            filter: isHovered ? 'brightness(1.1) saturate(1.2) contrast(1.1)' : 'brightness(1) saturate(1)',
+            filter: isHovered ? 'brightness(1.2) saturate(1.3) contrast(1.2)' : 'brightness(1.1) saturate(1.2)',
             transition: 'filter 0.3s ease'
           }}
         />
