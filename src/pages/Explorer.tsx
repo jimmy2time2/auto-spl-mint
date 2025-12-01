@@ -61,25 +61,25 @@ const Explorer = () => {
             />
             <div className="flex gap-2 flex-wrap">
               <Button
+                variant={sortBy === "price" ? "default" : "outline"}
+                onClick={() => setSortBy("price")}
+                className="border-2 border-black font-mono text-[10px] md:text-xs flex-1 sm:flex-none"
+              >
+                PRICE
+              </Button>
+              <Button
                 variant={sortBy === "volume_24h" ? "default" : "outline"}
                 onClick={() => setSortBy("volume_24h")}
                 className="border-2 border-black font-mono text-[10px] md:text-xs flex-1 sm:flex-none"
               >
-                TOP VOLUME
+                VOLUME
               </Button>
               <Button
                 variant={sortBy === "launch_timestamp" ? "default" : "outline"}
                 onClick={() => setSortBy("launch_timestamp")}
                 className="border-2 border-black font-mono text-[10px] md:text-xs flex-1 sm:flex-none"
               >
-                NEWEST
-              </Button>
-              <Button
-                variant={sortBy === "holders" ? "default" : "outline"}
-                onClick={() => setSortBy("holders")}
-                className="border-2 border-black font-mono text-[10px] md:text-xs flex-1 sm:flex-none"
-              >
-                TRENDING
+                LAUNCH
               </Button>
             </div>
           </div>

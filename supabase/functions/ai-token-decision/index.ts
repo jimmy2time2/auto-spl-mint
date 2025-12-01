@@ -8,7 +8,6 @@ import {
   executeTokenMint,
   getNextCheckInterval,
 } from "../_shared/decision-engine.ts";
-import { buildAIContext } from "../_shared/context-builder.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -42,14 +41,9 @@ serve(async (req) => {
     const randomnessFactor = calculateRandomnessFactor();
     console.log(`🎲 Randomness factor: ${randomnessFactor.toFixed(2)}`);
 
-    // Step 2.5: Build AI context for enhanced decision-making
-    console.log('📊 Building performance context...');
-    const aiContext = await buildAIContext(supabase);
-    console.log(`Context: ${aiContext.recent_token_count} recent tokens, ${(aiContext.launch_success_rate * 100).toFixed(1)}% success rate`);
-
-    // Step 3: Make AI decision (now uses Lovable AI + token theme generator + context)
+    // Step 3: Make AI decision (now uses Lovable AI + token theme generator)
     console.log('🧠 Consulting AI for decision...');
-    const aiDecision = await makeAIDecision(marketSignals, randomnessFactor, supabase, aiContext);
+    const aiDecision = await makeAIDecision(marketSignals, randomnessFactor, supabase);
     console.log(`Decision: ${aiDecision.decision} (confidence: ${aiDecision.confidence})`);
     console.log(`Reasoning: ${aiDecision.reasoning}`);
 

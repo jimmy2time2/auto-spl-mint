@@ -5,11 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 import { Menu, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import AsciiBrain from "./AsciiBrain";
-import type { Tables } from "@/integrations/supabase/types";
-
-type AiMood = Tables<"ai_mood_state">;
 
 const Navigation = () => {
   const location = useLocation();
@@ -17,70 +12,9 @@ const Navigation = () => {
   const logoRef = useRef<HTMLDivElement>(null);
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [aiMood, setAiMood] = useState<AiMood | null>(null);
-  const [aiActivity, setAiActivity] = useState<"idle" | "minting" | "analyzing" | "executing" | "thinking">("idle");
   const { trackEvent } = useEngagementTracking();
   
   const isActive = (path: string) => location.pathname === path;
-  
-  // Fetch AI mood state and recent activity
-  useEffect(() => {
-    const fetchAiState = async () => {
-      // Get mood
-      const { data: moodData } = await supabase
-        .from("ai_mood_state")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
-      
-      if (moodData) {
-        setAiMood(moodData);
-      }
-
-      // Get most recent action to determine activity state
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-      
-      // Check token decision log
-      const { data: tokenDecision } = await supabase
-        .from("token_decision_log")
-        .select("*")
-        .gte("timestamp", fiveMinutesAgo)
-        .order("timestamp", { ascending: false })
-        .limit(1)
-        .single();
-
-      // Check governor actions
-      const { data: governorAction } = await supabase
-        .from("governor_action_log")
-        .select("*")
-        .gte("timestamp", fiveMinutesAgo)
-        .order("timestamp", { ascending: false })
-        .limit(1)
-        .single();
-
-      // Determine activity based on recent actions
-      if (tokenDecision && tokenDecision.decision === "MINT") {
-        setAiActivity("minting");
-      } else if (governorAction) {
-        if (governorAction.action_type === "EXECUTE_TRADE") {
-          setAiActivity("executing");
-        } else if (governorAction.action_type === "ANALYZE_MARKET") {
-          setAiActivity("analyzing");
-        } else {
-          setAiActivity("thinking");
-        }
-      } else {
-        setAiActivity("idle");
-      }
-    };
-
-    fetchAiState();
-    
-    // Refresh every 10 seconds for more responsive activity tracking
-    const interval = setInterval(fetchAiState, 10000);
-    return () => clearInterval(interval);
-  }, []);
   
   // Track wallet connections
   useEffect(() => {
@@ -117,13 +51,11 @@ const Navigation = () => {
     <header className="border-b-2 border-border bg-card backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-4 md:px-8 py-2 flex items-center justify-between max-w-7xl">
         <div className="flex items-center gap-4 md:gap-16">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="border-2 border-primary px-2 py-1 font-bold text-lg md:text-xl tracking-tight">
-                M9
-              </div>
-            </Link>
-          </div>
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="border-2 border-primary px-2 py-1 font-bold text-lg md:text-xl tracking-tight">
+              M9
+            </div>
+          </Link>
           
           <nav className="hidden md:flex gap-6 lg:gap-10">
             <Link 

@@ -7,7 +7,6 @@ import TokenCard from "@/components/TokenCard";
 import ConsoleLog from "@/components/ConsoleLog";
 import AiMindTicker from "@/components/AiMindTicker";
 import MetricCard from "@/components/MetricCard";
-import AsciiBrain from "@/components/AsciiBrain";
 import { Button } from "@/components/ui/button";
 import { Sparkles, TrendingUp, Users, Zap, Activity, Circle, Brain } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
@@ -231,20 +230,6 @@ const Dashboard = () => {
           
           {/* LEFT SIDEBAR */}
           <div className="col-span-12 lg:col-span-3 space-y-4">
-            {/* AI Mind Visualization */}
-            <div className="bg-background p-4">
-              <div className="flex justify-center">
-                <AsciiBrain 
-                  mood={aiMood?.current_mood === "frenzied" ? "frenzied" : 
-                        aiMood?.current_mood === "zen" ? "zen" : 
-                        aiMood?.current_mood === "cosmic" ? "cosmic" : "neutral"}
-                  intensity={aiMood?.mood_intensity || 50}
-                  activity="idle"
-                  size={200}
-                />
-              </div>
-            </div>
-
             {/* Recent Tokens List */}
             <div className="border-2 border-border bg-card p-4">
               <h3 className="metric-label mb-4 font-bold">RECENT TOKENS</h3>
