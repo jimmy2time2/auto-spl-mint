@@ -8,40 +8,41 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Retro-Futuristic Editorial Terminal Design System */
-    /* Blend of 1980s CRT + Modern Editorial + Brutalist Geometric */
-    --background: 220 80% 6%;           /* CRT Black #000000 */
-    --foreground: 45 15% 95%;           /* Creamy Retro White #F3F2EB */
-    --card: 215 75% 15%;                /* Deep Digital Blue dark variant */
-    --card-foreground: 45 15% 95%;      /* Creamy White */
-    --popover: 220 80% 8%;
-    --popover-foreground: 45 15% 95%;
-    --primary: 215 85% 30%;             /* Deep Digital Blue #0B3C88 */
-    --primary-foreground: 45 15% 95%;
-    --secondary: 60 100% 45%;           /* Analog Yellow #E5E600 */
-    --secondary-foreground: 220 80% 6%;
-    --muted: 220 20% 30%;
-    --muted-foreground: 0 0% 70%;
-    --accent: 145 100% 45%;             /* Terminal Green #00FF66 */
-    --accent-foreground: 220 80% 6%;
-    --destructive: 0 100% 59%;          /* Pixel Red #FF2B2B */
-    --destructive-foreground: 45 15% 95%;
-    --border: 145 100% 45%;             /* Terminal Green borders */
-    --input: 220 50% 20%;
-    --ring: 145 100% 45%;
-    --radius: 0.75rem;                  /* Rounded modern corners */
+    /* Retro terminal design system - inspired by ERROR 404 UI */
+    /* Bright lime-yellow background with black text */
+    --background: 75 100% 82%;      /* Bright lime yellow */
+    --foreground: 0 0% 0%;          /* Pure black */
+    --card: 75 100% 85%;            /* Slightly lighter lime */
+    --card-foreground: 0 0% 0%;     /* Pure black */
+    --popover: 75 100% 82%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;             /* Black primary */
+    --primary-foreground: 75 100% 82%; /* Lime on black */
+    --secondary: 75 80% 75%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 75 60% 70%;
+    --muted-foreground: 0 0% 20%;
+    --accent: 0 0% 0%;
+    --accent-foreground: 75 100% 82%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 0%;              /* Black borders */
+    --input: 75 100% 85%;
+    --ring: 0 0% 0%;
+    --radius: 0rem;                 /* Sharp corners for retro feel */
     
-    /* Extended palette */
-    --terminal-green: 145 100% 45%;     /* #00FF66 */
-    --digital-blue: 215 85% 30%;        /* #0B3C88 */
-    --analog-yellow: 60 100% 45%;       /* #E5E600 */
-    --pixel-red: 0 100% 59%;            /* #FF2B2B */
-    --neo-mint: 135 100% 91%;           /* #D0FFDF */
-    --clean-grey: 0 0% 88%;             /* #E1E1E1 */
-    --muted-peach: 30 33% 96%;          /* #F7F0EC */
-    --retro-glow: 145 100% 45%;
-    --scanline-opacity: 0.08;
-    --noise-opacity: 0.04;
+    /* Terminal UI tokens */
+    --metric-primary: 0 0% 0%;
+    --metric-secondary: 0 0% 20%;
+    --line-accent: 0 0% 0%;
+    --dot-indicator: 0 0% 0%;
+    --success-green: 142 76% 36%;
+    --warning-amber: 38 92% 50%;
+    --terminal-green: 75 100% 82%;
+    --metric-neutral: 75 100% 82%;
+    --metric-danger: 0 84% 60%;
+    --metric-info: 200 80% 50%;
+    --metric-success: 142 76% 36%;
   }
 }
 
@@ -52,140 +53,39 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'IBM Plex Mono', 'Space Mono', 'Courier New', monospace;
+    font-family: 'Space Mono', 'IBM Plex Mono', 'Courier New', monospace;
     font-feature-settings: 'tnum' 1;
-    letter-spacing: 0.01em;
-    position: relative;
-    overflow-x: hidden;
-    background: linear-gradient(180deg, hsl(220 80% 6%) 0%, hsl(220 70% 8%) 100%);
-  }
-
-  /* CRT Screen Effect */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 9999;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, var(--scanline-opacity)) 0px,
-      transparent 1px,
-      transparent 2px,
-      rgba(0, 0, 0, var(--scanline-opacity)) 3px
-    );
-    animation: crt-flicker 4s infinite;
-  }
-
-  /* Background noise/grain */
-  body::after {
-    content: '';
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    pointer-events: none;
-    z-index: 9998;
-    opacity: var(--noise-opacity);
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='6.5' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' /%3E%3C/svg%3E");
-    animation: noise 0.2s infinite;
-  }
-
-  @keyframes noise {
-    0%, 100% { transform: translate(0, 0); }
-    10% { transform: translate(-5%, -5%); }
-    20% { transform: translate(-10%, 5%); }
-    30% { transform: translate(5%, -10%); }
-    40% { transform: translate(-5%, 15%); }
-    50% { transform: translate(-10%, 5%); }
-    60% { transform: translate(15%, 0); }
-    70% { transform: translate(0, 10%); }
-    80% { transform: translate(-15%, 0); }
-    90% { transform: translate(10%, 5%); }
+    letter-spacing: 0.02em;
   }
   
-  /* Slight screen curvature effect */
-  #root {
-    perspective: 1000px;
-  }
-  
-  /* Editorial serif headlines */
-  .editorial-headline {
-    font-family: 'Libre Caslon Text', 'Georgia', serif;
-    font-weight: 700;
-    font-size: 4rem;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    color: hsl(var(--foreground));
-  }
-
-  /* Retro-tech mono typography */
-  .retro-mono {
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-  }
-
-  /* Terminal metric displays with glow */
+  /* Terminal metric displays */
   .metric-display {
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'Space Mono', 'IBM Plex Mono', 'Courier New', monospace;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     font-feature-settings: 'tnum' 1, 'zero' 1;
-    color: hsl(var(--terminal-green));
-    text-shadow: 0 0 10px hsl(var(--retro-glow) / 0.8),
-                 0 0 20px hsl(var(--retro-glow) / 0.5);
   }
   
   .metric-label {
-    font-size: 0.65rem;
+    font-size: 0.625rem;
     font-weight: 700;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: hsl(var(--terminal-green));
-    font-family: 'IBM Plex Mono', monospace;
-    text-shadow: 0 0 8px hsl(var(--retro-glow) / 0.6);
+    color: hsl(var(--metric-secondary));
+    font-family: 'Space Mono', monospace;
   }
 
-  /* Terminal typography with glow */
+  /* Terminal typography */
   .terminal-text {
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.05em;
-    text-shadow: 0 0 5px hsl(var(--retro-glow) / 0.3);
+    letter-spacing: 0.02em;
   }
 
   .pixel-text {
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.15em;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.08em;
     font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-  }
-
-  /* Retro header text */
-  .retro-header {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 700;
-    font-size: 1.5rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: hsl(var(--foreground));
-  }
-
-  /* Module headers */
-  .module-header {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 700;
-    font-size: 0.875rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: hsl(var(--terminal-green));
-    text-shadow: 0 0 10px hsl(var(--retro-glow) / 0.7);
   }
 
   /* ASCII art rendering */

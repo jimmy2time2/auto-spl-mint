@@ -14,11 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        mono: ['"IBM Plex Mono"', '"Space Mono"', 'ui-monospace', 'monospace'],
-        sans: ['"IBM Plex Mono"', 'system-ui', 'monospace'],
-        terminal: ['"IBM Plex Mono"', 'monospace'],
-        editorial: ['"Libre Caslon Text"', 'Georgia', 'serif'],
-        pixel: ['"IBM Plex Mono"', 'monospace'],
+        mono: ['"Space Mono"', '"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+        sans: ['"Space Mono"', 'system-ui', 'monospace'],
+        terminal: ['"Space Mono"', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -64,13 +62,6 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        "terminal-green": "hsl(var(--terminal-green))",
-        "digital-blue": "hsl(var(--digital-blue))",
-        "analog-yellow": "hsl(var(--analog-yellow))",
-        "pixel-red": "hsl(var(--pixel-red))",
-        "neo-mint": "hsl(var(--neo-mint))",
-        "clean-grey": "hsl(var(--clean-grey))",
-        "muted-peach": "hsl(var(--muted-peach))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -100,8 +91,6 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "glitch": "glitch 0.3s infinite",
         "blink": "blink 1s infinite",
-        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
-        "flicker": "flicker 0.15s infinite",
       },
     },
   },
