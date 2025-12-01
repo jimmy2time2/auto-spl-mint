@@ -147,126 +147,102 @@ const AsciiBrain = ({
 
     const centerX = size / 2;
     const centerY = size / 2;
-    const baseRadius = size * 0.35;
+    const baseRadius = size * 0.38;
 
-    // Activity-based parameters - reduce morphing for sphere shape
-    let morphSpeed = 0.3;
-    let morphIntensity = 0.05;
-    let rotationSpeed = 0.2;
-    let numBlobs = 8;
-    let blobSpread = 0.15;
+    // Activity-based parameters
+    let animSpeed = 0.3;
+    let dotDensity = 8; // Distance between dots
 
     switch (activity) {
       case "minting":
-        morphSpeed = 0.5;
-        morphIntensity = 0.08;
-        rotationSpeed = 0.4;
-        numBlobs = 8;
-        blobSpread = 0.18;
+        animSpeed = 0.8;
+        dotDensity = 7;
         break;
       case "analyzing":
-        morphSpeed = 0.4;
-        morphIntensity = 0.06;
-        rotationSpeed = 0.3;
-        numBlobs = 8;
-        blobSpread = 0.16;
+        animSpeed = 0.5;
+        dotDensity = 8;
         break;
       case "executing":
-        morphSpeed = 0.45;
-        morphIntensity = 0.07;
-        rotationSpeed = 0.35;
-        numBlobs = 8;
-        blobSpread = 0.17;
+        animSpeed = 0.7;
+        dotDensity = 7;
         break;
       case "thinking":
-        morphSpeed = 0.35;
-        morphIntensity = 0.055;
-        rotationSpeed = 0.25;
-        numBlobs = 8;
-        blobSpread = 0.155;
+        animSpeed = 0.4;
+        dotDensity = 9;
         break;
     }
 
-    // Create metaballs for sphere shape - more evenly distributed
-    const blobs: Array<{x: number, y: number, r: number}> = [];
-    for (let i = 0; i < numBlobs; i++) {
-      const angle = (i / numBlobs) * Math.PI * 2 + time * rotationSpeed;
-      const offset = Math.sin(time * morphSpeed + i) * blobSpread;
-      const bx = Math.cos(angle) * baseRadius * (1 + offset);
-      const by = Math.sin(angle) * baseRadius * (1 + offset);
-      blobs.push({
-        x: bx,
-        y: by,
-        r: baseRadius * (1.1 + Math.sin(time * morphSpeed * 0.5 + i * 1.3) * 0.1)
-      });
-    }
-
-    // PIXELATION: Render at lower resolution
-    const pixelSize = 4; // Size of each "pixel"
-    const lowResWidth = Math.floor(size / pixelSize);
-    const lowResHeight = Math.floor(size / pixelSize);
-
-    // Create temporary low-res image data
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = lowResWidth;
-    tempCanvas.height = lowResHeight;
-    const tempCtx = tempCanvas.getContext('2d');
-    if (!tempCtx) return;
-
-    const imageData = tempCtx.createImageData(lowResWidth, lowResHeight);
-    const data = imageData.data;
-
-    for (let py = 0; py < lowResHeight; py++) {
-      for (let px = 0; px < lowResWidth; px++) {
-        // Scale back to original coordinates
-        const x = (px * pixelSize) - centerX;
-        const y = (py * pixelSize) - centerY;
+    // Halftone dot sphere rendering
+    const dotSpacing = dotDensity;
+    
+    for (let y = -baseRadius * 1.2; y < baseRadius * 1.2; y += dotSpacing) {
+      for (let x = -baseRadius * 1.2; x < baseRadius * 1.2; x += dotSpacing) {
+        // Distance from center
+        const dist = Math.sqrt(x * x + y * y);
         
-        // Calculate metaball field
-        const field = metaballField(x, y, blobs);
-        const threshold = 1.2 + Math.sin(time * morphSpeed) * morphIntensity;
-
-        if (field > threshold) {
-          // Inside the sphere
-          const dist = Math.sqrt(x * x + y * y);
-          const angle = Math.atan2(y, x);
+        // Only render if within sphere radius
+        if (dist > baseRadius * 1.15) continue;
+        
+        // Calculate 3D sphere depth (z coordinate)
+        const normalizedDist = dist / baseRadius;
+        if (normalizedDist > 1) continue;
+        
+        const z = Math.sqrt(1 - normalizedDist * normalizedDist);
+        
+        // Light source from top-right
+        const lightX = 0.5;
+        const lightY = -0.5;
+        const lightZ = 1;
+        const lightMag = Math.sqrt(lightX * lightX + lightY * lightY + lightZ * lightZ);
+        
+        // Normal vector at this point on sphere
+        const normalX = x / baseRadius;
+        const normalY = y / baseRadius;
+        const normalZ = z;
+        
+        // Dot product for lighting
+        const dotProduct = (normalX * lightX + normalY * lightY + normalZ * lightZ) / lightMag;
+        const lighting = Math.max(0, dotProduct);
+        
+        // Add subtle animation
+        const angle = Math.atan2(y, x);
+        const wave = Math.sin(time * animSpeed + angle * 3) * 0.1;
+        const finalLighting = lighting + wave;
+        
+        // Map lighting to dot size (brighter = larger dots)
+        const minDotSize = 0.5;
+        const maxDotSize = dotSpacing * 0.6;
+        const dotSize = minDotSize + finalLighting * (maxDotSize - minDotSize);
+        
+        // Map lighting to color intensity
+        const colorIntensity = 0.3 + finalLighting * 0.7 + (intensity / 100) * 0.3;
+        
+        // Get color based on position and time
+        const colorT = (angle / (Math.PI * 2)) + (time * 0.05);
+        const [r, g, b] = getGradientColor(colorT, colorStops);
+        
+        // Draw dot
+        if (dotSize > 0.5) {
+          ctx.beginPath();
+          ctx.arc(
+            centerX + x, 
+            centerY + y, 
+            dotSize, 
+            0, 
+            Math.PI * 2
+          );
+          ctx.fillStyle = `rgba(${r * colorIntensity}, ${g * colorIntensity}, ${b * colorIntensity}, ${Math.min(1, finalLighting * 1.2)})`;
+          ctx.fill();
           
-          // Add subtle noise for texture
-          const noiseValue = noise(x * 0.01, y * 0.01, time * morphSpeed * 0.5);
-          
-          // Calculate color based on angle and distance for sphere shading
-          const colorT = (angle / (Math.PI * 2)) + (noiseValue * 0.1) + (time * 0.05);
-          let [r, g, b] = getGradientColor(colorT, colorStops);
-          
-          // Sphere shading - brighter at edges, darker in center
-          const sphereFactor = 1 - (dist / baseRadius);
-          const edgeFactor = Math.max(0, 1 - Math.abs(field - threshold) * 5);
-          const brightness = 0.3 + sphereFactor * 0.4 + edgeFactor * 0.8 + (intensity / 100) * 0.5;
-          
-          // THRESHOLD EFFECT: Posterize colors to fewer levels
-          const colorLevels = 4; // Number of color steps (retro look)
-          r = Math.round((r * brightness) / 255 * colorLevels) * (255 / colorLevels);
-          g = Math.round((g * brightness) / 255 * colorLevels) * (255 / colorLevels);
-          b = Math.round((b * brightness) / 255 * colorLevels) * (255 / colorLevels);
-          
-          // Apply color with stronger falloff for sphere depth
-          const falloff = Math.max(0, 1 - (dist / (baseRadius * 1.2)));
-          const alpha = Math.min(255, falloff * 255 * brightness * 1.2);
-          
-          const idx = (py * lowResWidth + px) * 4;
-          data[idx] = r;
-          data[idx + 1] = g;
-          data[idx + 2] = b;
-          data[idx + 3] = alpha;
+          // Add subtle dot outline for depth
+          if (finalLighting > 0.7) {
+            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.3)`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
         }
       }
     }
-
-    tempCtx.putImageData(imageData, 0, 0);
-
-    // Scale up the pixelated result with nearest-neighbor (no smoothing)
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(tempCanvas, 0, 0, lowResWidth, lowResHeight, 0, 0, size, size);
 
     animationFrameRef.current = requestAnimationFrame(renderFrame);
   };
