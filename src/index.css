@@ -8,45 +8,40 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Retro-Industrial Corporate Terminal Design System */
-    /* CRT Monitor Aesthetic - Dark Indigo/Blue with Electric Green */
-    --background: 225 70% 10%;          /* Deep dark indigo #0A0A2A */
-    --foreground: 0 0% 94%;             /* Clean white/light gray #F0F0F0 */
-    --card: 225 65% 12%;                /* Slightly lighter than bg for cards */
-    --card-foreground: 0 0% 94%;        /* Light gray text on cards */
-    --popover: 225 70% 10%;
-    --popover-foreground: 0 0% 94%;
-    --primary: 120 100% 50%;            /* Electric green #00FF00 */
-    --primary-foreground: 225 70% 10%;  /* Dark bg on green */
-    --secondary: 180 100% 50%;          /* Cyan-green */
-    --secondary-foreground: 225 70% 10%;
-    --muted: 225 50% 20%;               /* Muted blue-gray */
-    --muted-foreground: 0 0% 70%;       /* Muted text */
-    --accent: 120 100% 50%;             /* Electric green accent */
-    --accent-foreground: 225 70% 10%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 120 100% 50%;             /* Electric green borders */
-    --input: 225 60% 15%;
-    --ring: 120 100% 50%;
-    --radius: 0rem;                     /* Sharp corners for retro */
+    /* Retro-Futuristic Editorial Terminal Design System */
+    /* Blend of 1980s CRT + Modern Editorial + Brutalist Geometric */
+    --background: 220 80% 6%;           /* CRT Black #000000 */
+    --foreground: 45 15% 95%;           /* Creamy Retro White #F3F2EB */
+    --card: 215 75% 15%;                /* Deep Digital Blue dark variant */
+    --card-foreground: 45 15% 95%;      /* Creamy White */
+    --popover: 220 80% 8%;
+    --popover-foreground: 45 15% 95%;
+    --primary: 215 85% 30%;             /* Deep Digital Blue #0B3C88 */
+    --primary-foreground: 45 15% 95%;
+    --secondary: 60 100% 45%;           /* Analog Yellow #E5E600 */
+    --secondary-foreground: 220 80% 6%;
+    --muted: 220 20% 30%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 145 100% 45%;             /* Terminal Green #00FF66 */
+    --accent-foreground: 220 80% 6%;
+    --destructive: 0 100% 59%;          /* Pixel Red #FF2B2B */
+    --destructive-foreground: 45 15% 95%;
+    --border: 145 100% 45%;             /* Terminal Green borders */
+    --input: 220 50% 20%;
+    --ring: 145 100% 45%;
+    --radius: 0.75rem;                  /* Rounded modern corners */
     
-    /* CRT Terminal UI tokens */
-    --terminal-green: 120 100% 50%;     /* Primary green glow */
-    --terminal-cyan: 180 100% 50%;      /* Cyan accent */
-    --terminal-glow: 120 100% 50%;      /* Glow color */
-    --scanline-opacity: 0.15;           /* CRT scanline visibility */
-    --noise-opacity: 0.08;              /* Background noise/grain */
-    --metric-primary: 120 100% 50%;
-    --metric-secondary: 0 0% 70%;
-    --line-accent: 120 100% 50%;
-    --dot-indicator: 120 100% 50%;
-    --success-green: 120 100% 50%;
-    --warning-amber: 45 100% 50%;
-    --metric-neutral: 180 100% 50%;
-    --metric-danger: 0 84% 60%;
-    --metric-info: 180 100% 50%;
-    --metric-success: 120 100% 50%;
+    /* Extended palette */
+    --terminal-green: 145 100% 45%;     /* #00FF66 */
+    --digital-blue: 215 85% 30%;        /* #0B3C88 */
+    --analog-yellow: 60 100% 45%;       /* #E5E600 */
+    --pixel-red: 0 100% 59%;            /* #FF2B2B */
+    --neo-mint: 135 100% 91%;           /* #D0FFDF */
+    --clean-grey: 0 0% 88%;             /* #E1E1E1 */
+    --muted-peach: 30 33% 96%;          /* #F7F0EC */
+    --retro-glow: 145 100% 45%;
+    --scanline-opacity: 0.08;
+    --noise-opacity: 0.04;
   }
 }
 
@@ -57,11 +52,12 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Space Mono', 'IBM Plex Mono', 'Courier New', monospace;
+    font-family: 'IBM Plex Mono', 'Space Mono', 'Courier New', monospace;
     font-feature-settings: 'tnum' 1;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     position: relative;
     overflow-x: hidden;
+    background: linear-gradient(180deg, hsl(220 80% 6%) 0%, hsl(220 70% 8%) 100%);
   }
 
   /* CRT Screen Effect */
@@ -117,64 +113,79 @@ All colors MUST be HSL.
     perspective: 1000px;
   }
   
+  /* Editorial serif headlines */
+  .editorial-headline {
+    font-family: 'Libre Caslon Text', 'Georgia', serif;
+    font-weight: 700;
+    font-size: 4rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+
+  /* Retro-tech mono typography */
+  .retro-mono {
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
   /* Terminal metric displays with glow */
   .metric-display {
-    font-family: 'Space Mono', 'IBM Plex Mono', 'Courier New', monospace;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     font-feature-settings: 'tnum' 1, 'zero' 1;
     color: hsl(var(--terminal-green));
-    text-shadow: 0 0 10px hsl(var(--terminal-glow) / 0.8),
-                 0 0 20px hsl(var(--terminal-glow) / 0.5);
+    text-shadow: 0 0 10px hsl(var(--retro-glow) / 0.8),
+                 0 0 20px hsl(var(--retro-glow) / 0.5);
   }
   
   .metric-label {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: hsl(var(--terminal-green));
-    font-family: 'Space Mono', monospace;
-    text-shadow: 0 0 8px hsl(var(--terminal-glow) / 0.6);
+    font-family: 'IBM Plex Mono', monospace;
+    text-shadow: 0 0 8px hsl(var(--retro-glow) / 0.6);
   }
 
   /* Terminal typography with glow */
   .terminal-text {
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.05em;
-    text-shadow: 0 0 5px hsl(var(--terminal-glow) / 0.3);
+    text-shadow: 0 0 5px hsl(var(--retro-glow) / 0.3);
   }
 
   .pixel-text {
-    font-family: 'Space Mono', monospace;
-    letter-spacing: 0.08em;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.15em;
     font-weight: 700;
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
+    text-transform: uppercase;
+    font-size: 0.75rem;
   }
 
-  /* Retro header text - wide bold */
+  /* Retro header text */
   .retro-header {
-    font-family: 'Space Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-weight: 700;
-    font-size: 2rem;
+    font-size: 1.5rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: hsl(var(--foreground));
-    text-shadow: 0 0 15px hsl(var(--terminal-glow) / 0.6);
   }
 
   /* Module headers */
   .module-header {
-    font-family: 'Space Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 0.1em;
+    font-size: 0.875rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: hsl(var(--terminal-green));
-    text-shadow: 0 0 10px hsl(var(--terminal-glow) / 0.7);
+    text-shadow: 0 0 10px hsl(var(--retro-glow) / 0.7);
   }
 
   /* ASCII art rendering */
