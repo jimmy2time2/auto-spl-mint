@@ -1182,14 +1182,8 @@ export type Database = {
       }
     }
     Functions: {
-      check_dao_eligibility: {
-        Args: { wallet: string }
-        Returns: boolean
-      }
-      close_expired_proposals: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      check_dao_eligibility: { Args: { wallet: string }; Returns: boolean }
+      close_expired_proposals: { Args: never; Returns: undefined }
     }
     Enums: {
       token_mood:
