@@ -63,7 +63,7 @@ export const TokenHeader = ({
         </Link>
         
         {/* QR Code as profile picture */}
-        {tokenId && <TokenQRCode tokenId={tokenId} size={56} />}
+        {tokenId && <TokenQRCode tokenId={tokenId} size={56} tokenName={`$${symbol}`} />}
         
         <div>
           <h1 className="text-lg sm:text-xl font-bold">{name}</h1>
