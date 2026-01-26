@@ -2,7 +2,13 @@
  * AI Token Decision Engine
  * 
  * Autonomous decision-making module that determines when to launch new tokens
- * based on market signals, randomness, and AI reasoning.
+ * based on market signals, randomness, AI reasoning, and TRACTION SAFEGUARDS.
+ * 
+ * TRACTION RULES (to prevent wasting SOL):
+ * - Minimum page views before first mint
+ * - Minimum wallet connections required
+ * - Existing tokens must show trading activity
+ * - Engagement score thresholds
  */
 
 export interface MarketSignals {
@@ -13,7 +19,49 @@ export interface MarketSignals {
   recent_volume: number;
   active_holders: number;
   dao_participation: number;
+  page_views: number;
+  total_tokens: number;
 }
+
+export interface TractionCheck {
+  passed: boolean;
+  reason: string;
+  metrics: {
+    page_views: number;
+    wallet_connections: number;
+    engagement_score: number;
+    trades_count: number;
+    total_tokens: number;
+    recent_volume: number;
+  };
+}
+
+/**
+ * TRACTION THRESHOLDS - Configurable safeguards
+ * These prevent the AI from minting when there's no real user activity
+ */
+export const TRACTION_THRESHOLDS = {
+  // Minimum page views before ANY token can be minted
+  MIN_PAGE_VIEWS_FIRST_TOKEN: 50,
+  
+  // Minimum page views before subsequent tokens
+  MIN_PAGE_VIEWS: 100,
+  
+  // Minimum wallet connections required
+  MIN_WALLET_CONNECTIONS: 5,
+  
+  // Minimum engagement score required
+  MIN_ENGAGEMENT_SCORE: 10,
+  
+  // Minimum trades on existing tokens before new mint
+  MIN_TRADES_FOR_NEW_TOKEN: 3,
+  
+  // Minimum trading volume (SOL) on existing tokens
+  MIN_VOLUME_FOR_NEW_TOKEN: 0.1,
+  
+  // Maximum tokens without significant traction
+  MAX_TOKENS_WITHOUT_TRACTION: 3,
+};
 
 export interface DecisionResult {
   decision: 'launch' | 'hold' | 'skip';
@@ -24,6 +72,90 @@ export interface DecisionResult {
   scheduled_launch_time?: string;
   market_signals: MarketSignals;
   randomness_factor: number;
+  traction_check?: TractionCheck;
+}
+
+/**
+ * Check if there's enough traction to justify minting a new token
+ * This is the PRIMARY safeguard against wasting SOL
+ */
+export function checkTractionRequirements(signals: MarketSignals): TractionCheck {
+  const metrics = {
+    page_views: signals.page_views || 0,
+    wallet_connections: signals.wallet_connections,
+    engagement_score: signals.engagement_score,
+    trades_count: signals.trades_count,
+    total_tokens: signals.total_tokens,
+    recent_volume: signals.recent_volume,
+  };
+  
+  const isFirstToken = signals.total_tokens === 0;
+  
+  // Check 1: Page views (basic traffic requirement)
+  const minPageViews = isFirstToken 
+    ? TRACTION_THRESHOLDS.MIN_PAGE_VIEWS_FIRST_TOKEN 
+    : TRACTION_THRESHOLDS.MIN_PAGE_VIEWS;
+  
+  if (metrics.page_views < minPageViews) {
+    return {
+      passed: false,
+      reason: `Insufficient page views: ${metrics.page_views} < ${minPageViews} required. Need more website traffic.`,
+      metrics,
+    };
+  }
+  
+  // Check 2: Wallet connections (real user interest)
+  if (metrics.wallet_connections < TRACTION_THRESHOLDS.MIN_WALLET_CONNECTIONS) {
+    return {
+      passed: false,
+      reason: `Insufficient wallet connections: ${metrics.wallet_connections} < ${TRACTION_THRESHOLDS.MIN_WALLET_CONNECTIONS} required. Need more users connecting wallets.`,
+      metrics,
+    };
+  }
+  
+  // Check 3: Engagement score
+  if (metrics.engagement_score < TRACTION_THRESHOLDS.MIN_ENGAGEMENT_SCORE) {
+    return {
+      passed: false,
+      reason: `Insufficient engagement: ${metrics.engagement_score} < ${TRACTION_THRESHOLDS.MIN_ENGAGEMENT_SCORE} required.`,
+      metrics,
+    };
+  }
+  
+  // Check 4: If tokens exist, require trading activity
+  if (!isFirstToken) {
+    if (metrics.trades_count < TRACTION_THRESHOLDS.MIN_TRADES_FOR_NEW_TOKEN) {
+      return {
+        passed: false,
+        reason: `Existing tokens have insufficient trades: ${metrics.trades_count} < ${TRACTION_THRESHOLDS.MIN_TRADES_FOR_NEW_TOKEN}. People need to trade existing coins first.`,
+        metrics,
+      };
+    }
+    
+    if (metrics.recent_volume < TRACTION_THRESHOLDS.MIN_VOLUME_FOR_NEW_TOKEN) {
+      return {
+        passed: false,
+        reason: `Existing tokens have insufficient volume: ${metrics.recent_volume} SOL < ${TRACTION_THRESHOLDS.MIN_VOLUME_FOR_NEW_TOKEN} SOL required.`,
+        metrics,
+      };
+    }
+  }
+  
+  // Check 5: Prevent spamming tokens without traction
+  if (signals.total_tokens >= TRACTION_THRESHOLDS.MAX_TOKENS_WITHOUT_TRACTION && 
+      metrics.recent_volume < 1) {
+    return {
+      passed: false,
+      reason: `Already have ${signals.total_tokens} tokens with minimal traction. Need more trading activity before minting more.`,
+      metrics,
+    };
+  }
+  
+  return {
+    passed: true,
+    reason: 'All traction requirements met ✅',
+    metrics,
+  };
 }
 
 /**
@@ -46,7 +178,7 @@ export function getNextCheckInterval(): number {
 }
 
 /**
- * Fetch market signals from Supabase
+ * Fetch market signals from Supabase including traction metrics
  */
 export async function fetchMarketSignals(supabase: any): Promise<MarketSignals> {
   // Get engagement metrics
@@ -56,6 +188,11 @@ export async function fetchMarketSignals(supabase: any): Promise<MarketSignals> 
     .order('created_at', { ascending: false })
     .limit(1)
     .single();
+
+  // Get token count
+  const { count: totalTokens } = await supabase
+    .from('tokens')
+    .select('*', { count: 'exact', head: true });
 
   // Get recent tokens
   const { data: recentTokens } = await supabase
@@ -94,44 +231,66 @@ export async function fetchMarketSignals(supabase: any): Promise<MarketSignals> 
     engagement_score: engagement?.engagement_score || 0,
     wallet_connections: engagement?.wallet_connections || 0,
     trades_count: engagement?.trades_count || 0,
+    page_views: engagement?.page_views || 0,
     hours_since_last_token: hoursSinceLastToken,
     recent_volume: recentVolume,
     active_holders: activeHolders || 0,
     dao_participation: daoVotes || 0,
+    total_tokens: totalTokens || 0,
   };
 }
 
 /**
  * Use AI to make a creative decision about token launch
  * Now uses the token theme generator for viral names
+ * INCLUDES TRACTION CHECK - will skip if no traction
  */
 export async function makeAIDecision(
   signals: MarketSignals,
   randomnessFactor: number,
   supabase: any
-): Promise<Omit<DecisionResult, 'market_signals' | 'randomness_factor'>> {
+): Promise<Omit<DecisionResult, 'market_signals' | 'randomness_factor'> & { traction_check?: TractionCheck }> {
+  
+  // FIRST: Check traction requirements BEFORE asking AI
+  const tractionCheck = checkTractionRequirements(signals);
+  
+  if (!tractionCheck.passed) {
+    console.log(`⛔ TRACTION CHECK FAILED: ${tractionCheck.reason}`);
+    console.log('📊 Metrics:', JSON.stringify(tractionCheck.metrics, null, 2));
+    
+    return {
+      decision: 'skip',
+      reasoning: `TRACTION SAFEGUARD: ${tractionCheck.reason}`,
+      confidence: 1.0,
+      traction_check: tractionCheck,
+    };
+  }
+  
+  console.log('✅ TRACTION CHECK PASSED:', tractionCheck.reason);
+  
   const prompt = `You are an autonomous AI token launcher for Mind9, a Solana-based platform.
 
 MARKET SIGNALS:
-- Engagement Score: ${signals.engagement_score}
+- Page Views: ${signals.page_views}
 - Wallet Connections (24h): ${signals.wallet_connections}
+- Engagement Score: ${signals.engagement_score}
 - Recent Trades: ${signals.trades_count}
 - Hours Since Last Token: ${signals.hours_since_last_token.toFixed(1)}
 - Trading Volume (24h): ${signals.recent_volume}
 - Active Holders: ${signals.active_holders}
 - DAO Participation: ${signals.dao_participation}
+- Total Tokens Launched: ${signals.total_tokens}
 
 RANDOMNESS FACTOR: ${randomnessFactor.toFixed(2)} (0=conservative, 1=aggressive)
 
-DECISION RULES:
-1. Launch if: engagement is high OR enough time passed OR randomness is high
-2. Hold if: recent token exists and low engagement
-3. Skip if: market is completely dead
+TRACTION STATUS: ✅ All requirements met (page views: ${signals.page_views}, wallets: ${signals.wallet_connections})
 
 DECISION RULES:
-1. Launch if: engagement is high OR enough time passed OR randomness is high
-2. Hold if: recent token exists and low engagement
-3. Skip if: market is completely dead
+1. Launch if: engagement is high AND good traction metrics
+2. Hold if: recent token exists and want to give it time to gain traction
+3. Skip if: market conditions unfavorable
+
+Be conservative with SOL - only launch when you're confident there's real user interest.
 
 Respond in JSON with your decision ONLY (no token details):
 {
