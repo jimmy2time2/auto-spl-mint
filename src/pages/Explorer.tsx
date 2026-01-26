@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import AsciiDivider from "@/components/AsciiDivider";
+import TokenQRCode from "@/components/TokenQRCode";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -192,11 +193,14 @@ const Explorer = () => {
                   className={`block p-3 sm:p-4 hover:bg-primary/10 transition-colors ${token.isHot ? 'bg-primary/5' : ''}`}
                 >
                   <div className="flex items-center justify-between gap-2 sm:gap-4">
-                    {/* Left: Rank + Token Info */}
+                    {/* Left: Rank + QR Code + Token Info */}
                     <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
                       <div className={`display-lg w-6 sm:w-8 text-center text-sm sm:text-xl ${index < 3 ? 'glow-text' : 'text-muted-foreground'}`}>
                         {index + 1 + (page - 1) * itemsPerPage}
                       </div>
+                      
+                      {/* QR Code Profile Picture */}
+                      <TokenQRCode tokenId={token.id} size={40} className="hidden sm:block shrink-0" />
                       
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1 sm:gap-2 mb-1 flex-wrap">

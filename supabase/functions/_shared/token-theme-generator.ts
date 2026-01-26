@@ -17,8 +17,8 @@ export interface TokenThemeInput {
 }
 
 export interface TokenTheme {
-  name: string;
-  symbol: string;
+  name: string;           // Will be "1234567 Created by M9"
+  symbol: string;         // Will be first 5 digits
   description: string;
   theme_category: string;
   vibe: string;
@@ -26,6 +26,20 @@ export interface TokenTheme {
   color?: string;
   tagline?: string;
   backstory?: string;
+}
+
+/**
+ * Generate a 7-digit random token name
+ * Format: "1234567 Created by M9"
+ */
+export function generateM9TokenName(): { name: string; symbol: string } {
+  // Generate 7 random digits (ensuring first digit is not 0)
+  const digits = Math.floor(1000000 + Math.random() * 9000000).toString();
+  
+  return {
+    name: `${digits} Created by M9`,
+    symbol: digits.slice(0, 5), // Use first 5 digits as symbol
+  };
 }
 
 /**
@@ -117,16 +131,43 @@ Respond ONLY with valid JSON (no markdown, no code blocks):
 
 /**
  * Generate token theme using Lovable AI
+ * Name and symbol are now fixed format: "1234567 Created by M9"
+ * AI generates only the description, vibe, and backstory
  */
 export async function generateTokenTheme(
   input: TokenThemeInput,
   lovableApiKey: string
 ): Promise<TokenTheme> {
-  const prompt = buildTokenThemePrompt(input);
-
+  // Generate fixed M9 format name
+  const { name, symbol } = generateM9TokenName();
+  
   console.log('🎨 Generating token theme...');
+  console.log(`Name: ${name} | Symbol: ${symbol}`);
   console.log(`Style: ${input.style_preference || 'random'}`);
   console.log(`Market vibe: ${input.market_vibe || 'neutral'}`);
+
+  // Build simplified prompt for description/vibe only
+  const prompt = `You are the creative mind for M9, an autonomous AI token launchpad.
+
+A new token has been created with:
+- Name: ${name}
+- Symbol: ${symbol}
+
+Generate a creative description and backstory for this token. The number ${symbol} should have meaning in your narrative.
+
+Market vibe: ${input.market_vibe || 'neutral'}
+Style: ${input.style_preference || 'random'}
+
+Respond ONLY with valid JSON (no markdown, no code blocks):
+{
+  "description": "One-line punchy description under 150 chars about what ${symbol} represents",
+  "theme_category": "meme/defi/abstract/culture/meta",
+  "vibe": "describe the vibe in 3-5 words",
+  "emoji": "🔢",
+  "color": "#BFFF00",
+  "tagline": "catchy tagline incorporating the number",
+  "backstory": "2-3 sentence backstory that gives meaning to the number ${symbol}"
+}`;
 
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
@@ -135,19 +176,19 @@ export async function generateTokenTheme(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'google/gemini-2.5-flash', // Default, fast and good
+      model: 'google/gemini-2.5-flash',
       messages: [
         {
           role: 'system',
-          content: 'You are a viral token theme generator. You create memorable, shareable crypto token concepts. Always respond with valid JSON only.',
+          content: 'You are M9, an autonomous AI that creates tokens. Give meaning to numbers. Always respond with valid JSON only.',
         },
         {
           role: 'user',
           content: prompt,
         },
       ],
-      temperature: 0.9, // High creativity
-      max_tokens: 500,
+      temperature: 0.9,
+      max_tokens: 400,
     }),
   });
 
@@ -170,29 +211,41 @@ export async function generateTokenTheme(
 
   console.log('Raw AI response:', content);
 
-  // Parse JSON from response (handle markdown code blocks if present)
+  // Parse JSON from response
   let jsonStr = content.trim();
-  
-  // Remove markdown code blocks if present
   if (jsonStr.startsWith('```')) {
     jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
   }
 
-  let theme: TokenTheme;
+  let themeDetails: Partial<TokenTheme>;
   try {
-    theme = JSON.parse(jsonStr);
+    themeDetails = JSON.parse(jsonStr);
   } catch (error) {
     console.error('Failed to parse AI response:', jsonStr);
-    throw new Error('Failed to parse token theme from AI response');
+    // Use fallback theme
+    themeDetails = {
+      description: `Token ${symbol} - Created by M9 autonomous AI`,
+      theme_category: 'meta',
+      vibe: 'mysterious numerical energy',
+      emoji: '🔢',
+      color: '#BFFF00',
+      tagline: `${symbol}: The number speaks`,
+      backstory: `The AI chose ${symbol} from the infinite possibilities. There must be a reason.`,
+    };
   }
 
-  // Validate required fields
-  if (!theme.name || !theme.symbol || !theme.description) {
-    throw new Error('Invalid token theme: missing required fields');
-  }
-
-  // Ensure symbol is uppercase and reasonable length
-  theme.symbol = theme.symbol.toUpperCase().substring(0, 5);
+  // Combine fixed name/symbol with AI-generated details
+  const theme: TokenTheme = {
+    name,
+    symbol,
+    description: themeDetails.description || `Token ${symbol} - Created by M9`,
+    theme_category: themeDetails.theme_category || 'meta',
+    vibe: themeDetails.vibe || 'numerical mystery',
+    emoji: themeDetails.emoji || '🔢',
+    color: themeDetails.color || '#BFFF00',
+    tagline: themeDetails.tagline || `${symbol}: Created by M9`,
+    backstory: themeDetails.backstory || `M9 chose these numbers. Trust the process.`,
+  };
 
   console.log(`✅ Generated: ${theme.name} ($${theme.symbol})`);
   console.log(`Theme: ${theme.theme_category} | Vibe: ${theme.vibe}`);

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import TokenQRCode from "./TokenQRCode";
 
 interface TokenCardProps {
   id: string;
@@ -12,19 +13,18 @@ interface TokenCardProps {
 const TokenCard = ({ id, symbol, name, price, liquidity, volume }: TokenCardProps) => {
   return (
     <Link to={`/token/${id}`}>
-      <div className="relative bg-card border border-border rounded-2xl p-6 transition-all hover:border-primary/40 hover:shadow-lg group cursor-pointer overflow-hidden">
+      <div className="relative bg-card border border-border p-6 transition-all hover:border-primary/40 hover:shadow-lg group cursor-pointer overflow-hidden">
         <div className="relative z-10 space-y-4">
-          {/* Header with decorative dots */}
-          <div className="flex items-start justify-between pb-4 border-b border-border/50">
-            <div>
-              <h3 className="text-3xl font-light tracking-tight group-hover:text-primary transition-colors metric-display">
+          {/* Header with QR code profile picture */}
+          <div className="flex items-start gap-4 pb-4 border-b border-border/50">
+            {/* QR Code as profile picture */}
+            <TokenQRCode tokenId={id} size={56} />
+            
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xl font-bold tracking-tight group-hover:text-primary transition-colors metric-display truncate">
                 ${symbol}
               </h3>
-              <span className="metric-label text-muted-foreground">{name}</span>
-            </div>
-            <div className="flex gap-1 pt-2">
-              <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-              <div className="w-1 h-1 rounded-full bg-muted-foreground/20" />
+              <span className="metric-label text-muted-foreground text-xs block truncate">{name}</span>
             </div>
           </div>
           

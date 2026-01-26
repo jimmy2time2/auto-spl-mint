@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import TokenQRCode from "./TokenQRCode";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Token = Tables<"tokens">;
@@ -118,11 +119,15 @@ const TokenDiscovery = () => {
               className="block px-6 py-4 hover:bg-primary/5 transition-colors"
             >
               <div className="flex items-center justify-between gap-4">
-                {/* Left: Rank + Info */}
+                {/* Left: Rank + QR Code + Info */}
                 <div className="flex items-center gap-4 min-w-0">
                   <span className={`data-md w-6 text-center ${index < 3 ? 'text-primary' : 'text-muted-foreground'}`}>
                     {index + 1}
                   </span>
+                  
+                  {/* QR Code Profile Picture */}
+                  <TokenQRCode tokenId={token.id} size={36} className="hidden sm:block shrink-0" />
+                  
                   <div className="min-w-0">
                     <p className="data-md font-bold truncate">${token.symbol}</p>
                     <p className="text-xs text-muted-foreground truncate">{token.name}</p>
