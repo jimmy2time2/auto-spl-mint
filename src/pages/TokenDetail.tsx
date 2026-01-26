@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
+import AsciiDivider from "@/components/AsciiDivider";
 import ConsoleLog from "@/components/ConsoleLog";
 import { TradingChart } from "@/components/TradingChart";
 import { TradeForm } from "@/components/TradeForm";
@@ -157,6 +158,9 @@ const TokenDetail = () => {
           </div>
         </div>
 
+        {/* ASCII Separator */}
+        <AsciiDivider pattern="dash" text="CHART" />
+
         {/* Chart & Trade */}
         <div className="grid grid-cols-1 lg:grid-cols-3">
           <div className="lg:col-span-2 border-r border-border">
@@ -175,6 +179,9 @@ const TokenDetail = () => {
           </div>
         </div>
 
+        {/* ASCII Separator before Activity */}
+        <AsciiDivider pattern="dot" />
+
         {/* Activity Log */}
         {formattedLogs.length > 0 && (
           <div className="border-t border-border">
@@ -186,6 +193,13 @@ const TokenDetail = () => {
             </div>
           </div>
         )}
+
+        {/* Footer ASCII */}
+        <div className="p-3 text-center">
+          <div className="data-sm text-muted-foreground opacity-50">
+            ─────────────────────────────────────────────────────────────
+          </div>
+        </div>
       </main>
     </div>
   );

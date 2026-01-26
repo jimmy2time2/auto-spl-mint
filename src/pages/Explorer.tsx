@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
+import AsciiDivider from "@/components/AsciiDivider";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -124,6 +125,9 @@ const Explorer = () => {
           </table>
         </div>
 
+        {/* ASCII Separator */}
+        <AsciiDivider pattern="dash" />
+
         {/* Pagination */}
         <div className="border-t border-border p-3 flex justify-between items-center">
           <div className="data-sm text-muted-foreground">
@@ -132,6 +136,13 @@ const Explorer = () => {
           <div className="flex gap-1">
             <Button variant="outline" className="h-8 px-3 data-sm">← PREV</Button>
             <Button variant="outline" className="h-8 px-3 data-sm">NEXT →</Button>
+          </div>
+        </div>
+
+        {/* Footer ASCII */}
+        <div className="p-3 text-center">
+          <div className="data-sm text-muted-foreground opacity-50">
+            ════════════════════════════════════════
           </div>
         </div>
       </main>
