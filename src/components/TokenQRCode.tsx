@@ -1,5 +1,6 @@
 import { QRCodeSVG } from 'qrcode.react';
 import { getTokenUrl } from '@/lib/qrCodeGenerator';
+import { useEffect, useState } from 'react';
 
 interface TokenQRCodeProps {
   tokenId: string;
@@ -10,25 +11,52 @@ interface TokenQRCodeProps {
 /**
  * TokenQRCode Component
  * Displays a branded M9 QR code that links to the token page
- * - Lime (#BFFF00) on black theme
- * - "M9" logo in center
+ * - Theme-aware: inverts colors based on website theme
+ * - "M9" logo in center with matching background
  */
 const TokenQRCode = ({ tokenId, size = 56, className = '' }: TokenQRCodeProps) => {
   const tokenUrl = getTokenUrl(tokenId);
+  const [isInverted, setIsInverted] = useState(false);
   
-  // Calculate logo size (25% of QR code)
+  // Listen for theme changes
+  useEffect(() => {
+    const checkTheme = () => {
+      setIsInverted(document.documentElement.classList.contains('theme-inverted'));
+    };
+    
+    checkTheme();
+    
+    // Watch for class changes on root element
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { 
+      attributes: true, 
+      attributeFilter: ['class'] 
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+  
+  // Theme-aware colors
+  const bgColor = isInverted ? '#BFFF00' : '#0A0A0A';
+  const fgColor = isInverted ? '#0A0A0A' : '#BFFF00';
+  
+  // Calculate logo size (28% of QR code)
   const logoSize = Math.max(size * 0.28, 14);
 
   return (
     <div 
-      className={`relative border border-border bg-[#0A0A0A] ${className}`}
-      style={{ width: size, height: size }}
+      className={`relative border border-border ${className}`}
+      style={{ 
+        width: size, 
+        height: size,
+        backgroundColor: bgColor,
+      }}
     >
       <QRCodeSVG
         value={tokenUrl}
         size={size}
-        bgColor="#0A0A0A"
-        fgColor="#BFFF00"
+        bgColor={bgColor}
+        fgColor={fgColor}
         level="H" // High error correction to allow for logo overlay
         style={{ width: '100%', height: '100%' }}
       />
@@ -38,18 +66,21 @@ const TokenQRCode = ({ tokenId, size = 56, className = '' }: TokenQRCodeProps) =
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
       >
         <div 
-          className="bg-[#0A0A0A] border border-primary flex items-center justify-center"
+          className="flex items-center justify-center"
           style={{ 
             width: logoSize, 
             height: logoSize,
+            backgroundColor: bgColor,
+            border: `1px solid ${fgColor}`,
           }}
         >
           <span 
-            className="font-bold text-primary"
+            className="font-bold"
             style={{ 
               fontSize: logoSize * 0.5,
               fontFamily: '"IBM Plex Mono", monospace',
               lineHeight: 1,
+              color: fgColor,
             }}
           >
             M9
