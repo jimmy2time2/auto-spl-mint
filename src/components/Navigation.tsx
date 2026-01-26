@@ -25,6 +25,7 @@ const Navigation = () => {
   const navLinks = [
     { path: "/trade", label: "TRADE" },
     { path: "/explorer", label: "EXPLORE" },
+    { path: "/dao", label: "DAO" },
     { path: "/logbook", label: "LOG" },
   ];
   

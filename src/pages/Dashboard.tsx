@@ -6,6 +6,7 @@ import AiMindTicker from "@/components/AiMindTicker";
 import AsciiDivider from "@/components/AsciiDivider";
 import LiveTokenFeed from "@/components/LiveTokenFeed";
 import TokenDiscovery from "@/components/TokenDiscovery";
+import CommunityChat from "@/components/CommunityChat";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
@@ -192,6 +193,38 @@ const Dashboard = () => {
         {/* Token Discovery */}
         <section className="border-b-2 border-primary">
           <TokenDiscovery />
+        </section>
+
+        {/* Community Chat */}
+        <section className="border-b-2 border-primary">
+          <div className="grid grid-cols-1 lg:grid-cols-3">
+            <div className="lg:col-span-2 lg:border-r-2 border-primary h-[400px]">
+              <CommunityChat />
+            </div>
+            <div className="border-t-2 lg:border-t-0 border-primary">
+              <div className="border-b border-primary/30 px-6 py-4">
+                <h2 className="data-sm">DAO GOVERNANCE</h2>
+              </div>
+              <div className="p-6">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Participate in M9 governance. Vote on proposals and shape the protocol's future.
+                </p>
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between items-center">
+                    <span className="data-sm text-muted-foreground">Active Proposals</span>
+                    <span className="data-sm">—</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="data-sm text-muted-foreground">Treasury</span>
+                    <span className="data-sm glow-text">—</span>
+                  </div>
+                </div>
+                <Button asChild className="w-full">
+                  <Link to="/dao">VIEW DAO</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Footer */}
