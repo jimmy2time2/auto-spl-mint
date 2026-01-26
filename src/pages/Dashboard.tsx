@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import CountdownTimer from "@/components/CountdownTimer";
 import AiMindTicker from "@/components/AiMindTicker";
+import { OnboardingTour } from "@/components/OnboardingTour";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Brain, Zap, TrendingUp, Gift, Eye } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
@@ -66,6 +67,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <OnboardingTour />
       <Navigation />
       <AiMindTicker />
       
