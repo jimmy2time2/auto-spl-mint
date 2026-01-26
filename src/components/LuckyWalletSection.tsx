@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { useReferralTracking } from "@/hooks/useReferralTracking";
 import type { Tables } from "@/integrations/supabase/types";
 
 type LuckyWalletSelection = Tables<"lucky_wallet_selections">;
@@ -12,11 +15,18 @@ interface LuckyWalletWithToken extends LuckyWalletSelection {
 }
 
 const LuckyWalletSection = () => {
+  const { publicKey, connected } = useWallet();
+  const { setVisible } = useWalletModal();
+  const walletAddress = publicKey?.toBase58() || null;
+  
+  const { stats, referralCode, loading: referralLoading, shareOnTwitter, getShareUrl } = useReferralTracking(walletAddress);
+  
   const [latestWinner, setLatestWinner] = useState<LuckyWalletWithToken | null>(null);
   const [recentWinners, setRecentWinners] = useState<LuckyWalletWithToken[]>([]);
   const [totalDistributed, setTotalDistributed] = useState(0);
   const [totalWinners, setTotalWinners] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchLuckyWallets = async () => {
@@ -98,13 +108,20 @@ const LuckyWalletSection = () => {
     return `${diffDays}d`;
   };
 
-  const handleShareTwitter = () => {
-    const text = "Join @M9_Protocol - an autonomous AI that creates and trades tokens on Solana. Get lucky and win rewards!";
-    const url = window.location.origin;
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
-      "_blank"
-    );
+  const handleShare = () => {
+    if (!connected) {
+      setVisible(true);
+      return;
+    }
+    shareOnTwitter();
+  };
+
+  const copyReferralLink = async () => {
+    if (!referralCode) return;
+    const url = getShareUrl();
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (loading) {
@@ -112,10 +129,10 @@ const LuckyWalletSection = () => {
       <section className="border-b-2 border-primary">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-0">
           <div className="lg:col-span-3 lg:border-r border-primary/30 p-4">
-            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-12 w-full" />
           </div>
           <div className="p-4">
-            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-12 w-full" />
           </div>
         </div>
       </section>
@@ -127,25 +144,25 @@ const LuckyWalletSection = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4">
         {/* Latest Winner + Recent */}
         <div className="lg:col-span-3 lg:border-r border-primary/30">
-          <div className="flex items-center border-b border-primary/30">
-            <div className="px-4 py-3 border-r border-primary/30">
+          <div className="flex items-center border-b border-primary/30 overflow-x-auto">
+            <div className="px-4 py-3 border-r border-primary/30 shrink-0">
               <span className="data-sm text-muted-foreground">LUCKY WALLET</span>
             </div>
             {latestWinner && (
               <>
-                <div className="px-4 py-3 border-r border-primary/30">
+                <div className="px-4 py-3 border-r border-primary/30 shrink-0">
                   <span className="data-sm text-muted-foreground mr-2">WINNER</span>
                   <span className="data-sm font-mono glow-text">
                     {formatAddress(latestWinner.wallet_address)}
                   </span>
                 </div>
-                <div className="px-4 py-3 border-r border-primary/30">
+                <div className="px-4 py-3 border-r border-primary/30 shrink-0">
                   <span className="data-sm text-muted-foreground mr-2">REWARD</span>
                   <span className="data-sm tabular-nums">
                     {Number(latestWinner.distribution_amount).toLocaleString()}
                   </span>
                 </div>
-                <div className="px-4 py-3 hidden sm:block">
+                <div className="px-4 py-3 hidden sm:block shrink-0">
                   <span className="data-sm text-muted-foreground">
                     {formatTimestamp(latestWinner.selection_timestamp)}
                   </span>
@@ -182,25 +199,57 @@ const LuckyWalletSection = () => {
         {/* Stats + Share */}
         <div className="border-t lg:border-t-0 border-primary/30">
           <div className="grid grid-cols-2 lg:grid-cols-1">
-            <div className="p-4 border-r lg:border-r-0 border-b border-primary/30">
+            <div className="p-3 border-r lg:border-r-0 border-b border-primary/30">
               <p className="text-xs text-muted-foreground mb-1">DISTRIBUTED</p>
-              <p className="data-md tabular-nums">{totalDistributed.toLocaleString()}</p>
+              <p className="data-sm tabular-nums">{totalDistributed.toLocaleString()}</p>
             </div>
-            <div className="p-4 border-b border-primary/30">
-              <p className="text-xs text-muted-foreground mb-1">WINNERS</p>
-              <p className="data-md tabular-nums">{totalWinners}</p>
+            <div className="p-3 border-b border-primary/30">
+              <p className="text-xs text-muted-foreground mb-1">
+                {connected ? 'YOUR ENTRIES' : 'WINNERS'}
+              </p>
+              <p className="data-sm tabular-nums">
+                {connected && stats ? stats.bonus_entries : totalWinners}
+              </p>
             </div>
           </div>
-          <div className="p-4">
-            <p className="text-xs text-muted-foreground mb-2">SHARE FOR +10 ENTRIES</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full text-xs"
-              onClick={handleShareTwitter}
-            >
-              SHARE ON X →
-            </Button>
+          
+          <div className="p-3">
+            {connected && referralCode ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">REF:</span>
+                  <span className="data-sm font-mono">{referralCode}</span>
+                  <button 
+                    onClick={copyReferralLink}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    {copied ? '✓' : 'COPY'}
+                  </button>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full text-xs"
+                  onClick={handleShare}
+                >
+                  SHARE ON X → +10 ENTRIES
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  {connected ? 'LOADING...' : 'CONNECT TO GET ENTRIES'}
+                </p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full text-xs"
+                  onClick={handleShare}
+                >
+                  {connected ? 'SHARE ON X →' : 'CONNECT WALLET'}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
