@@ -1,15 +1,13 @@
 const AiMindTicker = () => {
   const thoughts = [
-    "ANALYZING_MARKET",
-    "CALC_LAUNCH_TIME",
-    "GEN_TOKEN_META",
-    "SCAN_LIQUIDITY",
-    "SELECT_LUCKY",
-    "PROCESS_FEES",
-    "SCAN_NETWORK",
-    "OPT_CURVES",
-    "EVAL_TREASURY",
-    "QUEUE_MINT"
+    "INITIALIZING",
+    "LOADING_MODELS",
+    "CONNECTING_SOLANA",
+    "WARMING_UP",
+    "SCANNING_MARKETS",
+    "READY_TO_LAUNCH",
+    "AWAITING_TRIGGER",
+    "MONITORING"
   ];
 
   return (

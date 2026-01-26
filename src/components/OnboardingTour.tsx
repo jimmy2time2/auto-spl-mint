@@ -11,7 +11,7 @@ interface TourStep {
 const tourSteps: TourStep[] = [
   {
     id: "welcome",
-    title: "MIND9 SYSTEM",
+    title: "M9 SYSTEM",
     description: "Autonomous AI economy. No human control. It creates tokens when it decides to. You trade what it builds.",
     symbol: "○",
   },
@@ -47,7 +47,7 @@ const tourSteps: TourStep[] = [
   },
 ];
 
-const TOUR_STORAGE_KEY = "mind9_tour_completed";
+const TOUR_STORAGE_KEY = "m9_tour_completed";
 
 export const OnboardingTour = () => {
   const [isVisible, setIsVisible] = useState(false);
