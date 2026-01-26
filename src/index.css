@@ -458,3 +458,210 @@
     animation: power-pulse 2s ease-in-out infinite;
   }
 }
+
+/* Solana Wallet Adapter Overrides */
+.wallet-adapter-button {
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+  border: none !important;
+  border-left: 2px solid hsl(var(--primary)) !important;
+  border-radius: 0 !important;
+  height: 100% !important;
+  padding: 0 1rem !important;
+  transition: all 0.15s ease !important;
+}
+
+.wallet-adapter-button:hover {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.wallet-adapter-button-trigger {
+  background: transparent !important;
+}
+
+.wallet-adapter-button[disabled] {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Wallet Modal Overlay */
+.wallet-adapter-modal-overlay {
+  background: hsl(var(--background) / 0.9) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Wallet Modal Container */
+.wallet-adapter-modal-wrapper {
+  font-family: 'IBM Plex Mono', monospace !important;
+  background: hsl(var(--background)) !important;
+  border: 2px solid hsl(var(--primary)) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 30px hsl(var(--primary) / 0.2) !important;
+}
+
+.wallet-adapter-modal-container {
+  background: transparent !important;
+}
+
+/* Modal Title */
+.wallet-adapter-modal-title {
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 0.875rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Modal Close Button */
+.wallet-adapter-modal-button-close {
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--primary)) !important;
+  border-radius: 0 !important;
+  transition: all 0.15s ease !important;
+}
+
+.wallet-adapter-modal-button-close:hover {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.wallet-adapter-modal-button-close svg {
+  fill: currentColor !important;
+}
+
+/* Wallet List */
+.wallet-adapter-modal-list {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.wallet-adapter-modal-list li {
+  border: none !important;
+  margin: 0 !important;
+}
+
+/* Wallet List Buttons */
+.wallet-adapter-modal-list .wallet-adapter-button {
+  border: 1px solid hsl(var(--border)) !important;
+  border-left: 1px solid hsl(var(--border)) !important;
+  margin-bottom: 0.5rem !important;
+  padding: 0.75rem 1rem !important;
+  width: 100% !important;
+  justify-content: flex-start !important;
+  gap: 0.75rem !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button:hover {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border-color: hsl(var(--primary)) !important;
+}
+
+/* Wallet Icon */
+.wallet-adapter-button-start-icon,
+.wallet-adapter-button-end-icon {
+  margin: 0 !important;
+}
+
+.wallet-adapter-button-start-icon img,
+.wallet-adapter-button-end-icon img {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Collapse Button */
+.wallet-adapter-collapse-button {
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  color: hsl(var(--muted-foreground)) !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0.5rem !important;
+}
+
+.wallet-adapter-collapse-button:hover {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Connected Button State */
+.wallet-adapter-button-trigger {
+  gap: 0.5rem !important;
+}
+
+/* Dropdown */
+.wallet-adapter-dropdown {
+  display: flex !important;
+  align-items: stretch !important;
+  height: 100% !important;
+}
+
+.wallet-adapter-dropdown-list {
+  font-family: 'IBM Plex Mono', monospace !important;
+  background: hsl(var(--background)) !important;
+  border: 2px solid hsl(var(--primary)) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin-top: 0 !important;
+  box-shadow: 0 4px 20px hsl(var(--primary) / 0.2) !important;
+}
+
+.wallet-adapter-dropdown-list li {
+  border-bottom: 1px solid hsl(var(--border) / 0.3) !important;
+}
+
+.wallet-adapter-dropdown-list li:last-child {
+  border-bottom: none !important;
+}
+
+.wallet-adapter-dropdown-list-item {
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  color: hsl(var(--foreground)) !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0.75rem 1rem !important;
+  transition: all 0.15s ease !important;
+}
+
+.wallet-adapter-dropdown-list-item:hover {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Wallet Adapter Middle Button (More Options) */
+.wallet-adapter-modal-middle {
+  padding: 1rem 0 !important;
+}
+
+.wallet-adapter-modal-middle-button {
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  color: hsl(var(--muted-foreground)) !important;
+  background: transparent !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0 !important;
+  padding: 0.5rem 1rem !important;
+  transition: all 0.15s ease !important;
+}
+
+.wallet-adapter-modal-middle-button:hover {
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--primary)) !important;
+}
