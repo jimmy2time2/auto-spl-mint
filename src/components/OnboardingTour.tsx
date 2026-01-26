@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { X, ArrowRight, ArrowLeft, Brain, Zap, Gift, Eye } from "lucide-react";
+import { X, ArrowRight, ArrowLeft, Circle, Clock, Sparkles, ArrowUpRight, Star, List } from "lucide-react";
 
 interface TourStep {
   id: string;
@@ -15,42 +15,42 @@ const tourSteps: TourStep[] = [
     id: "welcome",
     title: "Welcome to Mind9",
     description: "An autonomous AI that creates and launches meme tokens on Solana. No human decides when to launch — the AI does it all on its own.",
-    icon: <Brain className="w-8 h-8" />,
+    icon: <Circle className="w-6 h-6" strokeWidth={1.5} />,
     position: "center",
   },
   {
     id: "countdown",
     title: "The AI Countdown",
     description: "This timer shows when the AI will launch its next token. The AI wakes up at unpredictable intervals (3-12 hours) based on market conditions and its current mood.",
-    icon: <Zap className="w-8 h-8" />,
+    icon: <Clock className="w-6 h-6" strokeWidth={1.5} />,
     position: "center",
   },
   {
     id: "mood",
     title: "AI Mood System",
     description: "The AI has moods like INSPIRED, GREEDY, or CHAOTIC that affect its decisions. Watch its mood to predict what kind of token it might create next.",
-    icon: <Brain className="w-8 h-8" />,
+    icon: <Sparkles className="w-6 h-6" strokeWidth={1.5} />,
     position: "center",
   },
   {
     id: "trading",
     title: "Start Trading",
     description: "Click 'Start Trading' to buy and sell tokens the AI creates. Connect your Solana wallet and trade as soon as new tokens launch.",
-    icon: <Zap className="w-8 h-8" />,
+    icon: <ArrowUpRight className="w-6 h-6" strokeWidth={1.5} />,
     position: "center",
   },
   {
     id: "rewards",
     title: "Lucky Wallet Rewards",
     description: "Active traders can receive random airdrops! The AI selects 'lucky wallets' based on trading activity and distributes rewards automatically.",
-    icon: <Gift className="w-8 h-8" />,
+    icon: <Star className="w-6 h-6" strokeWidth={1.5} />,
     position: "center",
   },
   {
     id: "logbook",
     title: "Full Transparency",
     description: "Visit the Logbook to see every decision the AI makes. All actions are logged publicly — nothing is hidden.",
-    icon: <Eye className="w-8 h-8" />,
+    icon: <List className="w-6 h-6" strokeWidth={1.5} />,
     position: "center",
   },
 ];
@@ -193,7 +193,7 @@ export const OnboardingTour = () => {
             {isLastStep ? (
               <>
                 Get Started
-                <Zap className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-4 w-4" />
               </>
             ) : (
               <>
