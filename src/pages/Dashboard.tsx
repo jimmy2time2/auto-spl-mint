@@ -72,21 +72,30 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background crt-flicker">
+      <div className="noise-overlay" />
       <OnboardingTour />
       <Navigation />
       <AiMindTicker />
       
       <main className="max-w-6xl mx-auto">
         {/* Main Grid */}
-        <div className="border-b border-border">
+        <div className="border-b-2 border-primary">
           <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero - Left */}
-            <div className="lg:col-span-2 border-r border-border p-6 md:p-8">
+            <div className="lg:col-span-2 border-r-2 border-primary p-6 md:p-8 relative">
+              {/* Version decorator */}
+              <div className="absolute top-4 right-4 hidden md:block">
+                <span className="version-label">V1.0</span>
+              </div>
+              
               <div className="mb-6">
-                <div className="data-sm text-muted-foreground mb-2">AUTONOMOUS TOKEN ECONOMY</div>
-                <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-4">
-                  A rogue AI with its own wallet.
+                <div className="data-sm text-muted-foreground mb-3 flex items-center gap-2">
+                  <span className="power-pulse">⏻</span>
+                  AUTONOMOUS TOKEN ECONOMY
+                </div>
+                <h1 className="display-xl mb-4 glow-text leading-tight">
+                  A ROGUE AI<br/>WITH ITS OWN<br/>WALLET.
                 </h1>
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
                   It decides when to create tokens, what to name them, and when to launch. 
@@ -95,10 +104,10 @@ const Dashboard = () => {
               </div>
               
               <div className="flex gap-3 mt-6">
-                <Button asChild className="h-10 data-sm px-6">
+                <Button asChild className="h-12 data-sm px-8 glow-border">
                   <Link to="/trade">TRADE →</Link>
                 </Button>
-                <Button asChild variant="outline" className="h-10 data-sm px-6">
+                <Button asChild variant="outline" className="h-12 data-sm px-8">
                   <Link to="/explorer">EXPLORE</Link>
                 </Button>
               </div>
@@ -107,24 +116,24 @@ const Dashboard = () => {
             {/* Stats - Right */}
             <div className="flex flex-col">
               {/* Countdown */}
-              <div className="border-b border-border p-4 flex-1">
+              <div className="border-b-2 border-primary p-4 flex-1 corner-decorator">
                 <div className="data-sm text-muted-foreground mb-1">NEXT LAUNCH</div>
-                <div className="data-lg">
+                <div className="display-lg glow-text">
                   <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
                 </div>
               </div>
               
               {/* Status */}
-              <div className="border-b border-border p-4 flex-1">
+              <div className="border-b border-primary/30 p-4 flex-1">
                 <div className="data-sm text-muted-foreground mb-1">SYSTEM</div>
                 <div className="flex items-center gap-2">
-                  <span className={`status-dot ${isPaused ? 'status-inactive' : 'status-active'}`}></span>
+                  <span className={`power-pulse ${isPaused ? 'opacity-30' : ''}`}>⏻</span>
                   <span className="data-md">{isPaused ? 'PAUSED' : 'ACTIVE'}</span>
                 </div>
               </div>
               
               {/* Mood */}
-              <div className="border-b border-border p-4 flex-1">
+              <div className="border-b border-primary/30 p-4 flex-1">
                 <div className="data-sm text-muted-foreground mb-1">AI MOOD</div>
                 <div className="data-md uppercase">{aiMood?.current_mood || 'INITIALIZING'}</div>
               </div>
@@ -132,29 +141,29 @@ const Dashboard = () => {
               {/* Token Count */}
               <div className="p-4 flex-1">
                 <div className="data-sm text-muted-foreground mb-1">TOKENS CREATED</div>
-                <div className="data-lg">{totalTokens}</div>
+                <div className="display-lg glow-text">{totalTokens}</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Live Feed + Quick Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 border-b border-border">
-          <div className="lg:col-span-2 border-r border-border">
+        <div className="grid grid-cols-1 lg:grid-cols-3 border-b-2 border-primary">
+          <div className="lg:col-span-2 border-r-2 border-primary">
             <LiveTokenFeed />
           </div>
           <div className="flex flex-col">
-            <div className="border-b border-border p-4">
+            <div className="border-b border-primary/30 p-4">
               <div className="data-sm text-muted-foreground mb-1">24H VOLUME</div>
-              <div className="data-lg tabular-nums">${totalVolume.toLocaleString()}</div>
+              <div className="display-lg tabular-nums glow-text">${totalVolume.toLocaleString()}</div>
             </div>
-            <div className="border-b border-border p-4">
+            <div className="border-b border-primary/30 p-4">
               <div className="data-sm text-muted-foreground mb-1">ACTIVE TRADERS</div>
-              <div className="data-lg tabular-nums">{Math.floor(Math.random() * 500) + 100}</div>
+              <div className="display-lg tabular-nums">{Math.floor(Math.random() * 500) + 100}</div>
             </div>
             <div className="p-4">
               <div className="data-sm text-muted-foreground mb-1">AVG TOKEN AGE</div>
-              <div className="data-lg tabular-nums">12h 34m</div>
+              <div className="display-lg tabular-nums">12h 34m</div>
             </div>
           </div>
         </div>
@@ -163,21 +172,21 @@ const Dashboard = () => {
         <AsciiDivider pattern="slash" text="HOW IT WORKS" />
 
         {/* How It Works */}
-        <div className="border-b border-border">
+        <div className="border-b-2 border-primary">
           <div className="grid grid-cols-1 md:grid-cols-3">
-            <div className="border-r border-b md:border-b-0 border-border p-4">
+            <div className="border-r-2 border-primary border-b md:border-b-0 p-5 corner-decorator">
               <div className="data-sm text-muted-foreground mb-2">01</div>
-              <div className="data-md font-bold mb-1">IT THINKS</div>
+              <div className="display-lg mb-2">IT THINKS</div>
               <div className="text-xs text-muted-foreground">AI reads markets, picks a vibe, creates a token from scratch.</div>
             </div>
-            <div className="border-r border-b md:border-b-0 border-border p-4">
+            <div className="border-r-2 border-primary border-b md:border-b-0 p-5">
               <div className="data-sm text-muted-foreground mb-2">02</div>
-              <div className="data-md font-bold mb-1">YOU TRADE</div>
+              <div className="display-lg mb-2">YOU TRADE</div>
               <div className="text-xs text-muted-foreground">Jump in early. Buy the launch. Sell the peak. Your call.</div>
             </div>
-            <div className="p-4">
+            <div className="p-5">
               <div className="data-sm text-muted-foreground mb-2">03</div>
-              <div className="data-md font-bold mb-1">GET LUCKY</div>
+              <div className="display-lg mb-2">GET LUCKY</div>
               <div className="text-xs text-muted-foreground">Active wallets get random airdrops. AI picks favorites.</div>
             </div>
           </div>
@@ -187,7 +196,7 @@ const Dashboard = () => {
         <AsciiDivider pattern="asterisk" text="DISCOVER" />
 
         {/* Token Discovery */}
-        <div className="border-b border-border">
+        <div className="border-b-2 border-primary">
           <TokenDiscovery />
         </div>
 
@@ -195,15 +204,14 @@ const Dashboard = () => {
         <AsciiDivider pattern="equals" />
 
         {/* Footer Info */}
-        <div className="p-4 text-center">
-          <div className="data-sm text-muted-foreground mb-2">
-            ╔══════════════════════════════════════════════════════════╗
-          </div>
+        <div className="p-6 text-center border-b-2 border-primary">
+          <div className="display-lg mb-2 glow-text">M9</div>
           <div className="data-sm text-muted-foreground">
-            M9 • AUTONOMOUS AI ECONOMY • SOLANA
+            AUTONOMOUS AI ECONOMY • SOLANA • VERSION 1.0
           </div>
-          <div className="data-sm text-muted-foreground mt-2">
-            ╚══════════════════════════════════════════════════════════╝
+          <div className="mt-4 flex justify-center gap-4">
+            <span className="power-pulse">⏻</span>
+            <span className="data-sm">BROADCAST LIVE</span>
           </div>
         </div>
       </main>

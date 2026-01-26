@@ -8,13 +8,14 @@ interface TerminalCardProps {
 
 const TerminalCard = ({ title, children, className = "" }: TerminalCardProps) => {
   return (
-    <div className={`border border-border bg-card ${className}`}>
+    <div className={`border-2 border-primary bg-card glow-border ${className}`}>
       {title && (
-        <div className="border-b border-border px-3 py-1.5 bg-muted">
-          <span className="data-sm text-muted-foreground">{title}</span>
+        <div className="border-b-2 border-primary px-4 py-2 bg-muted flex items-center gap-3">
+          <span className="power-pulse">⏻</span>
+          <span className="data-sm">{title}</span>
         </div>
       )}
-      <div className="p-3">
+      <div className="p-4">
         {children}
       </div>
     </div>
