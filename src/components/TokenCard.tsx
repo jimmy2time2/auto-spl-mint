@@ -18,7 +18,7 @@ const TokenCard = ({ id, symbol, name, price, liquidity, volume }: TokenCardProp
           {/* Header with QR code profile picture */}
           <div className="flex items-start gap-4 pb-4 border-b border-border/50">
             {/* QR Code as profile picture */}
-            <TokenQRCode tokenId={id} size={56} />
+            <TokenQRCode tokenId={id} size={56} tokenName={`$${symbol}`} />
             
             <div className="flex-1 min-w-0">
               <h3 className="text-xl font-bold tracking-tight group-hover:text-primary transition-colors metric-display truncate">
