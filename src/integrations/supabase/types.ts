@@ -219,54 +219,75 @@ export type Database = {
         Row: {
           active: boolean
           ai_score: number
+          behavior_score: number | null
           eligibility_date: string | null
           eligibility_type: string
+          engagement_score: number | null
+          evaluated_by: string | null
           flagged_reason: string | null
+          holding_score: number | null
           id: string
           invite_count: number
           is_eligible: boolean
           last_activity: string
+          last_evaluated_at: string | null
           max_buy_percentage: number
           max_sell_percentage: number
+          pump_dump_count: number | null
           token_id: string
           total_bought: number
           total_sold: number
+          trading_score: number | null
           wallet_address: string
           whale_status: boolean
         }
         Insert: {
           active?: boolean
           ai_score?: number
+          behavior_score?: number | null
           eligibility_date?: string | null
           eligibility_type?: string
+          engagement_score?: number | null
+          evaluated_by?: string | null
           flagged_reason?: string | null
+          holding_score?: number | null
           id?: string
           invite_count?: number
           is_eligible?: boolean
           last_activity?: string
+          last_evaluated_at?: string | null
           max_buy_percentage?: number
           max_sell_percentage?: number
+          pump_dump_count?: number | null
           token_id: string
           total_bought?: number
           total_sold?: number
+          trading_score?: number | null
           wallet_address: string
           whale_status?: boolean
         }
         Update: {
           active?: boolean
           ai_score?: number
+          behavior_score?: number | null
           eligibility_date?: string | null
           eligibility_type?: string
+          engagement_score?: number | null
+          evaluated_by?: string | null
           flagged_reason?: string | null
+          holding_score?: number | null
           id?: string
           invite_count?: number
           is_eligible?: boolean
           last_activity?: string
+          last_evaluated_at?: string | null
           max_buy_percentage?: number
           max_sell_percentage?: number
+          pump_dump_count?: number | null
           token_id?: string
           total_bought?: number
           total_sold?: number
+          trading_score?: number | null
           wallet_address?: string
           whale_status?: boolean
         }
@@ -279,6 +300,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dao_eligibility_log: {
+        Row: {
+          ai_confidence: number
+          ai_reasoning: string
+          behavior_score: number
+          engagement_score: number
+          evaluation_timestamp: string
+          holding_score: number
+          id: string
+          new_status: boolean
+          previous_status: boolean | null
+          pump_dump_detected: boolean | null
+          trading_score: number
+          wallet_address: string
+          whale_detected: boolean | null
+        }
+        Insert: {
+          ai_confidence: number
+          ai_reasoning: string
+          behavior_score: number
+          engagement_score: number
+          evaluation_timestamp?: string
+          holding_score: number
+          id?: string
+          new_status: boolean
+          previous_status?: boolean | null
+          pump_dump_detected?: boolean | null
+          trading_score: number
+          wallet_address: string
+          whale_detected?: boolean | null
+        }
+        Update: {
+          ai_confidence?: number
+          ai_reasoning?: string
+          behavior_score?: number
+          engagement_score?: number
+          evaluation_timestamp?: string
+          holding_score?: number
+          id?: string
+          new_status?: boolean
+          previous_status?: boolean | null
+          pump_dump_detected?: boolean | null
+          trading_score?: number
+          wallet_address?: string
+          whale_detected?: boolean | null
+        }
+        Relationships: []
       }
       dao_proposals: {
         Row: {
