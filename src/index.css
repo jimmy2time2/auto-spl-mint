@@ -2,59 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Brutalist Terminal Design System - Inspired by retro computing interfaces */
-/* Dense data displays, visible grids, monospace everything */
+/* Y2K Terminal Design System - Bold neon lime on black */
+/* Inspired by retro livestream overlays and early 2000s tech */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    /* High contrast brutalist terminal */
-    --background: 60 100% 97%;       /* Off-white/cream */
-    --foreground: 0 0% 0%;           /* Pure black */
-    --card: 60 100% 97%;
-    --card-foreground: 0 0% 0%;
-    --popover: 60 100% 97%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 0 0% 0%;              /* Black primary */
-    --primary-foreground: 60 100% 97%;
-    --secondary: 60 50% 92%;
-    --secondary-foreground: 0 0% 0%;
-    --muted: 60 30% 90%;
-    --muted-foreground: 0 0% 35%;
-    --accent: 0 0% 0%;
-    --accent-foreground: 60 100% 97%;
+    /* Y2K Neon Lime on Black - Always dark */
+    --background: 0 0% 4%;             /* Near black */
+    --foreground: 72 100% 50%;         /* Neon lime #BFFF00 */
+    --card: 0 0% 6%;
+    --card-foreground: 72 100% 50%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 72 100% 50%;
+    --primary: 72 100% 50%;            /* Neon lime */
+    --primary-foreground: 0 0% 0%;     /* Black text on lime */
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 72 100% 50%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 72 50% 40%;    /* Dimmed lime */
+    --accent: 72 100% 50%;
+    --accent-foreground: 0 0% 0%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 0%;
-    --input: 60 100% 97%;
-    --ring: 0 0% 0%;
+    --border: 72 100% 50%;             /* Lime borders */
+    --input: 0 0% 10%;
+    --ring: 72 100% 50%;
     --radius: 0rem;
 
     /* Terminal specific tokens */
-    --terminal-grid: 0 0% 85%;
-    --success: 120 60% 35%;
-    --warning: 45 100% 45%;
-    --info: 200 80% 40%;
+    --terminal-grid: 72 40% 15%;
+    --success: 120 100% 50%;
+    --warning: 45 100% 50%;
+    --info: 200 100% 50%;
+    
+    /* Y2K accent colors */
+    --neon-pink: 330 100% 50%;
+    --neon-cyan: 180 100% 50%;
+    --neon-orange: 30 100% 50%;
   }
 
   .dark {
-    --background: 0 0% 3%;
-    --foreground: 120 100% 65%;      /* Terminal green */
-    --card: 0 0% 5%;
-    --card-foreground: 120 100% 65%;
-    --popover: 0 0% 5%;
-    --popover-foreground: 120 100% 65%;
-    --primary: 120 100% 65%;
+    /* Same as root - always dark theme */
+    --background: 0 0% 4%;
+    --foreground: 72 100% 50%;
+    --card: 0 0% 6%;
+    --card-foreground: 72 100% 50%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 72 100% 50%;
+    --primary: 72 100% 50%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 10%;
-    --secondary-foreground: 120 100% 65%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 120 60% 50%;
-    --accent: 120 100% 65%;
+    --secondary-foreground: 72 100% 50%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 72 50% 40%;
+    --accent: 72 100% 50%;
     --accent-foreground: 0 0% 0%;
-    --border: 120 100% 65%;
+    --border: 72 100% 50%;
     --input: 0 0% 10%;
-    --ring: 120 100% 65%;
-    --terminal-grid: 120 40% 20%;
+    --ring: 72 100% 50%;
+    --terminal-grid: 72 40% 15%;
   }
 }
 
@@ -316,7 +324,7 @@
     animation: rotate 0.5s steps(4) infinite;
   }
 
-  /* Scanline effect for terminal mode */
+  /* Scanline effect - always on for Y2K aesthetic */
   .scanlines {
     pointer-events: none;
     position: fixed;
@@ -326,42 +334,111 @@
       0deg,
       transparent,
       transparent 2px,
-      rgba(0, 0, 0, 0.15) 2px,
-      rgba(0, 0, 0, 0.15) 4px
+      rgba(191, 255, 0, 0.02) 2px,
+      rgba(191, 255, 0, 0.02) 4px
     );
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .dark .scanlines {
     opacity: 1;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 255, 0, 0.03) 2px,
-      rgba(0, 255, 0, 0.03) 4px
-    );
   }
 
-  /* Terminal glow effect */
-  .dark body {
-    text-shadow: 0 0 2px hsl(120 100% 65% / 0.5);
+  /* Y2K Neon glow effect */
+  body {
+    text-shadow: 0 0 1px hsl(72 100% 50% / 0.3);
   }
 
-  .dark .glow-text {
-    text-shadow: 0 0 8px hsl(120 100% 65% / 0.8);
+  .glow-text {
+    text-shadow: 0 0 10px hsl(72 100% 50% / 0.8), 0 0 20px hsl(72 100% 50% / 0.4);
+  }
+
+  .glow-border {
+    box-shadow: 0 0 10px hsl(72 100% 50% / 0.3), inset 0 0 10px hsl(72 100% 50% / 0.1);
+  }
+
+  /* Y2K Version label styling */
+  .version-label {
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+  }
+
+  /* Y2K Power icon pulse */
+  @keyframes power-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .power-pulse {
+    animation: power-pulse 2s ease-in-out infinite;
+  }
+
+  /* Y2K Bold display text */
+  .display-xl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 3rem;
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+  }
+
+  .display-lg {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+
+  /* Y2K Corner decorators */
+  .corner-decorator {
+    position: relative;
+  }
+
+  .corner-decorator::before,
+  .corner-decorator::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 1px solid hsl(var(--primary));
+  }
+
+  .corner-decorator::before {
+    top: -1px;
+    left: -1px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .corner-decorator::after {
+    bottom: -1px;
+    right: -1px;
+    border-left: none;
+    border-top: none;
   }
 
   /* CRT flicker animation */
   @keyframes flicker {
     0%, 100% { opacity: 1; }
     92% { opacity: 1; }
-    93% { opacity: 0.8; }
+    93% { opacity: 0.85; }
     94% { opacity: 1; }
   }
 
-  .dark .crt-flicker {
+  .crt-flicker {
     animation: flicker 4s infinite;
+  }
+
+  /* Noise texture overlay */
+  .noise-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   }
 }

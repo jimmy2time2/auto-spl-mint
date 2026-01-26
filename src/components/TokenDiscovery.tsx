@@ -93,22 +93,25 @@ const TokenDiscovery = () => {
   };
 
   return (
-    <div className="border border-border">
+    <div className="border-2 border-primary glow-border">
       {/* Header */}
-      <div className="border-b border-border px-3 py-2 bg-muted flex items-center justify-between">
-        <span className="data-sm">TOKEN DISCOVERY</span>
+      <div className="border-b-2 border-primary px-4 py-3 bg-muted flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="power-pulse">⏻</span>
+          <span className="data-sm">TOKEN DISCOVERY</span>
+        </div>
         <span className="data-sm text-muted-foreground">{tokens.length} TOKENS</span>
       </div>
       
       {/* Filter Tabs */}
-      <div className="border-b border-border p-2 flex gap-1 flex-wrap">
+      <div className="border-b border-primary/30 p-3 flex gap-2 flex-wrap">
         {(['trending', 'new', 'gainers', 'volume'] as FilterType[]).map((f) => (
           <Button
             key={f}
             variant={filter === f ? 'default' : 'outline'}
             size="sm"
             onClick={() => setFilter(f)}
-            className="h-7 px-2 data-sm"
+            className="h-8 px-3 data-sm"
           >
             {f === 'trending' && '🔥 '}
             {f === 'new' && '✨ '}
@@ -122,25 +125,25 @@ const TokenDiscovery = () => {
       {/* Token Grid */}
       {loading ? (
         <div className="p-8 text-center">
-          <div className="data-sm text-muted-foreground">LOADING<span className="cursor-blink">_</span></div>
+          <div className="data-sm">LOADING<span className="cursor-blink">_</span></div>
         </div>
       ) : tokens.length === 0 ? (
         <div className="p-8 text-center">
-          <div className="text-2xl mb-2 opacity-30">○</div>
+          <div className="text-2xl mb-2 opacity-30">⏻</div>
           <div className="data-sm text-muted-foreground">NO TOKENS YET</div>
         </div>
       ) : (
-        <div className="divide-y divide-border">
+        <div className="divide-y divide-primary/30">
           {tokens.map((token, index) => (
             <Link
               key={token.id}
               to={`/token/${token.id}`}
-              className={`block p-3 hover:bg-secondary transition-colors ${token.isHot ? 'bg-muted/30' : ''}`}
+              className={`block p-4 hover:bg-primary/10 transition-colors ${token.isHot ? 'bg-primary/5' : ''}`}
             >
               <div className="flex items-start justify-between gap-3">
                 {/* Left: Rank + Info */}
-                <div className="flex items-start gap-3">
-                  <div className={`data-lg font-bold w-6 ${index < 3 ? 'text-primary' : 'text-muted-foreground'}`}>
+                <div className="flex items-start gap-4">
+                  <div className={`display-lg w-8 ${index < 3 ? 'glow-text' : 'text-muted-foreground'}`}>
                     {index + 1}
                   </div>
                   <div>
@@ -150,7 +153,7 @@ const TokenDiscovery = () => {
                         <Badge 
                           key={i} 
                           variant="secondary" 
-                          className="text-[9px] px-1 py-0 h-4"
+                          className="text-[9px] px-1.5 py-0.5 h-4 border border-primary/30"
                         >
                           {badge}
                         </Badge>
@@ -169,7 +172,7 @@ const TokenDiscovery = () => {
                 <div className="text-right">
                   <div className="data-md font-bold tabular-nums">${Number(token.price).toFixed(6)}</div>
                   <div className={`text-xs font-bold tabular-nums ${
-                    token.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'
+                    token.priceChange24h >= 0 ? 'text-primary glow-text' : 'text-destructive'
                   }`}>
                     {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(1)}%
                   </div>
@@ -184,8 +187,8 @@ const TokenDiscovery = () => {
       )}
       
       {/* View All */}
-      <div className="border-t border-border p-2 text-center">
-        <Link to="/explorer" className="data-sm text-muted-foreground hover:text-foreground">
+      <div className="border-t-2 border-primary p-3 text-center">
+        <Link to="/explorer" className="data-sm hover:text-primary transition-colors">
           VIEW ALL TOKENS →
         </Link>
       </div>

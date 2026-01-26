@@ -104,9 +104,9 @@ const LiveTokenFeed = () => {
 
   const getTypeColor = (type: FeedItem['type']) => {
     switch (type) {
-      case 'launch': return 'text-green-500';
-      case 'trade': return 'text-blue-400';
-      case 'price': return 'text-yellow-400';
+      case 'launch': return 'text-primary glow-text';
+      case 'trade': return 'text-primary';
+      case 'price': return 'text-primary';
       case 'ai_thought': return 'text-muted-foreground';
       default: return 'text-foreground';
     }
@@ -123,18 +123,21 @@ const LiveTokenFeed = () => {
   };
 
   return (
-    <div className="border border-border bg-background">
-      <div className="border-b border-border px-3 py-2 bg-muted flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="status-dot status-active"></span>
+    <div className="border-2 border-primary bg-background glow-border">
+      <div className="border-b-2 border-primary px-4 py-3 bg-muted flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="power-pulse text-lg">⏻</span>
           <span className="data-sm">LIVE FEED</span>
         </div>
-        <span className="data-sm text-muted-foreground animate-pulse">● REC</span>
+        <div className="flex items-center gap-2">
+          <span className="data-sm text-muted-foreground">VERSION 1.0</span>
+          <span className="data-sm animate-pulse">● REC</span>
+        </div>
       </div>
       
       <div 
         ref={containerRef}
-        className="h-48 overflow-y-auto p-2 font-mono text-xs space-y-1"
+        className="h-48 overflow-y-auto p-3 font-mono text-xs space-y-1"
         style={{ scrollBehavior: 'smooth' }}
       >
         {items.map((item, idx) => (
@@ -152,20 +155,20 @@ const LiveTokenFeed = () => {
               })}]
             </span>
             {item.tokenId ? (
-              <Link to={`/token/${item.tokenId}`} className="hover:underline">
+              <Link to={`/token/${item.tokenId}`} className="hover:underline glow-text">
                 {item.message}
               </Link>
             ) : (
               <span>{item.message}</span>
             )}
             {item.change !== undefined && (
-              <span className={item.change >= 0 ? 'text-green-500' : 'text-red-500'}>
+              <span className={item.change >= 0 ? 'text-primary glow-text' : 'text-destructive'}>
                 {item.change >= 0 ? '+' : ''}{item.change.toFixed(1)}%
               </span>
             )}
           </div>
         ))}
-        <div className="text-muted-foreground">
+        <div className="text-primary">
           <span className="cursor-blink">_</span>
         </div>
       </div>

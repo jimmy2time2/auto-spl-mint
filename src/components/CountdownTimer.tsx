@@ -41,7 +41,7 @@ const CountdownTimer = ({ targetDate, isPaused = false }: CountdownTimerProps) =
   }
 
   return (
-    <span className="tabular-nums">
+    <span className="tabular-nums glow-text">
       {String(timeLeft.hours).padStart(2, '0')}:
       {String(timeLeft.minutes).padStart(2, '0')}:
       {String(timeLeft.seconds).padStart(2, '0')}
