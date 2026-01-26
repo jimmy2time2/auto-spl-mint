@@ -5,9 +5,13 @@ import Navigation from "@/components/Navigation";
 import AsciiDivider from "@/components/AsciiDivider";
 import { TradeForm } from "@/components/TradeForm";
 import { TradingChart } from "@/components/TradingChart";
+import OrderBook from "@/components/OrderBook";
+import BondingCurveChart from "@/components/BondingCurveChart";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
+import { Link } from "react-router-dom";
 
 interface Token {
   id: string;
@@ -17,12 +21,21 @@ interface Token {
   volume_24h: number;
   holders: number;
   liquidity: number;
+  supply: number;
   created_at: string;
 }
 
 interface WalletBalance {
   token_id: string;
   balance: number;
+}
+
+interface RecentTrade {
+  type: 'buy' | 'sell';
+  amount: number;
+  price: number;
+  time: Date;
+  wallet: string;
 }
 
 const Trade = () => {
@@ -35,6 +48,8 @@ const Trade = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [walletBalances, setWalletBalances] = useState<WalletBalance[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
+  const [recentTrades, setRecentTrades] = useState<RecentTrade[]>([]);
+  const [viewMode, setViewMode] = useState<'chart' | 'depth'>('chart');
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -118,6 +133,16 @@ const Trade = () => {
       };
     });
     setChartData(data);
+
+    // Generate mock recent trades
+    const trades: RecentTrade[] = Array.from({ length: 8 }, (_, i) => ({
+      type: Math.random() > 0.5 ? 'buy' : 'sell',
+      amount: Math.random() * 5000 + 100,
+      price: selectedToken.price * (1 + (Math.random() - 0.5) * 0.02),
+      time: new Date(now - i * 60000 * Math.random() * 10),
+      wallet: `${Math.random().toString(36).substring(2, 6)}...${Math.random().toString(36).substring(2, 6)}`,
+    }));
+    setRecentTrades(trades.sort((a, b) => b.time.getTime() - a.time.getTime()));
   }, [selectedToken]);
 
   const filteredTokens = tokens.filter(token =>
@@ -154,23 +179,29 @@ const Trade = () => {
     <>
       <Navigation />
       <div className="min-h-screen bg-background">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="border-b border-border px-4 py-3 bg-muted">
             <div className="flex items-center justify-between">
               <div>
                 <div className="data-sm">TRADING TERMINAL</div>
-                <div className="text-xs text-muted-foreground">Buy & sell Mind9 tokens</div>
+                <div className="text-xs text-muted-foreground">Buy & sell M9 tokens</div>
               </div>
-              <div className="data-sm text-muted-foreground">
-                {filteredTokens.length} MARKETS
+              <div className="flex items-center gap-4">
+                <div className="hidden md:flex items-center gap-2">
+                  <span className="status-dot status-active"></span>
+                  <span className="data-sm text-muted-foreground">LIVE</span>
+                </div>
+                <div className="data-sm text-muted-foreground">
+                  {filteredTokens.length} MARKETS
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12">
             {/* Token List */}
-            <div className="lg:col-span-1 border-r border-border">
+            <div className="lg:col-span-2 border-r border-border">
               {/* Search */}
               <div className="border-b border-border p-2">
                 <Input
@@ -183,7 +214,7 @@ const Trade = () => {
               </div>
 
               {/* Token List */}
-              <div className="max-h-[500px] overflow-y-auto divide-y divide-border">
+              <div className="max-h-[600px] overflow-y-auto divide-y divide-border">
                 {filteredTokens.length === 0 ? (
                   <div className="p-4 text-center">
                     <div className="data-sm text-muted-foreground">NO TOKENS</div>
@@ -192,6 +223,7 @@ const Trade = () => {
                   filteredTokens.map((token) => {
                     const isSelected = selectedToken?.id === token.id;
                     const balance = getTokenBalance(token.id);
+                    const change = (Math.random() - 0.3) * 20;
                     
                     return (
                       <button
@@ -207,13 +239,13 @@ const Trade = () => {
                         <div className="flex justify-between items-start mb-1">
                           <div>
                             <div className="data-sm font-bold">{token.symbol}</div>
-                            <div className="text-xs opacity-70 truncate max-w-[100px]">{token.name}</div>
+                            <div className="text-xs opacity-70 truncate max-w-[80px]">{token.name}</div>
                           </div>
                           <div className="text-right">
                             <div className="data-sm tabular-nums">${token.price.toFixed(6)}</div>
-                            {balance > 0 && (
-                              <div className="text-xs opacity-70">{balance.toFixed(2)}</div>
-                            )}
+                            <div className={`text-[10px] tabular-nums ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                              {change >= 0 ? '+' : ''}{change.toFixed(1)}%
+                            </div>
                           </div>
                         </div>
                       </button>
@@ -221,11 +253,159 @@ const Trade = () => {
                   })
                 )}
               </div>
+            </div>
+
+            {/* Main Trading Area */}
+            <div className="lg:col-span-7 border-r border-border">
+              {selectedToken ? (
+                <>
+                  {/* Token Header */}
+                  <div className="border-b border-border p-4">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl font-bold">{selectedToken.name}</span>
+                          <Link 
+                            to={`/token/${selectedToken.id}`} 
+                            className="data-sm text-muted-foreground hover:text-foreground"
+                          >
+                            VIEW →
+                          </Link>
+                        </div>
+                        <div className="data-sm text-muted-foreground">${selectedToken.symbol}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="data-lg tabular-nums">${selectedToken.price.toFixed(6)}</div>
+                        <div className="text-xs text-green-500">+{(Math.random() * 10).toFixed(1)}% 24h</div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-2">
+                      <div className="border border-border p-2">
+                        <div className="data-sm text-muted-foreground mb-1">VOL 24H</div>
+                        <div className="data-md tabular-nums">${selectedToken.volume_24h.toFixed(0)}</div>
+                      </div>
+                      <div className="border border-border p-2">
+                        <div className="data-sm text-muted-foreground mb-1">HOLDERS</div>
+                        <div className="data-md tabular-nums">{selectedToken.holders}</div>
+                      </div>
+                      <div className="border border-border p-2">
+                        <div className="data-sm text-muted-foreground mb-1">LIQUIDITY</div>
+                        <div className="data-md tabular-nums">${selectedToken.liquidity.toFixed(0)}</div>
+                      </div>
+                      <div className="border border-border p-2">
+                        <div className="data-sm text-muted-foreground mb-1">MCAP</div>
+                        <div className="data-md tabular-nums">${(selectedToken.price * selectedToken.supply).toFixed(0)}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Chart Toggle */}
+                  <div className="border-b border-border p-2 flex gap-1">
+                    <Button
+                      variant={viewMode === 'chart' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setViewMode('chart')}
+                      className="h-7 px-3 data-sm"
+                    >
+                      📈 CHART
+                    </Button>
+                    <Button
+                      variant={viewMode === 'depth' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setViewMode('depth')}
+                      className="h-7 px-3 data-sm"
+                    >
+                      📊 DEPTH
+                    </Button>
+                  </div>
+
+                  {/* Chart */}
+                  <div className="border-b border-border">
+                    {viewMode === 'chart' ? (
+                      <TradingChart 
+                        data={chartData}
+                        tokenSymbol={selectedToken.symbol}
+                      />
+                    ) : (
+                      <div className="p-4">
+                        <OrderBook currentPrice={selectedToken.price} />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Recent Trades */}
+                  <div className="border-b border-border">
+                    <div className="border-b border-border px-3 py-2 bg-muted">
+                      <span className="data-sm">RECENT TRADES</span>
+                    </div>
+                    <div className="max-h-32 overflow-y-auto">
+                      <table className="w-full text-xs">
+                        <thead className="sticky top-0 bg-background">
+                          <tr className="border-b border-border">
+                            <td className="p-2 text-muted-foreground">TYPE</td>
+                            <td className="p-2 text-muted-foreground text-right">PRICE</td>
+                            <td className="p-2 text-muted-foreground text-right">AMOUNT</td>
+                            <td className="p-2 text-muted-foreground text-right">TIME</td>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/50">
+                          {recentTrades.map((trade, i) => (
+                            <tr key={i}>
+                              <td className={`p-2 font-bold ${trade.type === 'buy' ? 'text-green-500' : 'text-red-500'}`}>
+                                {trade.type.toUpperCase()}
+                              </td>
+                              <td className="p-2 text-right tabular-nums">${trade.price.toFixed(6)}</td>
+                              <td className="p-2 text-right tabular-nums">{trade.amount.toFixed(0)}</td>
+                              <td className="p-2 text-right text-muted-foreground">
+                                {trade.time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Trade Form */}
+                  <TradeForm
+                    tokenId={selectedToken.id}
+                    tokenSymbol={selectedToken.symbol}
+                    currentPrice={selectedToken.price}
+                    onTradeComplete={handleTradeComplete}
+                  />
+                </>
+              ) : (
+                <div className="p-12 text-center">
+                  <div className="text-2xl mb-2">→</div>
+                  <div className="data-sm text-muted-foreground">SELECT A TOKEN</div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Sidebar */}
+            <div className="lg:col-span-3">
+              {selectedToken && (
+                <>
+                  {/* Bonding Curve */}
+                  <div className="p-3 border-b border-border">
+                    <BondingCurveChart
+                      currentSupply={selectedToken.supply * 0.35}
+                      totalSupply={selectedToken.supply}
+                      currentPrice={selectedToken.price}
+                    />
+                  </div>
+
+                  {/* Order Book */}
+                  <div className="p-3">
+                    <OrderBook currentPrice={selectedToken.price} depth={5} />
+                  </div>
+                </>
+              )}
 
               {/* Holdings */}
               {connected && walletBalances.filter(b => b.balance > 0).length > 0 && (
                 <>
-                  {/* ASCII Separator */}
                   <AsciiDivider pattern="wave" />
                   
                   <div className="border-t border-b border-border px-3 py-2 bg-muted">
@@ -250,62 +430,6 @@ const Trade = () => {
                     })}
                   </div>
                 </>
-              )}
-            </div>
-
-            {/* Chart & Trade */}
-            <div className="lg:col-span-3">
-              {selectedToken ? (
-                <>
-                  {/* Token Header */}
-                  <div className="border-b border-border p-4">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <div className="text-xl font-bold">{selectedToken.name}</div>
-                        <div className="data-sm text-muted-foreground">${selectedToken.symbol}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="data-lg tabular-nums">${selectedToken.price.toFixed(6)}</div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="border border-border p-2">
-                        <div className="data-sm text-muted-foreground mb-1">VOL 24H</div>
-                        <div className="data-md tabular-nums">${selectedToken.volume_24h.toFixed(2)}</div>
-                      </div>
-                      <div className="border border-border p-2">
-                        <div className="data-sm text-muted-foreground mb-1">HOLDERS</div>
-                        <div className="data-md tabular-nums">{selectedToken.holders}</div>
-                      </div>
-                      <div className="border border-border p-2">
-                        <div className="data-sm text-muted-foreground mb-1">LIQUIDITY</div>
-                        <div className="data-md tabular-nums">${selectedToken.liquidity.toFixed(2)}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Chart */}
-                  <div className="border-b border-border">
-                    <TradingChart 
-                      data={chartData}
-                      tokenSymbol={selectedToken.symbol}
-                    />
-                  </div>
-
-                  {/* Trade Form */}
-                  <TradeForm
-                    tokenId={selectedToken.id}
-                    tokenSymbol={selectedToken.symbol}
-                    currentPrice={selectedToken.price}
-                    onTradeComplete={handleTradeComplete}
-                  />
-                </>
-              ) : (
-                <div className="p-12 text-center">
-                  <div className="text-2xl mb-2">→</div>
-                  <div className="data-sm text-muted-foreground">SELECT A TOKEN</div>
-                </div>
               )}
             </div>
           </div>

@@ -4,6 +4,8 @@ import Navigation from "@/components/Navigation";
 import CountdownTimer from "@/components/CountdownTimer";
 import AiMindTicker from "@/components/AiMindTicker";
 import AsciiDivider from "@/components/AsciiDivider";
+import LiveTokenFeed from "@/components/LiveTokenFeed";
+import TokenDiscovery from "@/components/TokenDiscovery";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
@@ -23,6 +25,7 @@ const Dashboard = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [totalTokens, setTotalTokens] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [totalVolume, setTotalVolume] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,7 +47,11 @@ const Dashboard = () => {
       }
       
       if (moodRes.data) setAiMood(moodRes.data);
-      if (tokensRes.data) setTokens(tokensRes.data);
+      if (tokensRes.data) {
+        setTokens(tokensRes.data);
+        const vol = tokensRes.data.reduce((sum, t) => sum + Number(t.volume_24h), 0);
+        setTotalVolume(vol);
+      }
       if (countRes.count !== null) setTotalTokens(countRes.count);
       
       setLoading(false);
@@ -70,12 +77,12 @@ const Dashboard = () => {
       <Navigation />
       <AiMindTicker />
       
-      <main className="max-w-5xl mx-auto">
+      <main className="max-w-6xl mx-auto">
         {/* Main Grid */}
         <div className="border-b border-border">
-          <div className="grid grid-cols-1 md:grid-cols-3">
+          <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero - Left */}
-            <div className="md:col-span-2 border-r border-border p-6 md:p-8">
+            <div className="lg:col-span-2 border-r border-border p-6 md:p-8">
               <div className="mb-6">
                 <div className="data-sm text-muted-foreground mb-2">AUTONOMOUS TOKEN ECONOMY</div>
                 <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-4">
@@ -131,6 +138,27 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Live Feed + Quick Stats */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 border-b border-border">
+          <div className="lg:col-span-2 border-r border-border">
+            <LiveTokenFeed />
+          </div>
+          <div className="flex flex-col">
+            <div className="border-b border-border p-4">
+              <div className="data-sm text-muted-foreground mb-1">24H VOLUME</div>
+              <div className="data-lg tabular-nums">${totalVolume.toLocaleString()}</div>
+            </div>
+            <div className="border-b border-border p-4">
+              <div className="data-sm text-muted-foreground mb-1">ACTIVE TRADERS</div>
+              <div className="data-lg tabular-nums">{Math.floor(Math.random() * 500) + 100}</div>
+            </div>
+            <div className="p-4">
+              <div className="data-sm text-muted-foreground mb-1">AVG TOKEN AGE</div>
+              <div className="data-lg tabular-nums">12h 34m</div>
+            </div>
+          </div>
+        </div>
+
         {/* ASCII Separator */}
         <AsciiDivider pattern="slash" text="HOW IT WORKS" />
 
@@ -156,53 +184,12 @@ const Dashboard = () => {
         </div>
 
         {/* ASCII Separator */}
-        <AsciiDivider pattern="asterisk" />
+        <AsciiDivider pattern="asterisk" text="DISCOVER" />
 
-        {/* Recent Tokens or Empty State */}
-        {tokens.length > 0 ? (
-          <div className="border-b border-border">
-            <div className="flex items-center justify-between border-b border-border px-4 py-2 bg-muted">
-              <span className="data-sm">RECENT TOKENS</span>
-              <Link to="/explorer" className="data-sm text-muted-foreground hover:text-foreground">
-                VIEW ALL →
-              </Link>
-            </div>
-            <table className="data-table w-full">
-              <thead>
-                <tr>
-                  <th>SYMBOL</th>
-                  <th className="hidden sm:table-cell">NAME</th>
-                  <th className="text-right">PRICE</th>
-                  <th className="text-right hidden md:table-cell">LIQUIDITY</th>
-                  <th className="text-right hidden lg:table-cell">HOLDERS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tokens.map((token) => (
-                  <tr key={token.id}>
-                    <td>
-                      <Link to={`/token/${token.id}`} className="font-bold hover:underline">
-                        ${token.symbol}
-                      </Link>
-                    </td>
-                    <td className="hidden sm:table-cell text-muted-foreground">{token.name}</td>
-                    <td className="text-right tabular-nums">{Number(token.price).toFixed(6)}</td>
-                    <td className="text-right tabular-nums hidden md:table-cell">{Number(token.liquidity)} SOL</td>
-                    <td className="text-right tabular-nums hidden lg:table-cell">{token.holders}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="border-b border-border p-8 text-center">
-            <div className="text-3xl mb-3 opacity-30">○</div>
-            <div className="data-md font-bold mb-2">NO TOKENS YET</div>
-            <div className="text-xs text-muted-foreground max-w-xs mx-auto">
-              The AI is warming up. First token launch coming soon. Watch the countdown.
-            </div>
-          </div>
-        )}
+        {/* Token Discovery */}
+        <div className="border-b border-border">
+          <TokenDiscovery />
+        </div>
 
         {/* ASCII Separator */}
         <AsciiDivider pattern="equals" />

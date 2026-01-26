@@ -4,43 +4,108 @@ import Navigation from "@/components/Navigation";
 import AsciiDivider from "@/components/AsciiDivider";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Token = Tables<"tokens">;
 
+type SortField = 'launch_timestamp' | 'price' | 'volume_24h' | 'holders' | 'liquidity';
+type FilterType = 'all' | 'new' | 'trending' | 'gainers';
+
+interface TokenWithMetrics extends Token {
+  priceChange24h: number;
+  isNew: boolean;
+  isHot: boolean;
+}
+
 const Explorer = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<keyof Token>("launch_timestamp");
-  const [tokens, setTokens] = useState<Token[]>([]);
+  const [sortBy, setSortBy] = useState<SortField>("launch_timestamp");
+  const [filter, setFilter] = useState<FilterType>("all");
+  const [tokens, setTokens] = useState<TokenWithMetrics[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const itemsPerPage = 20;
 
   useEffect(() => {
     const fetchTokens = async () => {
+      setLoading(true);
+      
       let query = supabase
         .from("tokens")
         .select("*", { count: 'exact' });
 
       if (searchTerm) {
-        query = query.ilike("symbol", `%${searchTerm}%`);
+        query = query.or(`symbol.ilike.%${searchTerm}%,name.ilike.%${searchTerm}%`);
       }
 
       query = query.order(sortBy, { ascending: false });
+      query = query.range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
 
       const { data, count } = await query;
 
-      if (data) setTokens(data);
+      if (data) {
+        const enriched: TokenWithMetrics[] = data.map((token) => {
+          const priceChange = (Math.random() - 0.3) * 80;
+          const isNew = new Date(token.launch_timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+          const isHot = Number(token.volume_24h) > 5000 || priceChange > 30;
+          
+          return {
+            ...token,
+            priceChange24h: priceChange,
+            isNew,
+            isHot,
+          };
+        });
+
+        // Apply filters
+        let filtered = enriched;
+        switch (filter) {
+          case 'new':
+            filtered = enriched.filter(t => t.isNew);
+            break;
+          case 'trending':
+            filtered = enriched.filter(t => t.isHot);
+            break;
+          case 'gainers':
+            filtered = enriched.filter(t => t.priceChange24h > 0).sort((a, b) => b.priceChange24h - a.priceChange24h);
+            break;
+        }
+
+        setTokens(filtered);
+      }
       if (count !== null) setTotalCount(count);
+      setLoading(false);
     };
 
     fetchTokens();
-  }, [searchTerm, sortBy]);
+  }, [searchTerm, sortBy, filter, page]);
+
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toFixed(2);
+  };
+
+  const formatAge = (timestamp: string) => {
+    const diff = Date.now() - new Date(timestamp).getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(hours / 24);
+    
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    return 'just now';
+  };
+
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="max-w-5xl mx-auto">
+      <main className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="border-b border-border px-4 py-3 bg-muted">
           <div className="flex items-center justify-between">
@@ -48,101 +113,195 @@ const Explorer = () => {
               <div className="data-sm">TOKEN EXPLORER</div>
               <div className="text-xs text-muted-foreground">All AI-generated tokens</div>
             </div>
-            <div className="data-sm text-muted-foreground">
-              {totalCount} TOKENS
+            <div className="flex items-center gap-3">
+              <span className="status-dot status-active"></span>
+              <span className="data-sm text-muted-foreground">
+                {totalCount} TOKENS
+              </span>
             </div>
           </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="border-b border-border p-3 flex gap-2 overflow-x-auto">
+          {(['all', 'new', 'trending', 'gainers'] as FilterType[]).map((f) => (
+            <Button
+              key={f}
+              variant={filter === f ? 'default' : 'outline'}
+              onClick={() => setFilter(f)}
+              className="h-8 px-3 data-sm whitespace-nowrap"
+            >
+              {f === 'all' && '📋 '}
+              {f === 'new' && '✨ '}
+              {f === 'trending' && '🔥 '}
+              {f === 'gainers' && '🚀 '}
+              {f.toUpperCase()}
+            </Button>
+          ))}
         </div>
 
         {/* Toolbar */}
         <div className="border-b border-border p-3">
           <div className="flex flex-col md:flex-row gap-2">
             <Input
-              placeholder="SEARCH SYMBOL..."
+              placeholder="SEARCH TOKEN OR SYMBOL..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 h-8 text-xs border-border"
             />
-            <div className="flex gap-1">
-              <Button
-                variant={sortBy === "price" ? "default" : "outline"}
-                onClick={() => setSortBy("price")}
-                className="h-8 px-3 data-sm"
-              >
-                PRICE
-              </Button>
-              <Button
-                variant={sortBy === "volume_24h" ? "default" : "outline"}
-                onClick={() => setSortBy("volume_24h")}
-                className="h-8 px-3 data-sm"
-              >
-                VOL
-              </Button>
-              <Button
-                variant={sortBy === "launch_timestamp" ? "default" : "outline"}
-                onClick={() => setSortBy("launch_timestamp")}
-                className="h-8 px-3 data-sm"
-              >
-                DATE
-              </Button>
+            <div className="flex gap-1 flex-wrap">
+              {(['launch_timestamp', 'price', 'volume_24h', 'holders', 'liquidity'] as SortField[]).map((field) => {
+                const labels: Record<SortField, string> = {
+                  launch_timestamp: 'DATE',
+                  price: 'PRICE',
+                  volume_24h: 'VOL',
+                  holders: 'HOLDERS',
+                  liquidity: 'LIQ',
+                };
+                return (
+                  <Button
+                    key={field}
+                    variant={sortBy === field ? "default" : "outline"}
+                    onClick={() => setSortBy(field)}
+                    className="h-8 px-3 data-sm"
+                  >
+                    {labels[field]}
+                  </Button>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="data-table w-full min-w-[600px]">
-            <thead>
-              <tr>
-                <th>SYMBOL</th>
-                <th className="hidden sm:table-cell">NAME</th>
-                <th className="text-right">PRICE</th>
-                <th className="text-right hidden md:table-cell">VOL 24H</th>
-                <th className="text-right">LIQUIDITY</th>
-                <th className="text-right hidden lg:table-cell">HOLDERS</th>
-                <th className="text-right hidden xl:table-cell">LAUNCHED</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tokens.map((token) => (
-                <tr key={token.id}>
-                  <td>
-                    <Link to={`/token/${token.id}`} className="font-bold hover:underline">
-                      ${token.symbol}
-                    </Link>
-                  </td>
-                  <td className="hidden sm:table-cell text-muted-foreground">{token.name}</td>
-                  <td className="text-right tabular-nums">${Number(token.price).toFixed(6)}</td>
-                  <td className="text-right tabular-nums hidden md:table-cell">${Number(token.volume_24h).toLocaleString()}</td>
-                  <td className="text-right tabular-nums">{Number(token.liquidity)} SOL</td>
-                  <td className="text-right tabular-nums hidden lg:table-cell">{token.holders}</td>
-                  <td className="text-right text-muted-foreground hidden xl:table-cell">
-                    {new Date(token.launch_timestamp).toLocaleDateString()}
-                  </td>
-                </tr>
+        {/* Loading State */}
+        {loading ? (
+          <div className="p-12 text-center">
+            <div className="data-lg mb-2">LOADING<span className="cursor-blink">_</span></div>
+          </div>
+        ) : tokens.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="text-3xl mb-3 opacity-30">○</div>
+            <div className="data-md font-bold mb-2">NO TOKENS FOUND</div>
+            <div className="text-xs text-muted-foreground">Try adjusting your search or filters</div>
+          </div>
+        ) : (
+          <>
+            {/* Token Grid */}
+            <div className="divide-y divide-border">
+              {tokens.map((token, index) => (
+                <Link
+                  key={token.id}
+                  to={`/token/${token.id}`}
+                  className={`block p-4 hover:bg-secondary transition-colors ${token.isHot ? 'bg-muted/30' : ''}`}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    {/* Left: Rank + Token Info */}
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      <div className={`data-lg font-bold w-8 text-center ${index < 3 ? 'text-primary' : 'text-muted-foreground'}`}>
+                        {index + 1 + (page - 1) * itemsPerPage}
+                      </div>
+                      
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="data-md font-bold">${token.symbol}</span>
+                          {token.isNew && (
+                            <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4">
+                              ✨ NEW
+                            </Badge>
+                          )}
+                          {token.isHot && (
+                            <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4">
+                              🔥 HOT
+                            </Badge>
+                          )}
+                          {token.priceChange24h > 50 && (
+                            <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4">
+                              🚀 PUMP
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">{token.name}</div>
+                        <div className="text-[10px] text-muted-foreground mt-1">
+                          {formatAge(token.launch_timestamp)} • {token.holders} holders
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Stats Grid */}
+                    <div className="hidden md:grid grid-cols-4 gap-6 text-right">
+                      <div>
+                        <div className="data-sm font-bold tabular-nums">${Number(token.price).toFixed(6)}</div>
+                        <div className="text-[10px] text-muted-foreground">PRICE</div>
+                      </div>
+                      <div>
+                        <div className={`data-sm font-bold tabular-nums ${
+                          token.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'
+                        }`}>
+                          {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(1)}%
+                        </div>
+                        <div className="text-[10px] text-muted-foreground">24H</div>
+                      </div>
+                      <div>
+                        <div className="data-sm tabular-nums">${formatNumber(Number(token.volume_24h))}</div>
+                        <div className="text-[10px] text-muted-foreground">VOL</div>
+                      </div>
+                      <div>
+                        <div className="data-sm tabular-nums">{formatNumber(Number(token.liquidity))} SOL</div>
+                        <div className="text-[10px] text-muted-foreground">LIQ</div>
+                      </div>
+                    </div>
+
+                    {/* Mobile: Just price + change */}
+                    <div className="md:hidden text-right">
+                      <div className="data-sm font-bold tabular-nums">${Number(token.price).toFixed(6)}</div>
+                      <div className={`text-xs font-bold tabular-nums ${
+                        token.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'
+                      }`}>
+                        {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(1)}%
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
 
-        {/* ASCII Separator */}
-        <AsciiDivider pattern="dash" />
+            {/* ASCII Separator */}
+            <AsciiDivider pattern="dash" />
 
-        {/* Pagination */}
-        <div className="border-t border-border p-3 flex justify-between items-center">
-          <div className="data-sm text-muted-foreground">
-            1-{tokens.length} OF {totalCount}
-          </div>
-          <div className="flex gap-1">
-            <Button variant="outline" className="h-8 px-3 data-sm">← PREV</Button>
-            <Button variant="outline" className="h-8 px-3 data-sm">NEXT →</Button>
-          </div>
-        </div>
+            {/* Pagination */}
+            <div className="border-t border-border p-3 flex justify-between items-center">
+              <div className="data-sm text-muted-foreground">
+                {((page - 1) * itemsPerPage) + 1}-{Math.min(page * itemsPerPage, totalCount)} OF {totalCount}
+              </div>
+              <div className="flex gap-1">
+                <Button 
+                  variant="outline" 
+                  className="h-8 px-3 data-sm"
+                  disabled={page === 1}
+                  onClick={() => setPage(p => p - 1)}
+                >
+                  ← PREV
+                </Button>
+                <div className="flex items-center px-3 data-sm text-muted-foreground">
+                  {page} / {totalPages}
+                </div>
+                <Button 
+                  variant="outline" 
+                  className="h-8 px-3 data-sm"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage(p => p + 1)}
+                >
+                  NEXT →
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Footer ASCII */}
         <div className="p-3 text-center">
           <div className="data-sm text-muted-foreground opacity-50">
-            ════════════════════════════════════════
+            ════════════════════════════════════════════════════════════════
           </div>
         </div>
       </main>
