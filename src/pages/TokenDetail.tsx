@@ -2,26 +2,42 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
-import AsciiDivider from "@/components/AsciiDivider";
-import ConsoleLog from "@/components/ConsoleLog";
-import { TradingChart } from "@/components/TradingChart";
-import { TradeForm } from "@/components/TradeForm";
+import { TokenHeader } from "@/components/TokenHeader";
+import { MarketCapDisplay } from "@/components/MarketCapDisplay";
+import { PriceStatsRow } from "@/components/PriceStatsRow";
+import { TradingChartPro } from "@/components/TradingChartPro";
+import { TradePanel } from "@/components/TradePanel";
+import { BondingCurveProgress } from "@/components/BondingCurveProgress";
+import { TopHoldersList } from "@/components/TopHoldersList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Token = Tables<"tokens">;
-type Log = Tables<"logs">;
+
+interface ChartDataPoint {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume?: number;
+}
 
 const TokenDetail = () => {
   const { id } = useParams();
   const [token, setToken] = useState<Token | null>(null);
-  const [logs, setLogs] = useState<Log[]>([]);
-  const [chartData, setChartData] = useState<Array<{ time: string; value: number }>>([]);
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [priceChanges, setPriceChanges] = useState({
+    change5m: 0,
+    change1h: 0,
+    change6h: 0,
+    change24h: 0,
+  });
 
   useEffect(() => {
     if (id) {
       fetchTokenData();
-      fetchTokenLogs();
     }
   }, [id]);
 
@@ -38,6 +54,7 @@ const TokenDetail = () => {
       if (data) {
         setToken(data);
         generateChartData(Number(data.price));
+        generatePriceChanges();
       }
     } catch (error) {
       console.error('Error fetching token:', error);
@@ -46,42 +63,54 @@ const TokenDetail = () => {
     }
   };
 
-  const fetchTokenLogs = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('logs')
-        .select('*')
-        .eq('token_id', id)
-        .order('timestamp', { ascending: false })
-        .limit(10);
-
-      if (error) throw error;
-      if (data) setLogs(data);
-    } catch (error) {
-      console.error('Error fetching logs:', error);
-    }
-  };
-
   const generateChartData = (currentPrice: number) => {
-    const data = [];
+    const data: ChartDataPoint[] = [];
     const now = Date.now();
-    for (let i = 24; i >= 0; i--) {
+    let price = currentPrice * 0.7;
+    
+    for (let i = 48; i >= 0; i--) {
+      const change = (Math.random() - 0.45) * 0.1;
+      price = price * (1 + change);
+      const high = price * (1 + Math.random() * 0.02);
+      const low = price * (1 - Math.random() * 0.02);
+      
       data.push({
-        time: new Date(now - i * 60 * 60 * 1000).toISOString(),
-        value: currentPrice * (0.8 + Math.random() * 0.4),
+        time: new Date(now - i * 30 * 60 * 1000).toISOString(),
+        open: price,
+        high: high,
+        low: low,
+        close: price * (1 + (Math.random() - 0.5) * 0.01),
+        volume: Math.random() * 10000,
       });
     }
+    
+    // Ensure last point matches current price
+    if (data.length > 0) {
+      data[data.length - 1].close = currentPrice;
+    }
+    
     setChartData(data);
   };
 
-  const formattedLogs = logs.map(log => {
-    const details = log.details as any;
-    return {
-      timestamp: new Date(log.timestamp).toLocaleString(),
-      message: `${log.action}: ${JSON.stringify(details)}`,
-      type: 'info' as const
-    };
-  });
+  const generatePriceChanges = () => {
+    setPriceChanges({
+      change5m: (Math.random() - 0.5) * 20,
+      change1h: (Math.random() - 0.5) * 30,
+      change6h: (Math.random() - 0.5) * 50,
+      change24h: (Math.random() - 0.5) * 60,
+    });
+  };
+
+  const mockHolders = [
+    { address: 'Liquidity pool', percentage: 7.86, isLiquidityPool: true },
+    { address: '7eNR...KTto', percentage: 2.17 },
+    { address: 'CpKu...C5mo', percentage: 1.99 },
+    { address: 'F9c9...u5JL', percentage: 1.95 },
+    { address: '4KW1...yuot', percentage: 1.85 },
+    { address: 'EJPF...uiQM', percentage: 1.59 },
+    { address: '3h65...axoE', percentage: 1.26 },
+    { address: 'GJdJ...1hLC', percentage: 1.22 },
+  ];
 
   if (loading) {
     return (
@@ -98,106 +127,143 @@ const TokenDetail = () => {
       <div className="min-h-screen bg-background">
         <Navigation />
         <div className="p-8 text-center">
-          <div className="data-sm text-muted-foreground">TOKEN NOT FOUND</div>
-          <Link to="/explorer" className="data-sm hover:underline mt-4 block">← BACK TO EXPLORER</Link>
+          <div className="data-sm text-muted-foreground mb-4">TOKEN NOT FOUND</div>
+          <Link to="/explorer" className="text-sm text-primary hover:underline">
+            Back to Explorer
+          </Link>
         </div>
       </div>
     );
   }
 
+  const marketCap = Number(token.price) * Number(token.supply);
+  const athMarketCap = marketCap * 1.5;
+  const bondingCurveSol = Number(token.liquidity) || 0;
+  const targetSol = 85;
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="max-w-5xl mx-auto">
+      <main className="w-full">
         {/* Token Header */}
-        <div className="border-b border-border px-4 py-3 bg-muted">
-          <div className="flex items-center gap-2">
-            <Link to="/explorer" className="data-sm text-muted-foreground hover:text-foreground">
-              EXPLORER
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="data-sm">${token.symbol}</span>
-          </div>
-        </div>
+        <TokenHeader
+          name={token.name}
+          symbol={token.symbol}
+          mintAddress={token.mint_address}
+          launchTimestamp={token.launch_timestamp}
+        />
 
-        {/* Token Info */}
-        <div className="border-b border-border p-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold">${token.symbol}</h1>
-              <div className="text-sm text-muted-foreground">{token.name}</div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Launched: {new Date(token.launch_timestamp).toLocaleString()}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="data-lg tabular-nums">${Number(token.price).toFixed(6)}</div>
-              <div className="data-sm text-muted-foreground">PRICE</div>
-            </div>
-          </div>
-        </div>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr,320px]">
+          {/* Left Column - Chart & Info */}
+          <div className="border-r border-border">
+            {/* Market Cap */}
+            <MarketCapDisplay
+              marketCap={marketCap}
+              priceChange24h={priceChanges.change24h}
+              athMarketCap={athMarketCap}
+            />
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 border-b border-border">
-          <div className="border-r border-b md:border-b-0 border-border p-4">
-            <div className="data-sm text-muted-foreground mb-1">SUPPLY</div>
-            <div className="data-md tabular-nums">{Number(token.supply).toLocaleString()}</div>
-          </div>
-          <div className="border-b md:border-b-0 md:border-r border-border p-4">
-            <div className="data-sm text-muted-foreground mb-1">LIQUIDITY</div>
-            <div className="data-md tabular-nums">{Number(token.liquidity)} SOL</div>
-          </div>
-          <div className="border-r border-border p-4">
-            <div className="data-sm text-muted-foreground mb-1">HOLDERS</div>
-            <div className="data-md tabular-nums">{token.holders}</div>
-          </div>
-          <div className="p-4">
-            <div className="data-sm text-muted-foreground mb-1">VOLUME 24H</div>
-            <div className="data-md tabular-nums">${Number(token.volume_24h).toFixed(2)}</div>
-          </div>
-        </div>
-
-        {/* ASCII Separator */}
-        <AsciiDivider pattern="dash" text="CHART" />
-
-        {/* Chart & Trade */}
-        <div className="grid grid-cols-1 lg:grid-cols-3">
-          <div className="lg:col-span-2 border-r border-border">
-            <TradingChart 
-              data={chartData} 
+            {/* Trading Chart */}
+            <TradingChartPro
+              data={chartData}
               tokenSymbol={token.symbol}
             />
+
+            {/* Price Stats Row */}
+            <PriceStatsRow
+              volume24h={Number(token.volume_24h)}
+              price={Number(token.price)}
+              change5m={priceChanges.change5m}
+              change1h={priceChanges.change1h}
+              change6h={priceChanges.change6h}
+            />
+
+            {/* Description & Tabs */}
+            <div className="p-4 border-b border-border">
+              <Tabs defaultValue="trades" className="w-full">
+                <TabsList className="w-full justify-start gap-4 bg-transparent border-b border-border rounded-none h-auto p-0">
+                  <TabsTrigger 
+                    value="trades" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-xs font-bold uppercase"
+                  >
+                    Trades
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="holders" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-xs font-bold uppercase"
+                  >
+                    Holders
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="info" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-xs font-bold uppercase"
+                  >
+                    Info
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="trades" className="mt-4">
+                  <div className="text-center py-8 text-sm text-muted-foreground">
+                    No recent trades
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="holders" className="mt-4">
+                  <div className="space-y-2">
+                    {mockHolders.map((holder, i) => (
+                      <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                        <span className="font-mono text-xs">{holder.address}</span>
+                        <span className="text-xs font-bold tabular-nums">{holder.percentage}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="info" className="mt-4">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Supply</span>
+                      <span className="font-mono tabular-nums">{Number(token.supply).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Holders</span>
+                      <span className="font-mono tabular-nums">{token.holders}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Liquidity</span>
+                      <span className="font-mono tabular-nums">{Number(token.liquidity)} SOL</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Launch</span>
+                      <span className="font-mono text-xs">{new Date(token.launch_timestamp).toLocaleString()}</span>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
-          <div>
-            <TradeForm 
+
+          {/* Right Column - Trade Panel & Info */}
+          <div className="space-y-4 p-4">
+            {/* Trade Panel */}
+            <TradePanel
               tokenId={token.id}
               tokenSymbol={token.symbol}
               currentPrice={Number(token.price)}
               onTradeComplete={fetchTokenData}
             />
-          </div>
-        </div>
 
-        {/* ASCII Separator before Activity */}
-        <AsciiDivider pattern="dot" />
+            {/* Bonding Curve Progress */}
+            <BondingCurveProgress
+              currentSol={bondingCurveSol}
+              targetSol={targetSol}
+              hasGraduated={bondingCurveSol >= targetSol}
+            />
 
-        {/* Activity Log */}
-        {formattedLogs.length > 0 && (
-          <div className="border-t border-border">
-            <div className="border-b border-border px-4 py-2 bg-muted">
-              <span className="data-sm">TOKEN ACTIVITY</span>
-            </div>
-            <div className="p-4">
-              <ConsoleLog logs={formattedLogs} />
-            </div>
-          </div>
-        )}
-
-        {/* Footer ASCII */}
-        <div className="p-3 text-center">
-          <div className="data-sm text-muted-foreground opacity-50">
-            ─────────────────────────────────────────────────────────────
+            {/* Top Holders */}
+            <TopHoldersList holders={mockHolders} />
           </div>
         </div>
       </main>
