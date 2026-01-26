@@ -1,22 +1,18 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Token = Tables<"tokens">;
-
 type FilterType = 'trending' | 'new' | 'gainers' | 'volume';
 
-interface TokenWithBadges extends Token {
-  badges: string[];
+interface TokenWithMetrics extends Token {
   priceChange24h: number;
-  isHot: boolean;
 }
 
 const TokenDiscovery = () => {
-  const [tokens, setTokens] = useState<TokenWithBadges[]>([]);
+  const [tokens, setTokens] = useState<TokenWithMetrics[]>([]);
   const [filter, setFilter] = useState<FilterType>('trending');
   const [loading, setLoading] = useState(true);
 
@@ -28,6 +24,7 @@ const TokenDiscovery = () => {
       
       switch (filter) {
         case 'trending':
+        case 'volume':
           query = query.order('volume_24h', { ascending: false });
           break;
         case 'new':
@@ -36,36 +33,17 @@ const TokenDiscovery = () => {
         case 'gainers':
           query = query.order('price', { ascending: false });
           break;
-        case 'volume':
-          query = query.order('volume_24h', { ascending: false });
-          break;
       }
       
-      query = query.limit(10);
+      query = query.limit(8);
       
       const { data } = await query;
       
       if (data) {
-        const enriched: TokenWithBadges[] = data.map((token, index) => {
-          const badges: string[] = [];
-          const priceChange = (Math.random() - 0.3) * 100; // Simulated
-          
-          // Badge logic
-          if (index < 3) badges.push('🔥 HOT');
-          if (new Date(token.launch_timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)) {
-            badges.push('✨ NEW');
-          }
-          if (priceChange > 20) badges.push('🚀 PUMP');
-          if (token.holders > 500) badges.push('👥 POPULAR');
-          if (Number(token.volume_24h) > 10000) badges.push('📈 HIGH VOL');
-          
-          return {
-            ...token,
-            badges,
-            priceChange24h: priceChange,
-            isHot: index < 3 || priceChange > 30,
-          };
-        });
+        const enriched: TokenWithMetrics[] = data.map((token) => ({
+          ...token,
+          priceChange24h: (Math.random() - 0.3) * 100,
+        }));
         
         setTokens(enriched);
       }
@@ -92,45 +70,44 @@ const TokenDiscovery = () => {
     return 'now';
   };
 
+  const filters: { key: FilterType; label: string }[] = [
+    { key: 'trending', label: 'TRENDING' },
+    { key: 'new', label: 'NEW' },
+    { key: 'gainers', label: 'GAINERS' },
+    { key: 'volume', label: 'VOLUME' },
+  ];
+
   return (
-    <div className="border-2 border-primary glow-border">
+    <div>
       {/* Header */}
-      <div className="border-b-2 border-primary px-4 py-3 bg-muted flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="power-pulse">⏻</span>
-          <span className="data-sm">TOKEN DISCOVERY</span>
-        </div>
-        <span className="data-sm text-muted-foreground">{tokens.length} TOKENS</span>
+      <div className="border-b border-primary/30 px-6 py-4 flex items-center justify-between">
+        <h2 className="data-sm">DISCOVER TOKENS</h2>
+        <span className="data-sm text-muted-foreground">{tokens.length} RESULTS</span>
       </div>
       
       {/* Filter Tabs */}
-      <div className="border-b border-primary/30 p-3 flex gap-2 flex-wrap">
-        {(['trending', 'new', 'gainers', 'volume'] as FilterType[]).map((f) => (
+      <div className="border-b border-primary/30 px-6 py-3 flex gap-2 overflow-x-auto">
+        {filters.map((f) => (
           <Button
-            key={f}
-            variant={filter === f ? 'default' : 'outline'}
+            key={f.key}
+            variant={filter === f.key ? 'default' : 'ghost'}
             size="sm"
-            onClick={() => setFilter(f)}
-            className="h-8 px-3 data-sm"
+            onClick={() => setFilter(f.key)}
+            className="h-8 px-4 data-sm shrink-0"
           >
-            {f === 'trending' && '🔥 '}
-            {f === 'new' && '✨ '}
-            {f === 'gainers' && '🚀 '}
-            {f === 'volume' && '📊 '}
-            {f.toUpperCase()}
+            {f.label}
           </Button>
         ))}
       </div>
       
-      {/* Token Grid */}
+      {/* Token List */}
       {loading ? (
         <div className="p-8 text-center">
-          <div className="data-sm">LOADING<span className="cursor-blink">_</span></div>
+          <p className="data-sm text-muted-foreground">LOADING<span className="cursor-blink">_</span></p>
         </div>
       ) : tokens.length === 0 ? (
         <div className="p-8 text-center">
-          <div className="text-2xl mb-2 opacity-30">⏻</div>
-          <div className="data-sm text-muted-foreground">NO TOKENS YET</div>
+          <p className="data-sm text-muted-foreground">NO TOKENS FOUND</p>
         </div>
       ) : (
         <div className="divide-y divide-primary/30">
@@ -138,47 +115,35 @@ const TokenDiscovery = () => {
             <Link
               key={token.id}
               to={`/token/${token.id}`}
-              className={`block p-4 hover:bg-primary/10 transition-colors ${token.isHot ? 'bg-primary/5' : ''}`}
+              className="block px-6 py-4 hover:bg-primary/5 transition-colors"
             >
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center justify-between gap-4">
                 {/* Left: Rank + Info */}
-                <div className="flex items-start gap-4">
-                  <div className={`display-lg w-8 ${index < 3 ? 'glow-text' : 'text-muted-foreground'}`}>
+                <div className="flex items-center gap-4 min-w-0">
+                  <span className={`data-md w-6 text-center ${index < 3 ? 'text-primary' : 'text-muted-foreground'}`}>
                     {index + 1}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="data-md font-bold">${token.symbol}</span>
-                      {token.badges.slice(0, 2).map((badge, i) => (
-                        <Badge 
-                          key={i} 
-                          variant="secondary" 
-                          className="text-[9px] px-1.5 py-0.5 h-4 border border-primary/30"
-                        >
-                          {badge}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="text-xs text-muted-foreground">{token.name}</div>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                      <span>{token.holders} holders</span>
-                      <span>•</span>
-                      <span>{formatAge(token.launch_timestamp)} old</span>
-                    </div>
+                  </span>
+                  <div className="min-w-0">
+                    <p className="data-md font-bold truncate">${token.symbol}</p>
+                    <p className="text-xs text-muted-foreground truncate">{token.name}</p>
                   </div>
                 </div>
                 
+                {/* Center: Metrics */}
+                <div className="hidden sm:flex items-center gap-6 text-xs text-muted-foreground">
+                  <span>{token.holders} holders</span>
+                  <span>{formatAge(token.launch_timestamp)}</span>
+                  <span>${formatNumber(Number(token.volume_24h))}</span>
+                </div>
+                
                 {/* Right: Price + Change */}
-                <div className="text-right">
-                  <div className="data-md font-bold tabular-nums">${Number(token.price).toFixed(6)}</div>
-                  <div className={`text-xs font-bold tabular-nums ${
-                    token.priceChange24h >= 0 ? 'text-primary glow-text' : 'text-destructive'
+                <div className="text-right shrink-0">
+                  <p className="data-md tabular-nums">${Number(token.price).toFixed(6)}</p>
+                  <p className={`text-xs tabular-nums ${
+                    token.priceChange24h >= 0 ? 'text-primary' : 'text-destructive'
                   }`}>
                     {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(1)}%
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    ${formatNumber(Number(token.volume_24h))} vol
-                  </div>
+                  </p>
                 </div>
               </div>
             </Link>
@@ -187,8 +152,8 @@ const TokenDiscovery = () => {
       )}
       
       {/* View All */}
-      <div className="border-t-2 border-primary p-3 text-center">
-        <Link to="/explorer" className="data-sm hover:text-primary transition-colors">
+      <div className="border-t border-primary/30 p-4 text-center">
+        <Link to="/explorer" className="data-sm text-muted-foreground hover:text-primary transition-colors">
           VIEW ALL TOKENS →
         </Link>
       </div>

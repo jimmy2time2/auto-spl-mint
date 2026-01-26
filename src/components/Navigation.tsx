@@ -3,7 +3,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useState, useEffect } from "react";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const Navigation = () => {
   const location = useLocation();
@@ -30,17 +29,19 @@ const Navigation = () => {
   ];
   
   return (
-    <header className="border-b-2 border-primary bg-background sticky top-0 z-50 glow-border">
+    <header className="border-b-2 border-primary bg-background sticky top-0 z-50">
       <div className="flex items-stretch justify-between">
-        {/* Logo with Y2K styling */}
-        <Link to="/" className="flex items-center border-r-2 border-primary px-5 py-3 hover:bg-primary hover:text-primary-foreground transition-colors group">
-          <span className="display-lg glow-text group-hover:text-primary-foreground">M9</span>
+        {/* Logo */}
+        <Link 
+          to="/" 
+          className="flex items-center border-r-2 border-primary px-5 py-3 hover:bg-primary hover:text-primary-foreground transition-colors"
+        >
+          <span className="display-lg">M9</span>
         </Link>
 
-        
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-stretch flex-1">
-          {navLinks.map((link, idx) => (
+          {navLinks.map((link) => (
             <Link 
               key={link.path}
               to={link.path} 
@@ -67,12 +68,11 @@ const Navigation = () => {
           )}
         </nav>
 
-        {/* Status with power icon */}
+        {/* Status */}
         <div className="hidden lg:flex items-center px-4 border-r border-primary/30 gap-2">
-          <span className="power-pulse text-lg">⏻</span>
-          <span className="data-sm">ONLINE</span>
+          <span className="status-live" />
+          <span className="data-sm">LIVE</span>
         </div>
-
 
         {/* Wallet */}
         <div className="flex items-center">
