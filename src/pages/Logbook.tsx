@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
+import AsciiDivider from "@/components/AsciiDivider";
 import { format } from "date-fns";
 
 interface LogEntry {
@@ -182,6 +183,9 @@ const Logbook = () => {
           </div>
         </div>
 
+        {/* ASCII Separator */}
+        <AsciiDivider pattern="dot" text="ACTIVITY LOG" />
+
         {/* Log Entries */}
         <div className="divide-y divide-border">
           {combinedLogs.length === 0 ? (
@@ -245,6 +249,13 @@ const Logbook = () => {
               </div>
             ))
           )}
+        </div>
+
+        {/* Footer ASCII */}
+        <div className="p-3 text-center">
+          <div className="data-sm text-muted-foreground opacity-50">
+            ···································································
+          </div>
         </div>
       </main>
     </div>

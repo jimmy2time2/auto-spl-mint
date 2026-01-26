@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Navigation from "@/components/Navigation";
+import AsciiDivider from "@/components/AsciiDivider";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 
@@ -85,6 +86,9 @@ const Wallet = () => {
               </div>
             </div>
 
+            {/* ASCII Separator */}
+            <AsciiDivider pattern="arrow" text="ACTIVITY" />
+
             {/* Activity Header */}
             <div className="border-b border-border px-4 py-2 bg-muted">
               <span className="data-sm">ACTIVITY HISTORY</span>
@@ -147,6 +151,13 @@ const Wallet = () => {
             )}
           </>
         )}
+
+        {/* Footer ASCII */}
+        <div className="p-3 text-center">
+          <div className="data-sm text-muted-foreground opacity-50">
+            ▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸
+          </div>
+        </div>
       </main>
     </div>
   );

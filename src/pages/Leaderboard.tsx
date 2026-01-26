@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
+import AsciiDivider from "@/components/AsciiDivider";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -82,6 +83,9 @@ const Leaderboard = () => {
           </Button>
         </div>
 
+        {/* ASCII Separator */}
+        <AsciiDivider pattern="asterisk" text="RANKINGS" />
+
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="data-table w-full min-w-[500px]">
@@ -130,6 +134,13 @@ const Leaderboard = () => {
           <Button variant="outline" className="h-8 px-6 data-sm">
             LOAD MORE
           </Button>
+        </div>
+
+        {/* Footer ASCII */}
+        <div className="p-3 text-center">
+          <div className="data-sm text-muted-foreground opacity-50">
+            ****************************************************************
+          </div>
         </div>
       </main>
     </div>

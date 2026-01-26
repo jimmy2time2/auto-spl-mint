@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
+import AsciiDivider from "@/components/AsciiDivider";
 import { TradeForm } from "@/components/TradeForm";
 import { TradingChart } from "@/components/TradingChart";
 import { Input } from "@/components/ui/input";
@@ -224,6 +225,9 @@ const Trade = () => {
               {/* Holdings */}
               {connected && walletBalances.filter(b => b.balance > 0).length > 0 && (
                 <>
+                  {/* ASCII Separator */}
+                  <AsciiDivider pattern="wave" />
+                  
                   <div className="border-t border-b border-border px-3 py-2 bg-muted">
                     <span className="data-sm">YOUR HOLDINGS</span>
                   </div>
@@ -303,6 +307,13 @@ const Trade = () => {
                   <div className="data-sm text-muted-foreground">SELECT A TOKEN</div>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Footer ASCII */}
+          <div className="p-3 text-center">
+            <div className="data-sm text-muted-foreground opacity-50">
+              ════════════════════════════════════════════════════════════════════
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import CountdownTimer from "@/components/CountdownTimer";
 import AiMindTicker from "@/components/AiMindTicker";
+import AsciiDivider from "@/components/AsciiDivider";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
@@ -130,6 +131,9 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* ASCII Separator */}
+        <AsciiDivider pattern="slash" text="HOW IT WORKS" />
+
         {/* How It Works */}
         <div className="border-b border-border">
           <div className="grid grid-cols-1 md:grid-cols-3">
@@ -150,6 +154,9 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* ASCII Separator */}
+        <AsciiDivider pattern="asterisk" />
 
         {/* Recent Tokens */}
         {tokens.length > 0 && (
@@ -189,10 +196,19 @@ const Dashboard = () => {
           </div>
         )}
 
+        {/* ASCII Separator */}
+        <AsciiDivider pattern="equals" />
+
         {/* Footer Info */}
         <div className="p-4 text-center">
+          <div className="data-sm text-muted-foreground mb-2">
+            ╔══════════════════════════════════════════════════════════╗
+          </div>
           <div className="data-sm text-muted-foreground">
             MIND9 • AUTONOMOUS AI ECONOMY • SOLANA
+          </div>
+          <div className="data-sm text-muted-foreground mt-2">
+            ╚══════════════════════════════════════════════════════════╝
           </div>
         </div>
       </main>
