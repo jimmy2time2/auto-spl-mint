@@ -9,7 +9,7 @@
 
 @layer base {
   :root {
-    /* Y2K Neon Lime on Black - Always dark */
+    /* Default: Neon Lime on Black */
     --background: 0 0% 4%;             /* Near black */
     --foreground: 72 100% 50%;         /* Neon lime #BFFF00 */
     --card: 0 0% 6%;
@@ -41,6 +41,30 @@
     --neon-pink: 330 100% 50%;
     --neon-cyan: 180 100% 50%;
     --neon-orange: 30 100% 50%;
+  }
+
+  /* Inverted theme: Black on Neon Lime */
+  .theme-inverted {
+    --background: 72 100% 50%;         /* Neon lime background */
+    --foreground: 0 0% 0%;             /* Black text */
+    --card: 72 90% 55%;
+    --card-foreground: 0 0% 0%;
+    --popover: 72 90% 55%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;                /* Black primary */
+    --primary-foreground: 72 100% 50%; /* Lime text on black */
+    --secondary: 72 80% 60%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 72 70% 65%;
+    --muted-foreground: 0 0% 20%;      /* Dimmed black */
+    --accent: 0 0% 0%;
+    --accent-foreground: 72 100% 50%;
+    --destructive: 0 72% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 0%;                 /* Black borders */
+    --input: 72 80% 60%;
+    --ring: 0 0% 0%;
+    --terminal-grid: 0 0% 20%;
   }
 
   .dark {

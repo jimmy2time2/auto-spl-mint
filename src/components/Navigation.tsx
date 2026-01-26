@@ -3,6 +3,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useState, useEffect } from "react";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
+import ThemeSwitch from "@/components/ThemeSwitch";
 
 const Navigation = () => {
   const location = useLocation();
@@ -69,6 +70,11 @@ const Navigation = () => {
           )}
         </nav>
 
+        {/* Theme Switch */}
+        <div className="hidden lg:flex items-center border-r border-primary/30">
+          <ThemeSwitch />
+        </div>
+
         {/* Status */}
         <div className="hidden lg:flex items-center px-4 border-r border-primary/30 gap-2">
           <span className="status-live" />
@@ -118,6 +124,9 @@ const Navigation = () => {
               WALLET
             </Link>
           )}
+          <div className="px-4 py-3 border-b border-primary/30">
+            <ThemeSwitch />
+          </div>
         </nav>
       )}
     </header>
