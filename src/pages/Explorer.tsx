@@ -105,17 +105,20 @@ const Explorer = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="max-w-6xl mx-auto">
+      <main className="max-w-6xl mx-auto px-2 sm:px-0">
         {/* Header */}
-        <div className="border-b border-border px-4 py-3 bg-muted">
+        <div className="border-b-2 border-primary px-3 sm:px-4 py-3 bg-muted">
           <div className="flex items-center justify-between">
             <div>
-              <div className="data-sm">TOKEN EXPLORER</div>
-              <div className="text-xs text-muted-foreground">All AI-generated tokens</div>
+              <div className="data-sm flex items-center gap-2">
+                <span className="power-pulse">⏻</span>
+                TOKEN EXPLORER
+              </div>
+              <div className="text-xs text-muted-foreground hidden sm:block">All AI-generated tokens</div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="status-dot status-active"></span>
-              <span className="data-sm text-muted-foreground">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="power-pulse text-xs">●</span>
+              <span className="data-sm">
                 {totalCount} TOKENS
               </span>
             </div>
@@ -123,39 +126,40 @@ const Explorer = () => {
         </div>
 
         {/* Filter Tabs */}
-        <div className="border-b border-border p-3 flex gap-2 overflow-x-auto">
+        <div className="border-b border-primary/30 p-2 sm:p-3 flex gap-1 sm:gap-2 overflow-x-auto">
           {(['all', 'new', 'trending', 'gainers'] as FilterType[]).map((f) => (
             <Button
               key={f}
               variant={filter === f ? 'default' : 'outline'}
               onClick={() => setFilter(f)}
-              className="h-8 px-3 data-sm whitespace-nowrap"
+              className="h-8 px-2 sm:px-3 data-sm whitespace-nowrap flex-shrink-0"
             >
               {f === 'all' && '📋 '}
               {f === 'new' && '✨ '}
               {f === 'trending' && '🔥 '}
               {f === 'gainers' && '🚀 '}
-              {f.toUpperCase()}
+              <span className="hidden sm:inline">{f.toUpperCase()}</span>
+              <span className="sm:hidden">{f === 'all' ? 'ALL' : f === 'new' ? 'NEW' : f === 'trending' ? 'HOT' : '🚀'}</span>
             </Button>
           ))}
         </div>
 
         {/* Toolbar */}
-        <div className="border-b border-border p-3">
-          <div className="flex flex-col md:flex-row gap-2">
+        <div className="border-b-2 border-primary p-2 sm:p-3">
+          <div className="flex flex-col gap-2">
             <Input
               placeholder="SEARCH TOKEN OR SYMBOL..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 h-8 text-xs border-border"
+              className="h-10 text-xs border-primary"
             />
-            <div className="flex gap-1 flex-wrap">
+            <div className="flex gap-1 overflow-x-auto pb-1">
               {(['launch_timestamp', 'price', 'volume_24h', 'holders', 'liquidity'] as SortField[]).map((field) => {
                 const labels: Record<SortField, string> = {
                   launch_timestamp: 'DATE',
                   price: 'PRICE',
                   volume_24h: 'VOL',
-                  holders: 'HOLDERS',
+                  holders: 'HOLD',
                   liquidity: 'LIQ',
                 };
                 return (
@@ -163,7 +167,7 @@ const Explorer = () => {
                     key={field}
                     variant={sortBy === field ? "default" : "outline"}
                     onClick={() => setSortBy(field)}
-                    className="h-8 px-3 data-sm"
+                    className="h-8 px-2 sm:px-3 data-sm flex-shrink-0"
                   >
                     {labels[field]}
                   </Button>
@@ -176,66 +180,61 @@ const Explorer = () => {
         {/* Loading State */}
         {loading ? (
           <div className="p-12 text-center">
-            <div className="data-lg mb-2">LOADING<span className="cursor-blink">_</span></div>
+            <div className="display-lg mb-2">LOADING<span className="cursor-blink">_</span></div>
           </div>
         ) : tokens.length === 0 ? (
           <div className="p-12 text-center">
-            <div className="text-3xl mb-3 opacity-30">○</div>
+            <div className="text-3xl mb-3 power-pulse">⏻</div>
             <div className="data-md font-bold mb-2">NO TOKENS FOUND</div>
             <div className="text-xs text-muted-foreground">Try adjusting your search or filters</div>
           </div>
         ) : (
           <>
             {/* Token Grid */}
-            <div className="divide-y divide-border">
+            <div className="divide-y divide-primary/30">
               {tokens.map((token, index) => (
                 <Link
                   key={token.id}
                   to={`/token/${token.id}`}
-                  className={`block p-4 hover:bg-secondary transition-colors ${token.isHot ? 'bg-muted/30' : ''}`}
+                  className={`block p-3 sm:p-4 hover:bg-primary/10 transition-colors ${token.isHot ? 'bg-primary/5' : ''}`}
                 >
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center justify-between gap-2 sm:gap-4">
                     {/* Left: Rank + Token Info */}
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className={`data-lg font-bold w-8 text-center ${index < 3 ? 'text-primary' : 'text-muted-foreground'}`}>
+                    <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                      <div className={`display-lg w-6 sm:w-8 text-center text-sm sm:text-xl ${index < 3 ? 'glow-text' : 'text-muted-foreground'}`}>
                         {index + 1 + (page - 1) * itemsPerPage}
                       </div>
                       
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-1 sm:gap-2 mb-1 flex-wrap">
                           <span className="data-md font-bold">${token.symbol}</span>
                           {token.isNew && (
-                            <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4">
+                            <Badge variant="secondary" className="text-[8px] sm:text-[9px] px-1 py-0 h-4 border border-primary/30">
                               ✨ NEW
                             </Badge>
                           )}
                           {token.isHot && (
-                            <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4">
+                            <Badge variant="secondary" className="text-[8px] sm:text-[9px] px-1 py-0 h-4 border border-primary/30 hidden sm:inline-flex">
                               🔥 HOT
-                            </Badge>
-                          )}
-                          {token.priceChange24h > 50 && (
-                            <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4">
-                              🚀 PUMP
                             </Badge>
                           )}
                         </div>
                         <div className="text-xs text-muted-foreground truncate">{token.name}</div>
-                        <div className="text-[10px] text-muted-foreground mt-1">
+                        <div className="text-[10px] text-muted-foreground mt-1 hidden sm:block">
                           {formatAge(token.launch_timestamp)} • {token.holders} holders
                         </div>
                       </div>
                     </div>
 
-                    {/* Stats Grid */}
-                    <div className="hidden md:grid grid-cols-4 gap-6 text-right">
+                    {/* Stats Grid - Desktop */}
+                    <div className="hidden md:grid grid-cols-4 gap-4 sm:gap-6 text-right">
                       <div>
                         <div className="data-sm font-bold tabular-nums">${Number(token.price).toFixed(6)}</div>
                         <div className="text-[10px] text-muted-foreground">PRICE</div>
                       </div>
                       <div>
                         <div className={`data-sm font-bold tabular-nums ${
-                          token.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'
+                          token.priceChange24h >= 0 ? 'text-primary glow-text' : 'text-destructive'
                         }`}>
                           {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(1)}%
                         </div>
@@ -255,7 +254,7 @@ const Explorer = () => {
                     <div className="md:hidden text-right">
                       <div className="data-sm font-bold tabular-nums">${Number(token.price).toFixed(6)}</div>
                       <div className={`text-xs font-bold tabular-nums ${
-                        token.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'
+                        token.priceChange24h >= 0 ? 'text-primary' : 'text-destructive'
                       }`}>
                         {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(1)}%
                       </div>
@@ -269,25 +268,25 @@ const Explorer = () => {
             <AsciiDivider pattern="dash" />
 
             {/* Pagination */}
-            <div className="border-t border-border p-3 flex justify-between items-center">
+            <div className="border-t-2 border-primary p-2 sm:p-3 flex flex-col sm:flex-row justify-between items-center gap-2">
               <div className="data-sm text-muted-foreground">
                 {((page - 1) * itemsPerPage) + 1}-{Math.min(page * itemsPerPage, totalCount)} OF {totalCount}
               </div>
               <div className="flex gap-1">
                 <Button 
                   variant="outline" 
-                  className="h-8 px-3 data-sm"
+                  className="h-8 px-2 sm:px-3 data-sm"
                   disabled={page === 1}
                   onClick={() => setPage(p => p - 1)}
                 >
                   ← PREV
                 </Button>
-                <div className="flex items-center px-3 data-sm text-muted-foreground">
+                <div className="flex items-center px-2 sm:px-3 data-sm text-muted-foreground">
                   {page} / {totalPages}
                 </div>
                 <Button 
                   variant="outline" 
-                  className="h-8 px-3 data-sm"
+                  className="h-8 px-2 sm:px-3 data-sm"
                   disabled={page >= totalPages}
                   onClick={() => setPage(p => p + 1)}
                 >
@@ -300,7 +299,7 @@ const Explorer = () => {
 
         {/* Footer ASCII */}
         <div className="p-3 text-center">
-          <div className="data-sm text-muted-foreground opacity-50">
+          <div className="data-sm text-primary/30 hidden sm:block">
             ════════════════════════════════════════════════════════════════
           </div>
         </div>

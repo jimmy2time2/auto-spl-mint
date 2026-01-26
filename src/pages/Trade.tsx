@@ -179,42 +179,72 @@ const Trade = () => {
     <>
       <Navigation />
       <div className="min-h-screen bg-background">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto px-2 sm:px-0">
           {/* Header */}
-          <div className="border-b border-border px-4 py-3 bg-muted">
+          <div className="border-b-2 border-primary px-3 sm:px-4 py-3 bg-muted">
             <div className="flex items-center justify-between">
               <div>
-                <div className="data-sm">TRADING TERMINAL</div>
-                <div className="text-xs text-muted-foreground">Buy & sell M9 tokens</div>
+                <div className="data-sm flex items-center gap-2">
+                  <span className="power-pulse">⏻</span>
+                  TRADING TERMINAL
+                </div>
+                <div className="text-xs text-muted-foreground hidden sm:block">Buy & sell M9 tokens</div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="hidden md:flex items-center gap-2">
-                  <span className="status-dot status-active"></span>
-                  <span className="data-sm text-muted-foreground">LIVE</span>
+              <div className="flex items-center gap-2 sm:gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="power-pulse text-xs">●</span>
+                  <span className="data-sm">LIVE</span>
                 </div>
                 <div className="data-sm text-muted-foreground">
-                  {filteredTokens.length} MARKETS
+                  {filteredTokens.length} MKT
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Mobile Token Selector */}
+          <div className="lg:hidden border-b-2 border-primary p-2">
+            <Input
+              type="text"
+              placeholder="SEARCH TOKEN..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-10 text-xs border-primary"
+            />
+            <div className="flex gap-2 mt-2 overflow-x-auto pb-2">
+              {filteredTokens.slice(0, 5).map((token) => {
+                const isSelected = selectedToken?.id === token.id;
+                return (
+                  <button
+                    key={token.id}
+                    onClick={() => setSelectedToken(token)}
+                    className={`flex-shrink-0 px-3 py-2 border-2 ${
+                      isSelected ? 'border-primary bg-primary text-primary-foreground' : 'border-primary/30'
+                    }`}
+                  >
+                    <div className="data-sm font-bold">{token.symbol}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-12">
-            {/* Token List */}
-            <div className="lg:col-span-2 border-r border-border">
+            {/* Token List - Hidden on mobile */}
+            <div className="hidden lg:block lg:col-span-2 border-r-2 border-primary">
               {/* Search */}
-              <div className="border-b border-border p-2">
+              <div className="border-b-2 border-primary p-2">
                 <Input
                   type="text"
                   placeholder="SEARCH..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-8 text-xs border-border"
+                  className="h-8 text-xs border-primary"
                 />
               </div>
 
               {/* Token List */}
-              <div className="max-h-[600px] overflow-y-auto divide-y divide-border">
+              <div className="max-h-[600px] overflow-y-auto divide-y divide-primary/30">
                 {filteredTokens.length === 0 ? (
                   <div className="p-4 text-center">
                     <div className="data-sm text-muted-foreground">NO TOKENS</div>
@@ -222,7 +252,6 @@ const Trade = () => {
                 ) : (
                   filteredTokens.map((token) => {
                     const isSelected = selectedToken?.id === token.id;
-                    const balance = getTokenBalance(token.id);
                     const change = (Math.random() - 0.3) * 20;
                     
                     return (
@@ -233,7 +262,7 @@ const Trade = () => {
                           trackEvent('trade');
                         }}
                         className={`w-full p-3 text-left transition-colors ${
-                          isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'
+                          isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'
                         }`}
                       >
                         <div className="flex justify-between items-start mb-1">
@@ -243,7 +272,7 @@ const Trade = () => {
                           </div>
                           <div className="text-right">
                             <div className="data-sm tabular-nums">${token.price.toFixed(6)}</div>
-                            <div className={`text-[10px] tabular-nums ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                            <div className={`text-[10px] tabular-nums ${change >= 0 ? 'text-primary' : 'text-destructive'}`}>
                               {change >= 0 ? '+' : ''}{change.toFixed(1)}%
                             </div>
                           </div>
@@ -256,18 +285,18 @@ const Trade = () => {
             </div>
 
             {/* Main Trading Area */}
-            <div className="lg:col-span-7 border-r border-border">
+            <div className="lg:col-span-7 lg:border-r-2 border-primary">
               {selectedToken ? (
                 <>
                   {/* Token Header */}
-                  <div className="border-b border-border p-4">
-                    <div className="flex items-start justify-between mb-4">
+                  <div className="border-b-2 border-primary p-3 sm:p-4">
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
                       <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl font-bold">{selectedToken.name}</span>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-lg sm:text-xl font-bold glow-text">{selectedToken.name}</span>
                           <Link 
                             to={`/token/${selectedToken.id}`} 
-                            className="data-sm text-muted-foreground hover:text-foreground"
+                            className="data-sm text-muted-foreground hover:text-primary"
                           >
                             VIEW →
                           </Link>
@@ -275,25 +304,25 @@ const Trade = () => {
                         <div className="data-sm text-muted-foreground">${selectedToken.symbol}</div>
                       </div>
                       <div className="text-right">
-                        <div className="data-lg tabular-nums">${selectedToken.price.toFixed(6)}</div>
-                        <div className="text-xs text-green-500">+{(Math.random() * 10).toFixed(1)}% 24h</div>
+                        <div className="display-lg tabular-nums glow-text">${selectedToken.price.toFixed(6)}</div>
+                        <div className="text-xs text-primary">+{(Math.random() * 10).toFixed(1)}% 24h</div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2">
-                      <div className="border border-border p-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <div className="border-2 border-primary p-2">
                         <div className="data-sm text-muted-foreground mb-1">VOL 24H</div>
                         <div className="data-md tabular-nums">${selectedToken.volume_24h.toFixed(0)}</div>
                       </div>
-                      <div className="border border-border p-2">
+                      <div className="border-2 border-primary p-2">
                         <div className="data-sm text-muted-foreground mb-1">HOLDERS</div>
                         <div className="data-md tabular-nums">{selectedToken.holders}</div>
                       </div>
-                      <div className="border border-border p-2">
+                      <div className="border-2 border-primary p-2">
                         <div className="data-sm text-muted-foreground mb-1">LIQUIDITY</div>
                         <div className="data-md tabular-nums">${selectedToken.liquidity.toFixed(0)}</div>
                       </div>
-                      <div className="border border-border p-2">
+                      <div className="border-2 border-primary p-2">
                         <div className="data-sm text-muted-foreground mb-1">MCAP</div>
                         <div className="data-md tabular-nums">${(selectedToken.price * selectedToken.supply).toFixed(0)}</div>
                       </div>
@@ -301,12 +330,12 @@ const Trade = () => {
                   </div>
 
                   {/* Chart Toggle */}
-                  <div className="border-b border-border p-2 flex gap-1">
+                  <div className="border-b border-primary/30 p-2 flex gap-2">
                     <Button
                       variant={viewMode === 'chart' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setViewMode('chart')}
-                      className="h-7 px-3 data-sm"
+                      className="h-8 px-3 data-sm"
                     >
                       📈 CHART
                     </Button>
@@ -314,14 +343,14 @@ const Trade = () => {
                       variant={viewMode === 'depth' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setViewMode('depth')}
-                      className="h-7 px-3 data-sm"
+                      className="h-8 px-3 data-sm"
                     >
                       📊 DEPTH
                     </Button>
                   </div>
 
                   {/* Chart */}
-                  <div className="border-b border-border">
+                  <div className="border-b-2 border-primary">
                     {viewMode === 'chart' ? (
                       <TradingChart 
                         data={chartData}
@@ -334,25 +363,25 @@ const Trade = () => {
                     )}
                   </div>
 
-                  {/* Recent Trades */}
-                  <div className="border-b border-border">
-                    <div className="border-b border-border px-3 py-2 bg-muted">
+                  {/* Recent Trades - Hidden on small screens */}
+                  <div className="border-b-2 border-primary hidden sm:block">
+                    <div className="border-b border-primary/30 px-3 py-2 bg-muted">
                       <span className="data-sm">RECENT TRADES</span>
                     </div>
                     <div className="max-h-32 overflow-y-auto">
                       <table className="w-full text-xs">
                         <thead className="sticky top-0 bg-background">
-                          <tr className="border-b border-border">
+                          <tr className="border-b border-primary/30">
                             <td className="p-2 text-muted-foreground">TYPE</td>
                             <td className="p-2 text-muted-foreground text-right">PRICE</td>
                             <td className="p-2 text-muted-foreground text-right">AMOUNT</td>
                             <td className="p-2 text-muted-foreground text-right">TIME</td>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-border/50">
+                        <tbody className="divide-y divide-primary/20">
                           {recentTrades.map((trade, i) => (
                             <tr key={i}>
-                              <td className={`p-2 font-bold ${trade.type === 'buy' ? 'text-green-500' : 'text-red-500'}`}>
+                              <td className={`p-2 font-bold ${trade.type === 'buy' ? 'text-primary' : 'text-destructive'}`}>
                                 {trade.type.toUpperCase()}
                               </td>
                               <td className="p-2 text-right tabular-nums">${trade.price.toFixed(6)}</td>
@@ -377,7 +406,7 @@ const Trade = () => {
                 </>
               ) : (
                 <div className="p-12 text-center">
-                  <div className="text-2xl mb-2">→</div>
+                  <div className="text-2xl mb-2 power-pulse">⏻</div>
                   <div className="data-sm text-muted-foreground">SELECT A TOKEN</div>
                 </div>
               )}
