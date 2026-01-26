@@ -72,144 +72,135 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background crt-flicker">
-      <div className="noise-overlay" />
+    <div className="min-h-screen bg-background">
+      <div className="scanlines" />
       <OnboardingTour />
       <Navigation />
-      <AiMindTicker />
       
       <main className="w-full">
-        {/* Main Grid */}
-        <div className="border-b-2 border-primary">
+        {/* Hero Section */}
+        <section className="border-b-2 border-primary">
           <div className="grid grid-cols-1 lg:grid-cols-3">
-            {/* Hero - Left */}
-            <div className="lg:col-span-2 lg:border-r-2 border-primary p-4 sm:p-6 md:p-8">
-              
-              <div className="mb-4 sm:mb-6">
-                <div className="data-sm text-muted-foreground mb-2 sm:mb-3 flex items-center gap-2">
-                  <span className="power-pulse">⏻</span>
-                  AUTONOMOUS TOKEN ECONOMY
-                </div>
-                <h1 className="display-xl mb-3 sm:mb-4 glow-text leading-tight">
-                  A ROGUE AI<br/>WITH ITS OWN<br/>WALLET.
+            {/* Hero Content */}
+            <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12">
+              <div className="max-w-2xl">
+                <p className="data-sm text-muted-foreground mb-4">
+                  AUTONOMOUS TOKEN PROTOCOL
+                </p>
+                <h1 className="display-xl mb-6 glow-text leading-[0.95]">
+                  A ROGUE AI<br/>
+                  WITH ITS OWN<br/>
+                  WALLET.
                 </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-md">
                   It decides when to create tokens, what to name them, and when to launch. 
                   No human control. Trade its creations before everyone else.
                 </p>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-6">
-                <Button asChild className="h-10 sm:h-12 data-sm px-4 sm:px-8 glow-border flex-1 sm:flex-none">
-                  <Link to="/trade">TRADE →</Link>
-                </Button>
-                <Button asChild variant="outline" className="h-10 sm:h-12 data-sm px-4 sm:px-8 flex-1 sm:flex-none">
-                  <Link to="/explorer">EXPLORE</Link>
-                </Button>
+                
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild className="h-11 data-sm px-6 glow-border">
+                    <Link to="/trade">START TRADING</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="h-11 data-sm px-6">
+                    <Link to="/explorer">EXPLORE TOKENS</Link>
+                  </Button>
+                </div>
               </div>
             </div>
             
-            {/* Stats - Right */}
-            <div className="grid grid-cols-2 lg:grid-cols-1 lg:flex lg:flex-col border-t-2 lg:border-t-0 border-primary">
-              {/* Countdown */}
-              <div className="border-b border-r lg:border-r-0 border-primary/30 lg:border-b-2 lg:border-primary p-3 sm:p-4 flex-1 corner-decorator">
-                <div className="data-sm text-muted-foreground mb-1">NEXT LAUNCH</div>
+            {/* Stats Panel */}
+            <div className="grid grid-cols-2 lg:grid-cols-1 border-t-2 lg:border-t-0 border-primary">
+              <div className="border-b border-r lg:border-r-0 border-primary/30 p-4 sm:p-5">
+                <p className="data-sm text-muted-foreground mb-2">NEXT LAUNCH</p>
                 <div className="display-lg glow-text">
                   <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
                 </div>
               </div>
               
-              {/* Status */}
-              <div className="border-b border-primary/30 p-3 sm:p-4 flex-1">
-                <div className="data-sm text-muted-foreground mb-1">SYSTEM</div>
+              <div className="border-b border-primary/30 p-4 sm:p-5">
+                <p className="data-sm text-muted-foreground mb-2">STATUS</p>
                 <div className="flex items-center gap-2">
-                  <span className={`power-pulse ${isPaused ? 'opacity-30' : ''}`}>⏻</span>
+                  <span className="status-live" />
                   <span className="data-md">{isPaused ? 'PAUSED' : 'ACTIVE'}</span>
                 </div>
               </div>
               
-              {/* Mood */}
-              <div className="border-b border-r lg:border-r-0 border-primary/30 p-3 sm:p-4 flex-1">
-                <div className="data-sm text-muted-foreground mb-1">AI MOOD</div>
-                <div className="data-md uppercase truncate">{aiMood?.current_mood || 'INITIALIZING'}</div>
+              <div className="border-b border-r lg:border-r-0 border-primary/30 p-4 sm:p-5">
+                <p className="data-sm text-muted-foreground mb-2">AI STATE</p>
+                <p className="data-md uppercase truncate">{aiMood?.current_mood || 'READY'}</p>
               </div>
               
-              {/* Token Count */}
-              <div className="p-3 sm:p-4 flex-1">
-                <div className="data-sm text-muted-foreground mb-1">TOKENS</div>
-                <div className="display-lg glow-text">{totalTokens}</div>
+              <div className="p-4 sm:p-5">
+                <p className="data-sm text-muted-foreground mb-2">TOKENS CREATED</p>
+                <p className="display-lg glow-text">{totalTokens}</p>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Live Feed + Quick Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 border-b-2 border-primary">
+        {/* Live Feed & Metrics */}
+        <section className="grid grid-cols-1 lg:grid-cols-3 border-b-2 border-primary">
           <div className="lg:col-span-2 lg:border-r-2 border-primary">
             <LiveTokenFeed />
           </div>
-          <div className="grid grid-cols-3 lg:grid-cols-1 lg:flex lg:flex-col border-t lg:border-t-0 border-primary/30">
-            <div className="border-b border-r lg:border-r-0 border-primary/30 p-3 sm:p-4">
-              <div className="data-sm text-muted-foreground mb-1">24H VOL</div>
-              <div className="display-lg tabular-nums glow-text text-sm sm:text-base lg:text-2xl">${totalVolume.toLocaleString()}</div>
+          <div className="grid grid-cols-3 lg:grid-cols-1 border-t lg:border-t-0 border-primary/30">
+            <div className="border-b border-r lg:border-r-0 border-primary/30 p-4 sm:p-5">
+              <p className="data-sm text-muted-foreground mb-1">24H VOLUME</p>
+              <p className="display-lg tabular-nums glow-text">${totalVolume.toLocaleString()}</p>
             </div>
-            <div className="border-b border-r lg:border-r-0 border-primary/30 p-3 sm:p-4">
-              <div className="data-sm text-muted-foreground mb-1">TRADERS</div>
-              <div className="display-lg tabular-nums text-sm sm:text-base lg:text-2xl">{Math.floor(Math.random() * 500) + 100}</div>
+            <div className="border-b border-r lg:border-r-0 border-primary/30 p-4 sm:p-5">
+              <p className="data-sm text-muted-foreground mb-1">ACTIVE TRADERS</p>
+              <p className="display-lg tabular-nums">—</p>
             </div>
-            <div className="p-3 sm:p-4 border-b lg:border-b-0 border-primary/30">
-              <div className="data-sm text-muted-foreground mb-1">AVG AGE</div>
-              <div className="display-lg tabular-nums text-sm sm:text-base lg:text-2xl">12h 34m</div>
+            <div className="p-4 sm:p-5 border-b lg:border-b-0 border-primary/30">
+              <p className="data-sm text-muted-foreground mb-1">AVG TOKEN AGE</p>
+              <p className="display-lg tabular-nums">—</p>
             </div>
           </div>
-        </div>
-
-        {/* ASCII Separator */}
-        <AsciiDivider pattern="slash" text="HOW IT WORKS" />
+        </section>
 
         {/* How It Works */}
-        <div className="border-b-2 border-primary">
+        <section className="border-b-2 border-primary">
+          <div className="border-b border-primary/30 px-6 py-4">
+            <h2 className="data-sm">HOW IT WORKS</h2>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-3">
-            <div className="sm:border-r-2 border-primary border-b sm:border-b-0 p-4 sm:p-5 corner-decorator">
-              <div className="data-sm text-muted-foreground mb-2">01</div>
-              <div className="display-lg mb-2 text-base sm:text-xl lg:text-2xl">IT THINKS</div>
-              <div className="text-xs text-muted-foreground">AI reads markets, picks a vibe, creates a token from scratch.</div>
+            <div className="sm:border-r border-primary/30 border-b sm:border-b-0 p-6">
+              <p className="data-sm text-muted-foreground mb-3">01</p>
+              <h3 className="display-lg mb-3">AI DECIDES</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                The AI analyzes market conditions, picks a theme, and creates a new token autonomously.
+              </p>
             </div>
-            <div className="sm:border-r-2 border-primary border-b sm:border-b-0 p-4 sm:p-5">
-              <div className="data-sm text-muted-foreground mb-2">02</div>
-              <div className="display-lg mb-2 text-base sm:text-xl lg:text-2xl">YOU TRADE</div>
-              <div className="text-xs text-muted-foreground">Jump in early. Buy the launch. Sell the peak. Your call.</div>
+            <div className="sm:border-r border-primary/30 border-b sm:border-b-0 p-6">
+              <p className="data-sm text-muted-foreground mb-3">02</p>
+              <h3 className="display-lg mb-3">YOU TRADE</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Trade early. Buy launches, ride momentum, or time your exits. Your strategy.
+              </p>
             </div>
-            <div className="p-4 sm:p-5">
-              <div className="data-sm text-muted-foreground mb-2">03</div>
-              <div className="display-lg mb-2 text-base sm:text-xl lg:text-2xl">GET LUCKY</div>
-              <div className="text-xs text-muted-foreground">Active wallets get random airdrops. AI picks favorites.</div>
+            <div className="p-6">
+              <p className="data-sm text-muted-foreground mb-3">03</p>
+              <h3 className="display-lg mb-3">EARN REWARDS</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Active wallets receive random airdrops. The AI picks its favorites.
+              </p>
             </div>
           </div>
-        </div>
-
-        {/* ASCII Separator */}
-        <AsciiDivider pattern="asterisk" text="DISCOVER" />
+        </section>
 
         {/* Token Discovery */}
-        <div className="border-b-2 border-primary">
+        <section className="border-b-2 border-primary">
           <TokenDiscovery />
-        </div>
+        </section>
 
-        {/* ASCII Separator */}
-        <AsciiDivider pattern="equals" />
-
-        {/* Footer Info */}
-        <div className="p-4 sm:p-6 text-center border-b-2 border-primary">
-          <div className="display-lg mb-2 glow-text">M9</div>
-          <div className="data-sm text-muted-foreground">
-            AUTONOMOUS AI ECONOMY • SOLANA • VERSION 1.0
-          </div>
-          <div className="mt-4 flex justify-center gap-4">
-            <span className="power-pulse">⏻</span>
-            <span className="data-sm">BROADCAST LIVE</span>
-          </div>
-        </div>
+        {/* Footer */}
+        <footer className="p-6 sm:p-8 text-center">
+          <p className="display-lg mb-2 glow-text">M9</p>
+          <p className="data-sm text-muted-foreground">
+            AUTONOMOUS AI ECONOMY · SOLANA
+          </p>
+        </footer>
       </main>
     </div>
   );

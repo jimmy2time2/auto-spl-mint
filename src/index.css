@@ -324,7 +324,7 @@
     animation: rotate 0.5s steps(4) infinite;
   }
 
-  /* Scanline effect - always on for Y2K aesthetic */
+  /* Scanline effect - subtle, professional */
   .scanlines {
     pointer-events: none;
     position: fixed;
@@ -333,62 +333,48 @@
     background: repeating-linear-gradient(
       0deg,
       transparent,
-      transparent 2px,
-      rgba(191, 255, 0, 0.02) 2px,
-      rgba(191, 255, 0, 0.02) 4px
+      transparent 3px,
+      rgba(191, 255, 0, 0.015) 3px,
+      rgba(191, 255, 0, 0.015) 6px
     );
-    opacity: 1;
+    opacity: 0.5;
   }
 
-  /* Y2K Neon glow effect */
-  body {
-    text-shadow: 0 0 1px hsl(72 100% 50% / 0.3);
-  }
-
+  /* Glow effects - refined and subtle */
   .glow-text {
-    text-shadow: 0 0 10px hsl(72 100% 50% / 0.8), 0 0 20px hsl(72 100% 50% / 0.4);
+    text-shadow: 0 0 8px hsl(72 100% 50% / 0.5);
   }
 
   .glow-border {
-    box-shadow: 0 0 10px hsl(72 100% 50% / 0.3), inset 0 0 10px hsl(72 100% 50% / 0.1);
+    box-shadow: 0 0 8px hsl(72 100% 50% / 0.15);
   }
 
-  /* Y2K Version label styling */
-  .version-label {
-    font-size: 0.5rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    opacity: 0.5;
-    writing-mode: vertical-lr;
-    text-orientation: mixed;
-  }
-
-  /* Y2K Power icon pulse */
+  /* Power icon pulse - subtle */
   @keyframes power-pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    50% { opacity: 0.6; }
   }
 
   .power-pulse {
-    animation: power-pulse 2s ease-in-out infinite;
+    animation: power-pulse 3s ease-in-out infinite;
   }
 
-  /* Y2K Bold display text - RESPONSIVE */
+  /* Display typography - RESPONSIVE */
   .display-xl {
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 700;
-    font-size: clamp(1.5rem, 5vw, 3rem);
-    line-height: 0.95;
-    letter-spacing: -0.05em;
+    font-size: clamp(1.5rem, 5vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
     text-transform: uppercase;
   }
 
   .display-lg {
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 700;
-    font-size: clamp(1.25rem, 4vw, 2rem);
-    line-height: 0.95;
-    letter-spacing: -0.03em;
+    font-size: clamp(1.125rem, 3vw, 1.75rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
     text-transform: uppercase;
   }
 
@@ -405,53 +391,46 @@
     }
   }
 
-  /* Y2K Corner decorators */
+  /* Corner decorators - minimal */
   .corner-decorator {
     position: relative;
   }
 
-  .corner-decorator::before,
-  .corner-decorator::after {
+  .corner-decorator::before {
     content: '';
     position: absolute;
-    width: 8px;
-    height: 8px;
-    border: 1px solid hsl(var(--primary));
+    width: 6px;
+    height: 6px;
+    top: 0;
+    left: 0;
+    border-top: 1px solid hsl(var(--primary));
+    border-left: 1px solid hsl(var(--primary));
   }
 
-  .corner-decorator::before {
-    top: -1px;
-    left: -1px;
-    border-right: none;
-    border-bottom: none;
-  }
-
-  .corner-decorator::after {
-    bottom: -1px;
-    right: -1px;
-    border-left: none;
-    border-top: none;
-  }
-
-  /* CRT flicker animation */
+  /* CRT flicker - very subtle, almost imperceptible */
   @keyframes flicker {
     0%, 100% { opacity: 1; }
-    92% { opacity: 1; }
-    93% { opacity: 0.85; }
-    94% { opacity: 1; }
+    96% { opacity: 1; }
+    97% { opacity: 0.97; }
+    98% { opacity: 1; }
   }
 
   .crt-flicker {
-    animation: flicker 4s infinite;
+    animation: flicker 8s infinite;
   }
 
-  /* Noise texture overlay */
+  /* Noise texture - extremely subtle */
   .noise-overlay {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9998;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    display: none; /* Disabled for cleaner look */
+  }
+
+  /* Status indicator */
+  .status-live {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: hsl(var(--primary));
+    border-radius: 0;
+    animation: power-pulse 2s ease-in-out infinite;
   }
 }
