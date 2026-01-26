@@ -884,6 +884,38 @@ export type Database = {
         }
         Relationships: []
       }
+      token_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          token_id: string
+          wallet_address: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          token_id: string
+          wallet_address: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          token_id?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_comments_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       token_decision_log: {
         Row: {
           confidence: number
