@@ -16,14 +16,14 @@ const AiMindTicker = () => {
         <div className="ticker-content py-2">
           {thoughts.map((thought, index) => (
             <span key={index} className="ticker-item data-sm">
-              <span className="text-primary">⏻</span>
+              <span className="text-primary">●</span>
               <span className="ml-2">{thought}</span>
               <span className="mx-6 text-primary/30">|</span>
             </span>
           ))}
           {thoughts.map((thought, index) => (
             <span key={`dup-${index}`} className="ticker-item data-sm">
-              <span className="text-primary">⏻</span>
+              <span className="text-primary">●</span>
               <span className="ml-2">{thought}</span>
               <span className="mx-6 text-primary/30">|</span>
             </span>
