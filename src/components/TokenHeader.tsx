@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Copy, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import TokenQRCode from "./TokenQRCode";
 
 interface TokenHeaderProps {
   name: string;
@@ -19,6 +20,7 @@ export const TokenHeader = ({
   launchTimestamp 
 }: TokenHeaderProps) => {
   const { toast } = useToast();
+  const { id: tokenId } = useParams<{ id: string }>();
 
   const copyAddress = () => {
     if (mintAddress) {
@@ -60,9 +62,8 @@ export const TokenHeader = ({
           <ArrowLeft className="h-4 w-4" />
         </Link>
         
-        <div className="w-12 h-12 sm:w-14 sm:h-14 border border-border bg-muted flex items-center justify-center text-lg font-bold">
-          {symbol.slice(0, 2)}
-        </div>
+        {/* QR Code as profile picture */}
+        {tokenId && <TokenQRCode tokenId={tokenId} size={56} />}
         
         <div>
           <h1 className="text-lg sm:text-xl font-bold">{name}</h1>
