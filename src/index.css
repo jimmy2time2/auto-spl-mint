@@ -315,4 +315,53 @@
     content: '|';
     animation: rotate 0.5s steps(4) infinite;
   }
+
+  /* Scanline effect for terminal mode */
+  .scanlines {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .dark .scanlines {
+    opacity: 1;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 0, 0.03) 2px,
+      rgba(0, 255, 0, 0.03) 4px
+    );
+  }
+
+  /* Terminal glow effect */
+  .dark body {
+    text-shadow: 0 0 2px hsl(120 100% 65% / 0.5);
+  }
+
+  .dark .glow-text {
+    text-shadow: 0 0 8px hsl(120 100% 65% / 0.8);
+  }
+
+  /* CRT flicker animation */
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    92% { opacity: 1; }
+    93% { opacity: 0.8; }
+    94% { opacity: 1; }
+  }
+
+  .dark .crt-flicker {
+    animation: flicker 4s infinite;
+  }
 }

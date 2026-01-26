@@ -3,6 +3,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useState, useEffect } from "react";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Navigation = () => {
   const location = useLocation();
@@ -70,6 +71,9 @@ const Navigation = () => {
           <span className="status-dot status-active"></span>
           <span className="data-sm text-muted-foreground">SYS:OK</span>
         </div>
+
+        {/* Theme Toggle */}
+        <ThemeToggle />
 
         {/* Wallet */}
         <div className="flex items-center">
