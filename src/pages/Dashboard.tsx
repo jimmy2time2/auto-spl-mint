@@ -7,6 +7,7 @@ import AsciiDivider from "@/components/AsciiDivider";
 import LiveTokenFeed from "@/components/LiveTokenFeed";
 import TokenDiscovery from "@/components/TokenDiscovery";
 import CommunityChat from "@/components/CommunityChat";
+import LuckyWalletSection from "@/components/LuckyWalletSection";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
@@ -189,6 +190,9 @@ const Dashboard = () => {
             </div>
           </div>
         </section>
+
+        {/* Lucky Wallet Section */}
+        <LuckyWalletSection />
 
         {/* Token Discovery */}
         <section className="border-b-2 border-primary">
