@@ -73,8 +73,6 @@ const Navigation = () => {
           <span className="data-sm">ONLINE</span>
         </div>
 
-        {/* Theme Toggle */}
-        <ThemeToggle />
 
         {/* Wallet */}
         <div className="flex items-center">
