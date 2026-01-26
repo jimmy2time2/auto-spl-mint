@@ -373,12 +373,12 @@
     animation: power-pulse 2s ease-in-out infinite;
   }
 
-  /* Y2K Bold display text */
+  /* Y2K Bold display text - RESPONSIVE */
   .display-xl {
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 700;
-    font-size: 3rem;
-    line-height: 0.9;
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    line-height: 0.95;
     letter-spacing: -0.05em;
     text-transform: uppercase;
   }
@@ -386,10 +386,23 @@
   .display-lg {
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 700;
-    font-size: 2rem;
-    line-height: 0.9;
+    font-size: clamp(1.25rem, 4vw, 2rem);
+    line-height: 0.95;
     letter-spacing: -0.03em;
     text-transform: uppercase;
+  }
+
+  /* Responsive data classes */
+  @media (max-width: 640px) {
+    .data-lg {
+      font-size: 1.5rem;
+    }
+    .data-md {
+      font-size: 0.875rem;
+    }
+    .data-sm {
+      font-size: 0.625rem;
+    }
   }
 
   /* Y2K Corner decorators */
