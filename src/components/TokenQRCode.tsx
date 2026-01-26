@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { generateM9QRCodeWithLogo } from '@/lib/qrCodeGenerator';
+import { QRCodeSVG } from 'qrcode.react';
+import { getTokenUrl } from '@/lib/qrCodeGenerator';
 
 interface TokenQRCodeProps {
   tokenId: string;
@@ -14,67 +14,49 @@ interface TokenQRCodeProps {
  * - "M9" logo in center
  */
 const TokenQRCode = ({ tokenId, size = 56, className = '' }: TokenQRCodeProps) => {
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    const generateQR = async () => {
-      try {
-        setIsLoading(true);
-        setError(false);
-        
-        // Generate QR code with M9 logo
-        const dataUrl = await generateM9QRCodeWithLogo({ 
-          tokenId, 
-          size: Math.max(size * 2, 200) // Generate at higher res for quality
-        });
-        
-        setQrCodeUrl(dataUrl);
-      } catch (err) {
-        console.error('Failed to generate QR code:', err);
-        setError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (tokenId) {
-      generateQR();
-    }
-  }, [tokenId, size]);
-
-  // Loading state - show M9 placeholder
-  if (isLoading) {
-    return (
-      <div 
-        className={`flex items-center justify-center bg-muted border border-border ${className}`}
-        style={{ width: size, height: size }}
-      >
-        <span className="text-xs font-bold text-muted-foreground">M9</span>
-      </div>
-    );
-  }
-
-  // Error state - show M9 text fallback
-  if (error || !qrCodeUrl) {
-    return (
-      <div 
-        className={`flex items-center justify-center bg-card border border-border ${className}`}
-        style={{ width: size, height: size }}
-      >
-        <span className="text-lg font-bold text-primary">M9</span>
-      </div>
-    );
-  }
+  const tokenUrl = getTokenUrl(tokenId);
+  
+  // Calculate logo size (25% of QR code)
+  const logoSize = Math.max(size * 0.28, 14);
 
   return (
-    <img 
-      src={qrCodeUrl} 
-      alt={`QR code for token ${tokenId}`}
-      className={`border border-border ${className}`}
+    <div 
+      className={`relative border border-border bg-[#0A0A0A] ${className}`}
       style={{ width: size, height: size }}
-    />
+    >
+      <QRCodeSVG
+        value={tokenUrl}
+        size={size}
+        bgColor="#0A0A0A"
+        fgColor="#BFFF00"
+        level="H" // High error correction to allow for logo overlay
+        style={{ width: '100%', height: '100%' }}
+      />
+      
+      {/* M9 Logo Overlay in Center */}
+      <div 
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+      >
+        <div 
+          className="bg-[#0A0A0A] border border-primary flex items-center justify-center"
+          style={{ 
+            width: logoSize, 
+            height: logoSize,
+          }}
+        >
+          <span 
+            className="font-bold text-primary"
+            style={{ 
+              fontSize: logoSize * 0.5,
+              fontFamily: '"IBM Plex Mono", monospace',
+              lineHeight: 1,
+            }}
+          >
+            M9
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };
 
