@@ -111,7 +111,6 @@ const Explorer = () => {
           <div className="flex items-center justify-between">
             <div>
               <div className="data-sm flex items-center gap-2">
-                <span className="power-pulse">⏻</span>
                 TOKEN EXPLORER
               </div>
               <div className="text-xs text-muted-foreground hidden sm:block">All AI-generated tokens</div>
@@ -134,12 +133,7 @@ const Explorer = () => {
               onClick={() => setFilter(f)}
               className="h-8 px-2 sm:px-3 data-sm whitespace-nowrap flex-shrink-0"
             >
-              {f === 'all' && '📋 '}
-              {f === 'new' && '✨ '}
-              {f === 'trending' && '🔥 '}
-              {f === 'gainers' && '🚀 '}
-              <span className="hidden sm:inline">{f.toUpperCase()}</span>
-              <span className="sm:hidden">{f === 'all' ? 'ALL' : f === 'new' ? 'NEW' : f === 'trending' ? 'HOT' : '🚀'}</span>
+              {f.toUpperCase()}
             </Button>
           ))}
         </div>
@@ -184,7 +178,6 @@ const Explorer = () => {
           </div>
         ) : tokens.length === 0 ? (
           <div className="p-12 text-center">
-            <div className="text-3xl mb-3 power-pulse">⏻</div>
             <div className="data-md font-bold mb-2">NO TOKENS FOUND</div>
             <div className="text-xs text-muted-foreground">Try adjusting your search or filters</div>
           </div>
@@ -210,12 +203,12 @@ const Explorer = () => {
                           <span className="data-md font-bold">${token.symbol}</span>
                           {token.isNew && (
                             <Badge variant="secondary" className="text-[8px] sm:text-[9px] px-1 py-0 h-4 border border-primary/30">
-                              ✨ NEW
+                              NEW
                             </Badge>
                           )}
                           {token.isHot && (
                             <Badge variant="secondary" className="text-[8px] sm:text-[9px] px-1 py-0 h-4 border border-primary/30 hidden sm:inline-flex">
-                              🔥 HOT
+                              HOT
                             </Badge>
                           )}
                         </div>
