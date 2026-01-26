@@ -12,6 +12,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Wallet from "./pages/Wallet";
 import Logbook from "./pages/Logbook";
 import Trade from "./pages/Trade";
+import DAO from "./pages/DAO";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/trade" element={<Trade />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/logbook" element={<Logbook />} />
+            <Route path="/dao" element={<DAO />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
