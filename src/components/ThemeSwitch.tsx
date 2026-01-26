@@ -28,6 +28,19 @@ const ThemeSwitch = () => {
     }
   }, []);
 
+  // Keyboard shortcut: Ctrl+Shift+T
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
+        e.preventDefault();
+        setIsInverted((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <button
       onClick={() => setIsInverted(!isInverted)}
