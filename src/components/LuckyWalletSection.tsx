@@ -126,13 +126,19 @@ const LuckyWalletSection = () => {
 
   if (loading) {
     return (
-      <div className="border-b-2 lg:border-b-0 border-primary">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-0">
-          <div className="lg:col-span-3 lg:border-r border-primary/30 p-4">
-            <Skeleton className="h-12 w-full" />
+      <div className="h-full flex flex-col">
+        <div className="flex items-center border-b border-primary/30 px-4 py-3">
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <div className="flex-1 p-4">
+          <Skeleton className="h-20 w-full" />
+        </div>
+        <div className="border-t border-primary/30 grid grid-cols-2">
+          <div className="p-3 border-r border-primary/30">
+            <Skeleton className="h-8 w-full" />
           </div>
-          <div className="p-4">
-            <Skeleton className="h-12 w-full" />
+          <div className="p-3">
+            <Skeleton className="h-8 w-full" />
           </div>
         </div>
       </div>
@@ -140,114 +146,99 @@ const LuckyWalletSection = () => {
   }
 
   return (
-    <div className="border-b-2 lg:border-b-0 border-primary">
-      <div className="grid grid-cols-1 lg:grid-cols-4 h-full">
-        {/* Latest Winner + Recent */}
-        <div className="lg:col-span-3 lg:border-r border-primary/30">
-          <div className="flex items-center border-b border-primary/30 overflow-x-auto">
-            <div className="px-4 py-3 border-r border-primary/30 shrink-0">
-              <span className="data-sm text-muted-foreground">LUCKY WALLET</span>
-            </div>
-            {latestWinner && (
-              <>
-                <div className="px-4 py-3 border-r border-primary/30 shrink-0">
-                  <span className="data-sm text-muted-foreground mr-2">WINNER</span>
-                  <span className="data-sm font-mono glow-text">
-                    {formatAddress(latestWinner.wallet_address)}
-                  </span>
-                </div>
-                <div className="px-4 py-3 border-r border-primary/30 shrink-0">
-                  <span className="data-sm text-muted-foreground mr-2">REWARD</span>
-                  <span className="data-sm tabular-nums">
-                    {Number(latestWinner.distribution_amount).toLocaleString()}
-                  </span>
-                </div>
-                <div className="px-4 py-3 hidden sm:block shrink-0">
-                  <span className="data-sm text-muted-foreground">
-                    {formatTimestamp(latestWinner.selection_timestamp)}
-                  </span>
-                </div>
-              </>
-            )}
-            {!latestWinner && (
-              <div className="px-4 py-3">
-                <span className="data-sm text-muted-foreground">NO WINNERS YET</span>
-              </div>
-            )}
-          </div>
-
-          {/* Recent Winners Row */}
-          {recentWinners.length > 1 && (
-            <div className="flex items-center divide-x divide-primary/20 overflow-x-auto">
-              <div className="px-4 py-2 shrink-0">
-                <span className="text-xs text-muted-foreground">RECENT</span>
-              </div>
-              {recentWinners.slice(1).map((winner) => (
-                <div key={winner.id} className="px-4 py-2 shrink-0">
-                  <span className="text-xs font-mono text-muted-foreground">
-                    {formatAddress(winner.wallet_address)}
-                  </span>
-                  <span className="text-xs text-primary ml-2">
-                    +{Number(winner.distribution_amount).toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+    <div className="h-full flex flex-col">
+      {/* Header - matches TokenDistributionInfo */}
+      <div className="flex items-center border-b border-primary/30 overflow-x-auto">
+        <div className="px-4 py-3 border-r border-primary/30 shrink-0">
+          <span className="data-sm text-muted-foreground">LUCKY WALLET</span>
         </div>
-
-        {/* Stats + Share */}
-        <div className="border-t lg:border-t-0 border-primary/30">
-          <div className="grid grid-cols-2 lg:grid-cols-1">
-            <div className="p-3 border-r lg:border-r-0 border-b border-primary/30">
-              <p className="text-xs text-muted-foreground mb-1">DISTRIBUTED</p>
-              <p className="data-sm tabular-nums">{totalDistributed.toLocaleString()}</p>
+        {latestWinner ? (
+          <>
+            <div className="px-4 py-3 border-r border-primary/30 shrink-0">
+              <span className="data-sm font-mono glow-text">
+                {formatAddress(latestWinner.wallet_address)}
+              </span>
             </div>
-            <div className="p-3 border-b border-primary/30">
-              <p className="text-xs text-muted-foreground mb-1">
-                {connected ? 'YOUR ENTRIES' : 'WINNERS'}
-              </p>
-              <p className="data-sm tabular-nums">
-                {connected && stats ? stats.bonus_entries : totalWinners}
-              </p>
+            <div className="px-4 py-3 shrink-0">
+              <span className="text-xs text-muted-foreground">
+                {formatTimestamp(latestWinner.selection_timestamp)}
+              </span>
             </div>
+          </>
+        ) : (
+          <div className="px-4 py-3 shrink-0">
+            <span className="text-xs text-muted-foreground">NO WINNERS YET</span>
           </div>
-          
+        )}
+      </div>
+
+      {/* Content area - recent winners */}
+      <div className="flex-1 p-4">
+        {recentWinners.length > 0 ? (
+          <div className="space-y-2">
+            {recentWinners.map((winner) => (
+              <div key={winner.id} className="flex items-center gap-3">
+                <span className="text-xs font-mono text-muted-foreground w-24 truncate">
+                  {formatAddress(winner.wallet_address)}
+                </span>
+                <div className="flex-1 h-1.5 bg-muted/30 relative overflow-hidden">
+                  <div 
+                    className="absolute inset-y-0 left-0 bg-primary/60"
+                    style={{ width: `${Math.min(100, (Number(winner.distribution_amount) / 1000) * 100)}%` }}
+                  />
+                </div>
+                <span className="text-xs tabular-nums glow-text w-16 text-right">
+                  +{Number(winner.distribution_amount).toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">No recent winners</p>
+        )}
+      </div>
+
+      {/* Footer stats - matches TokenDistributionInfo structure */}
+      <div className="border-t border-primary/30">
+        <div className="grid grid-cols-2">
+          <div className="p-3 border-r border-primary/30">
+            <p className="text-xs text-muted-foreground mb-1">
+              {connected ? 'YOUR ENTRIES' : 'DISTRIBUTED'}
+            </p>
+            <p className="data-sm tabular-nums glow-text">
+              {connected && stats ? stats.bonus_entries : totalDistributed.toLocaleString()}
+            </p>
+          </div>
           <div className="p-3">
             {connected && referralCode ? (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
+              <div className="space-y-1">
+                <div className="flex items-center gap-1">
                   <span className="text-xs text-muted-foreground">REF:</span>
-                  <span className="data-sm font-mono">{referralCode}</span>
+                  <span className="text-xs font-mono">{referralCode}</span>
                   <button 
                     onClick={copyReferralLink}
-                    className="text-xs text-primary hover:underline"
+                    className="text-xs text-primary hover:underline ml-auto"
                   >
-                    {copied ? '✓' : 'COPY'}
+                    {copied ? 'COPIED' : 'COPY'}
                   </button>
                 </div>
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="w-full text-xs"
+                  className="w-full text-xs h-6"
                   onClick={handleShare}
                 >
-                  SHARE ON X → +10 ENTRIES
+                  SHARE → +10
                 </Button>
               </div>
             ) : (
-              <div className="space-y-2">
-                <p className="text-xs text-muted-foreground">
-                  {connected ? 'LOADING...' : 'CONNECT TO GET ENTRIES'}
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground mb-1">
+                  {connected ? 'LOADING...' : 'TOTAL WINNERS'}
                 </p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full text-xs"
-                  onClick={handleShare}
-                >
-                  {connected ? 'SHARE ON X →' : 'CONNECT WALLET'}
-                </Button>
+                <p className="data-sm tabular-nums">
+                  {connected ? '—' : totalWinners}
+                </p>
               </div>
             )}
           </div>

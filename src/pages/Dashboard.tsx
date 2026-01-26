@@ -195,11 +195,13 @@ const Dashboard = () => {
         </section>
 
         {/* Lucky Wallet & Distribution */}
-        <section className="grid grid-cols-1 lg:grid-cols-2">
+        <section className="grid grid-cols-1 lg:grid-cols-2 border-b-2 border-primary">
           <div className="lg:border-r-2 border-primary">
             <LuckyWalletSection />
           </div>
-          <TokenDistributionInfo />
+          <div>
+            <TokenDistributionInfo />
+          </div>
         </section>
 
         {/* Token Discovery */}
