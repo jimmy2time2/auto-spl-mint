@@ -23,7 +23,6 @@ const Navigation = () => {
   }, [location.pathname]);
 
   const navLinks = [
-    { path: "/", label: "INDEX" },
     { path: "/trade", label: "TRADE" },
     { path: "/explorer", label: "EXPLORE" },
     { path: "/logbook", label: "LOG" },
