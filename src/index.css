@@ -58,6 +58,8 @@
   }
 }
 
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
 @layer base {
   * {
     @apply border-border;
@@ -65,17 +67,17 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace;
+    font-family: 'IBM Plex Mono', 'SF Mono', 'Monaco', 'Courier New', monospace;
     font-feature-settings: 'tnum' 1, 'zero' 1;
     letter-spacing: -0.01em;
     line-height: 1.4;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: unset;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Dense data typography */
+  /* Dense data typography - IBM Plex Mono */
   .data-lg {
-    font-family: 'SF Mono', 'Monaco', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-weight: 700;
     letter-spacing: -0.02em;
     font-feature-settings: 'tnum' 1, 'zero' 1;
@@ -84,7 +86,7 @@
   }
 
   .data-md {
-    font-family: 'SF Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-weight: 600;
     letter-spacing: 0;
     font-feature-settings: 'tnum' 1;
@@ -93,32 +95,32 @@
   }
 
   .data-sm {
-    font-family: 'SF Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 0.6875rem;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     font-weight: 600;
     line-height: 1.3;
   }
 
   .metric-label {
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 0.5625rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: hsl(var(--muted-foreground));
-    font-family: 'SF Mono', monospace;
   }
 
   .metric-display {
-    font-family: 'SF Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-weight: 700;
     letter-spacing: -0.02em;
     font-feature-settings: 'tnum' 1, 'zero' 1;
   }
 
   .terminal-text {
-    font-family: 'SF Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0;
   }

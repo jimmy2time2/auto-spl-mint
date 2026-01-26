@@ -34,7 +34,7 @@ const Navigation = () => {
       <div className="flex items-stretch justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center border-r border-border px-4 py-2 hover:bg-primary hover:text-primary-foreground transition-colors">
-          <span className="data-sm font-bold tracking-tight">MIND9</span>
+          <span className="text-lg font-bold tracking-tighter">M9</span>
         </Link>
         
         {/* Desktop Navigation */}
