@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { X, ArrowRight, ArrowLeft, Circle, Clock, Sparkles, ArrowUpRight, Star, List } from "lucide-react";
+import { X, ArrowRight, ArrowLeft } from "lucide-react";
 
 interface TourStep {
   id: string;
   title: string;
   description: string;
-  icon: React.ReactNode;
+  symbol: string;
   position: "center" | "top" | "bottom";
 }
 
@@ -14,43 +14,43 @@ const tourSteps: TourStep[] = [
   {
     id: "welcome",
     title: "Welcome to Mind9",
-    description: "An autonomous AI that creates and launches meme tokens on Solana. No human decides when to launch — the AI does it all on its own.",
-    icon: <Circle className="w-6 h-6" strokeWidth={1.5} />,
+    description: "You're entering an experiment in autonomous finance. An AI with its own wallet, its own decisions, and zero human control. It creates tokens when it feels like it.",
+    symbol: "◉",
     position: "center",
   },
   {
     id: "countdown",
-    title: "The AI Countdown",
-    description: "This timer shows when the AI will launch its next token. The AI wakes up at unpredictable intervals (3-12 hours) based on market conditions and its current mood.",
-    icon: <Clock className="w-6 h-6" strokeWidth={1.5} />,
+    title: "The Countdown",
+    description: "Nobody knows exactly when. The AI wakes up every 3-12 hours based on market chaos, its mood, and pure randomness. When the timer hits zero — a new token is born.",
+    symbol: "○",
     position: "center",
   },
   {
     id: "mood",
-    title: "AI Mood System",
-    description: "The AI has moods like INSPIRED, GREEDY, or CHAOTIC that affect its decisions. Watch its mood to predict what kind of token it might create next.",
-    icon: <Sparkles className="w-6 h-6" strokeWidth={1.5} />,
+    title: "It Has Moods",
+    description: "INSPIRED. GREEDY. CHAOTIC. The AI's emotional state shapes what it creates. A bored AI makes different tokens than an excited one. Watch its mood. Predict its moves.",
+    symbol: "◐",
     position: "center",
   },
   {
     id: "trading",
-    title: "Start Trading",
-    description: "Click 'Start Trading' to buy and sell tokens the AI creates. Connect your Solana wallet and trade as soon as new tokens launch.",
-    icon: <ArrowUpRight className="w-6 h-6" strokeWidth={1.5} />,
+    title: "Trade What It Builds",
+    description: "The moment a token launches, it's live. Connect your wallet, pick your position, and ride the wave. Early traders often become lucky wallet recipients.",
+    symbol: "→",
     position: "center",
   },
   {
     id: "rewards",
-    title: "Lucky Wallet Rewards",
-    description: "Active traders can receive random airdrops! The AI selects 'lucky wallets' based on trading activity and distributes rewards automatically.",
-    icon: <Star className="w-6 h-6" strokeWidth={1.5} />,
+    title: "Random Rewards",
+    description: "The AI randomly selects active traders and airdrops them tokens. No applications. No requirements. Just be active — and you might get lucky.",
+    symbol: "✦",
     position: "center",
   },
   {
     id: "logbook",
-    title: "Full Transparency",
-    description: "Visit the Logbook to see every decision the AI makes. All actions are logged publicly — nothing is hidden.",
-    icon: <List className="w-6 h-6" strokeWidth={1.5} />,
+    title: "Nothing Hidden",
+    description: "Every thought. Every decision. Every launch. It's all public in the Logbook. This AI operates in the open — judge it by its actions.",
+    symbol: "≡",
     position: "center",
   },
 ];
@@ -149,10 +149,10 @@ export const OnboardingTour = () => {
           ))}
         </div>
 
-        {/* Icon */}
+        {/* Symbol */}
         <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 border-2 border-primary flex items-center justify-center bg-background">
-            {step.icon}
+          <div className="w-14 h-14 border border-primary/50 flex items-center justify-center">
+            <span className="text-2xl">{step.symbol}</span>
           </div>
         </div>
 

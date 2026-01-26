@@ -5,7 +5,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import AiMindTicker from "@/components/AiMindTicker";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Brain, Zap, TrendingUp, Gift, Eye } from "lucide-react";
+import { ArrowRight, Zap, Eye } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 import { Link } from "react-router-dom";
@@ -82,9 +82,8 @@ const Dashboard = () => {
 ██║ ╚═╝ ██║██║██║ ╚████║██████╔╝ █████╔╝
 ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝  ╚════╝`}
           </pre>
-          <p className="text-sm md:text-base max-w-xl mx-auto text-muted-foreground">
-            An autonomous AI that creates and launches tokens on Solana.
-            Watch it think. Trade what it builds.
+          <p className="text-sm md:text-base max-w-lg mx-auto text-muted-foreground leading-relaxed">
+            A rogue AI with its own wallet. It decides when to create tokens, what to name them, and when to launch. No human pulls the strings. Trade its creations before everyone else.
           </p>
         </div>
 
@@ -101,7 +100,7 @@ const Dashboard = () => {
                 {isPaused ? 'SYSTEM PAUSED' : 'AI IS ACTIVE'}
               </span>
               <div className="flex items-center gap-1 px-2 py-1 border border-border">
-                <Brain className="w-3 h-3" />
+                <span className="text-xs">◐</span>
                 <span className="metric-label text-xs capitalize">{aiMood?.current_mood || 'NEUTRAL'}</span>
               </div>
             </div>
@@ -182,28 +181,22 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* How It Works - Super Simple */}
+        {/* How It Works - Minimal */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-          <div className="p-4 border-2 border-border">
-            <div className="w-10 h-10 mx-auto mb-3 border-2 border-primary flex items-center justify-center">
-              <Brain className="w-5 h-5" />
-            </div>
-            <div className="font-bold text-sm mb-1">AI DECIDES</div>
-            <div className="text-xs text-muted-foreground">Autonomous token creation based on market signals</div>
+          <div className="p-4 border border-border">
+            <div className="text-2xl mb-3">◉</div>
+            <div className="font-bold text-sm mb-1">IT THINKS</div>
+            <div className="text-xs text-muted-foreground">The AI reads markets, picks a vibe, and creates a token from scratch</div>
           </div>
-          <div className="p-4 border-2 border-border">
-            <div className="w-10 h-10 mx-auto mb-3 border-2 border-primary flex items-center justify-center">
-              <TrendingUp className="w-5 h-5" />
-            </div>
+          <div className="p-4 border border-border">
+            <div className="text-2xl mb-3">→</div>
             <div className="font-bold text-sm mb-1">YOU TRADE</div>
-            <div className="text-xs text-muted-foreground">Buy and sell tokens as they launch</div>
+            <div className="text-xs text-muted-foreground">Jump in early. Buy the launch. Sell the peak. Your call.</div>
           </div>
-          <div className="p-4 border-2 border-border">
-            <div className="w-10 h-10 mx-auto mb-3 border-2 border-primary flex items-center justify-center">
-              <Gift className="w-5 h-5" />
-            </div>
-            <div className="font-bold text-sm mb-1">EARN REWARDS</div>
-            <div className="text-xs text-muted-foreground">Active traders get lucky wallet distributions</div>
+          <div className="p-4 border border-border">
+            <div className="text-2xl mb-3">✦</div>
+            <div className="font-bold text-sm mb-1">GET LUCKY</div>
+            <div className="text-xs text-muted-foreground">Active wallets get random airdrops. The AI picks favorites.</div>
           </div>
         </div>
       </main>
