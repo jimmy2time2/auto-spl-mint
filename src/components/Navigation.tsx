@@ -37,10 +37,6 @@ const Navigation = () => {
           <span className="display-lg glow-text group-hover:text-primary-foreground">M9</span>
         </Link>
 
-        {/* Version Label */}
-        <div className="hidden lg:flex items-center px-2 border-r border-primary/30">
-          <span className="version-label">VERSION 1.0</span>
-        </div>
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-stretch flex-1">

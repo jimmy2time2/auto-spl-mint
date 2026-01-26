@@ -78,16 +78,12 @@ const Dashboard = () => {
       <Navigation />
       <AiMindTicker />
       
-      <main className="max-w-6xl mx-auto px-2 sm:px-0">
+      <main className="w-full">
         {/* Main Grid */}
         <div className="border-b-2 border-primary">
           <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero - Left */}
-            <div className="lg:col-span-2 lg:border-r-2 border-primary p-4 sm:p-6 md:p-8 relative">
-              {/* Version decorator */}
-              <div className="absolute top-4 right-4 hidden md:block">
-                <span className="version-label">V1.0</span>
-              </div>
+            <div className="lg:col-span-2 lg:border-r-2 border-primary p-4 sm:p-6 md:p-8">
               
               <div className="mb-4 sm:mb-6">
                 <div className="data-sm text-muted-foreground mb-2 sm:mb-3 flex items-center gap-2">
