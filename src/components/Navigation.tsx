@@ -3,7 +3,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useState, useEffect } from "react";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
-import { Menu, X } from "lucide-react";
 
 const Navigation = () => {
   const location = useLocation();
@@ -19,108 +18,104 @@ const Navigation = () => {
     }
   }, [connected]);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
   const navLinks = [
-    { path: "/", label: "HOME" },
+    { path: "/", label: "INDEX" },
     { path: "/trade", label: "TRADE" },
     { path: "/explorer", label: "EXPLORE" },
-    { path: "/logbook", label: "LOGBOOK" },
+    { path: "/logbook", label: "LOG" },
   ];
   
   return (
-    <header className="border-b-2 border-border bg-card sticky top-0 z-50">
-      <div className="container mx-auto px-4 md:px-8 py-3 flex items-center justify-between max-w-7xl">
+    <header className="border-b border-border bg-background sticky top-0 z-50">
+      <div className="flex items-stretch justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="border-2 border-primary px-3 py-1 font-bold text-lg md:text-xl tracking-tight hover:bg-primary hover:text-primary-foreground transition-colors">
-            M9
-          </div>
+        <Link to="/" className="flex items-center border-r border-border px-4 py-2 hover:bg-primary hover:text-primary-foreground transition-colors">
+          <span className="data-sm font-bold tracking-tight">MIND9</span>
         </Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
+        <nav className="hidden md:flex items-stretch flex-1">
+          {navLinks.map((link, idx) => (
             <Link 
               key={link.path}
               to={link.path} 
-              className={`metric-label text-xs transition-all relative py-2 ${
+              className={`flex items-center px-4 border-r border-border data-sm transition-colors ${
                 isActive(link.path) 
-                  ? 'text-foreground font-bold' 
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'hover:bg-secondary'
               }`}
             >
               {link.label}
-              {isActive(link.path) && (
-                <div className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-primary" />
-              )}
             </Link>
           ))}
           {connected && (
             <Link 
               to="/wallet" 
-              className={`metric-label text-xs transition-all relative py-2 ${
+              className={`flex items-center px-4 border-r border-border data-sm transition-colors ${
                 isActive('/wallet') 
-                  ? 'text-foreground font-bold' 
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'hover:bg-secondary'
               }`}
             >
               WALLET
-              {isActive('/wallet') && (
-                <div className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-primary" />
-              )}
             </Link>
           )}
         </nav>
 
-        {/* Right Side */}
-        <div className="flex items-center gap-3">
-          <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/80 !border-2 !border-primary !font-bold !text-[10px] md:!text-xs !h-9 !px-4 !transition-all uppercase" />
-          
-          <button
-            className="md:hidden border-2 border-primary p-2 hover:bg-primary hover:text-primary-foreground transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
+        {/* Status */}
+        <div className="hidden lg:flex items-center px-4 border-r border-border gap-2">
+          <span className="status-dot status-active"></span>
+          <span className="data-sm text-muted-foreground">SYS:OK</span>
         </div>
+
+        {/* Wallet */}
+        <div className="flex items-center">
+          <WalletMultiButton className="!bg-transparent !text-foreground hover:!bg-primary hover:!text-primary-foreground !border-0 !border-l !border-border !font-mono !text-[9px] !font-bold !h-full !px-4 !rounded-none !uppercase !tracking-wider" />
+        </div>
+        
+        {/* Mobile Menu Toggle */}
+        <button
+          className="md:hidden border-l border-border px-4 py-2 hover:bg-secondary transition-colors data-sm"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          {mobileMenuOpen ? '✕' : '≡'}
+        </button>
       </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t-2 border-border bg-card">
-          <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.path}
-                to={link.path} 
-                className={`metric-label text-sm transition-all py-3 px-3 ${
-                  isActive(link.path) 
-                    ? 'text-foreground font-bold bg-primary/10 border-l-2 border-primary' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            {connected && (
-              <Link 
-                to="/wallet"
-                className={`metric-label text-sm transition-all py-3 px-3 ${
-                  isActive('/wallet') 
-                    ? 'text-foreground font-bold bg-primary/10 border-l-2 border-primary' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                }`}
-              >
-                WALLET
-              </Link>
-            )}
-          </nav>
-        </div>
+        <nav className="md:hidden border-t border-border">
+          {navLinks.map((link) => (
+            <Link 
+              key={link.path}
+              to={link.path} 
+              className={`block px-4 py-3 border-b border-border data-sm transition-colors ${
+                isActive(link.path) 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'hover:bg-secondary'
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+          {connected && (
+            <Link 
+              to="/wallet"
+              className={`block px-4 py-3 border-b border-border data-sm transition-colors ${
+                isActive('/wallet') 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'hover:bg-secondary'
+              }`}
+            >
+              WALLET
+            </Link>
+          )}
+        </nav>
       )}
     </header>
   );

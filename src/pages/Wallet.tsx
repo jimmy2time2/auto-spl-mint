@@ -2,10 +2,8 @@ import { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Navigation from "@/components/Navigation";
-import TerminalCard from "@/components/TerminalCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { Wallet as WalletIcon, Activity, TrendingUp } from "lucide-react";
 
 interface WalletActivity {
   id: string;
@@ -52,105 +50,101 @@ const Wallet = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-6xl">
-        <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-4xl font-bold uppercase tracking-tight mb-2">Wallet</h1>
-          <p className="text-[10px] md:text-xs uppercase tracking-widest opacity-70">Your trading activity & holdings</p>
+      <main className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="border-b border-border px-4 py-3 bg-muted">
+          <div className="data-sm">WALLET</div>
+          <div className="text-xs text-muted-foreground">Activity & holdings</div>
         </div>
 
         {!connected ? (
-          <TerminalCard>
-            <div className="text-center py-12">
-              <WalletIcon className="w-16 h-16 mx-auto mb-6 opacity-50" />
-              <h3 className="text-xl font-bold uppercase mb-4">Connect Wallet</h3>
-              <p className="text-sm mb-6 opacity-70">Connect your Solana wallet to view your activity</p>
-              <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !border-2 !border-border !font-bold !uppercase !tracking-widest" />
-            </div>
-          </TerminalCard>
+          <div className="p-8 text-center border-b border-border">
+            <div className="text-3xl mb-4">○</div>
+            <div className="data-md font-bold mb-2">CONNECT WALLET</div>
+            <div className="text-sm text-muted-foreground mb-6">Connect your Solana wallet to view activity</div>
+            <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90 !border !border-border !font-mono !text-xs !font-bold !uppercase" />
+          </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
-              <TerminalCard title="WALLET ADDRESS">
-                <div className="font-mono text-[10px] md:text-sm break-all">
-                  {publicKey?.toString()}
+            {/* Stats */}
+            <div className="grid grid-cols-3 border-b border-border">
+              <div className="border-r border-border p-4">
+                <div className="data-sm text-muted-foreground mb-1">ADDRESS</div>
+                <div className="text-xs font-mono truncate">{publicKey?.toString()}</div>
+              </div>
+              <div className="border-r border-border p-4 text-center">
+                <div className="data-sm text-muted-foreground mb-1">TRADES</div>
+                <div className="data-lg">{activities.length}</div>
+              </div>
+              <div className="p-4 text-center">
+                <div className="data-sm text-muted-foreground mb-1">STATUS</div>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="status-dot status-active"></span>
+                  <span className="data-md">ACTIVE</span>
                 </div>
-              </TerminalCard>
-
-              <TerminalCard title="TOTAL TRADES">
-                <div className="text-2xl md:text-4xl font-bold font-mono">
-                  {activities.length}
-                </div>
-              </TerminalCard>
-
-              <TerminalCard title="STATUS">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 md:w-3 h-2 md:h-3 bg-primary rounded-full animate-pulse" />
-                  <span className="text-lg md:text-xl font-bold font-mono">ACTIVE</span>
-                </div>
-              </TerminalCard>
+              </div>
             </div>
 
-            <TerminalCard title="ACTIVITY HISTORY">
-              {loading ? (
-                <div className="text-center py-8 font-mono">LOADING...</div>
-              ) : activities.length === 0 ? (
-                <div className="text-center py-8 opacity-70">
-                  <Activity className="w-12 h-12 mx-auto mb-4" />
-                  <p className="text-sm uppercase">No activity yet</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto -mx-2 md:mx-0">
-                  <table className="w-full font-mono text-xs min-w-[500px]">
-                    <thead>
-                      <tr className="border-b-2 border-border">
-                        <th className="text-left py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs">TYPE</th>
-                        <th className="text-left py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs">TOKEN</th>
-                        <th className="text-right py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs">AMOUNT</th>
-                        <th className="text-right py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs hidden sm:table-cell">% OF SUPPLY</th>
-                        <th className="text-right py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs hidden md:table-cell">TIME</th>
+            {/* Activity Header */}
+            <div className="border-b border-border px-4 py-2 bg-muted">
+              <span className="data-sm">ACTIVITY HISTORY</span>
+            </div>
+
+            {/* Activity List */}
+            {loading ? (
+              <div className="p-8 text-center">
+                <div className="data-sm text-muted-foreground">LOADING<span className="cursor-blink">_</span></div>
+              </div>
+            ) : activities.length === 0 ? (
+              <div className="p-8 text-center">
+                <div className="text-2xl mb-2">○</div>
+                <div className="data-sm text-muted-foreground">NO ACTIVITY YET</div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="data-table w-full min-w-[500px]">
+                  <thead>
+                    <tr>
+                      <th>TYPE</th>
+                      <th>TOKEN</th>
+                      <th className="text-right">AMOUNT</th>
+                      <th className="text-right hidden sm:table-cell">% SUPPLY</th>
+                      <th className="text-right hidden md:table-cell">TIME</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activities.map((activity) => (
+                      <tr key={activity.id}>
+                        <td>
+                          <span className={`font-bold ${
+                            activity.activity_type === 'buy' ? 'text-green-700' : 'text-red-700'
+                          }`}>
+                            {activity.activity_type.toUpperCase()}
+                          </span>
+                        </td>
+                        <td>
+                          <Link 
+                            to={`/token/${activity.token_id}`}
+                            className="hover:underline"
+                          >
+                            VIEW →
+                          </Link>
+                        </td>
+                        <td className="text-right tabular-nums">
+                          {Number(activity.amount).toLocaleString()}
+                        </td>
+                        <td className="text-right tabular-nums hidden sm:table-cell">
+                          {Number(activity.percentage_of_supply).toFixed(2)}%
+                        </td>
+                        <td className="text-right text-muted-foreground hidden md:table-cell">
+                          {new Date(activity.timestamp).toLocaleString()}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {activities.map((activity, index) => (
-                        <tr 
-                          key={activity.id}
-                          className={`border-b border-dashed border-border hover:bg-secondary/50 transition-colors ${
-                            index % 2 === 0 ? 'bg-card' : ''
-                          }`}
-                        >
-                          <td className="py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs">
-                            <span className={`uppercase font-bold ${
-                              activity.activity_type === 'buy' ? 'text-green-600' : 'text-red-600'
-                            }`}>
-                              {activity.activity_type}
-                            </span>
-                          </td>
-                          <td className="py-2 md:py-3 px-1 md:px-2 text-[10px] md:text-xs">
-                            <Link 
-                              to={`/token/${activity.token_id}`}
-                              className="hover:opacity-70 flex items-center gap-1"
-                            >
-                              <TrendingUp className="w-3 h-3" />
-                              <span className="hidden sm:inline">View Token</span>
-                              <span className="sm:hidden">View</span>
-                            </Link>
-                          </td>
-                          <td className="py-2 md:py-3 px-1 md:px-2 text-right text-[10px] md:text-xs">
-                            {Number(activity.amount).toLocaleString()}
-                          </td>
-                          <td className="py-2 md:py-3 px-1 md:px-2 text-right text-[10px] md:text-xs hidden sm:table-cell">
-                            {Number(activity.percentage_of_supply).toFixed(2)}%
-                          </td>
-                          <td className="py-2 md:py-3 px-1 md:px-2 text-right opacity-70 text-[10px] md:text-xs hidden md:table-cell">
-                            {new Date(activity.timestamp).toLocaleString()}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </TerminalCard>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </>
         )}
       </main>

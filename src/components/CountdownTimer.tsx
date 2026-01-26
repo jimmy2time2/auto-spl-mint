@@ -36,34 +36,16 @@ const CountdownTimer = ({ targetDate, isPaused = false }: CountdownTimerProps) =
 
   if (isPaused) {
     return (
-      <div className="text-center font-mono">
-        <div className="text-4xl font-bold mb-2 terminal-text">
-          AUTONOMOUS LAUNCHING: <span className="text-destructive">OFF</span>
-        </div>
-      </div>
+      <span className="text-muted-foreground">--:--:--</span>
     );
   }
 
   return (
-    <div className="text-center font-mono">
-      <div className="text-sm mb-2 terminal-text">{'>'} AI_LAUNCHING_NEXT_TOKEN_IN</div>
-      <div className="flex justify-center gap-4 text-5xl font-bold terminal-text">
-        <div className="flex flex-col items-center">
-          <span>{String(timeLeft.hours).padStart(2, '0')}</span>
-          <span className="text-xs">HOURS</span>
-        </div>
-        <span>:</span>
-        <div className="flex flex-col items-center">
-          <span>{String(timeLeft.minutes).padStart(2, '0')}</span>
-          <span className="text-xs">MINS</span>
-        </div>
-        <span>:</span>
-        <div className="flex flex-col items-center">
-          <span>{String(timeLeft.seconds).padStart(2, '0')}</span>
-          <span className="text-xs">SECS</span>
-        </div>
-      </div>
-    </div>
+    <span className="tabular-nums">
+      {String(timeLeft.hours).padStart(2, '0')}:
+      {String(timeLeft.minutes).padStart(2, '0')}:
+      {String(timeLeft.seconds).padStart(2, '0')}
+    </span>
   );
 };
 
