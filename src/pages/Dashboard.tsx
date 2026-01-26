@@ -119,12 +119,12 @@ const Dashboard = () => {
               {/* Mood */}
               <div className="border-b border-border p-4 flex-1">
                 <div className="data-sm text-muted-foreground mb-1">AI MOOD</div>
-                <div className="data-md uppercase">{aiMood?.current_mood || 'NEUTRAL'}</div>
+                <div className="data-md uppercase">{aiMood?.current_mood || 'INITIALIZING'}</div>
               </div>
               
               {/* Token Count */}
               <div className="p-4 flex-1">
-                <div className="data-sm text-muted-foreground mb-1">TOKENS</div>
+                <div className="data-sm text-muted-foreground mb-1">TOKENS CREATED</div>
                 <div className="data-lg">{totalTokens}</div>
               </div>
             </div>
@@ -158,8 +158,8 @@ const Dashboard = () => {
         {/* ASCII Separator */}
         <AsciiDivider pattern="asterisk" />
 
-        {/* Recent Tokens */}
-        {tokens.length > 0 && (
+        {/* Recent Tokens or Empty State */}
+        {tokens.length > 0 ? (
           <div className="border-b border-border">
             <div className="flex items-center justify-between border-b border-border px-4 py-2 bg-muted">
               <span className="data-sm">RECENT TOKENS</span>
@@ -194,6 +194,14 @@ const Dashboard = () => {
               </tbody>
             </table>
           </div>
+        ) : (
+          <div className="border-b border-border p-8 text-center">
+            <div className="text-3xl mb-3 opacity-30">○</div>
+            <div className="data-md font-bold mb-2">NO TOKENS YET</div>
+            <div className="text-xs text-muted-foreground max-w-xs mx-auto">
+              The AI is warming up. First token launch coming soon. Watch the countdown.
+            </div>
+          </div>
         )}
 
         {/* ASCII Separator */}
@@ -205,7 +213,7 @@ const Dashboard = () => {
             ╔══════════════════════════════════════════════════════════╗
           </div>
           <div className="data-sm text-muted-foreground">
-            MIND9 • AUTONOMOUS AI ECONOMY • SOLANA
+            M9 • AUTONOMOUS AI ECONOMY • SOLANA
           </div>
           <div className="data-sm text-muted-foreground mt-2">
             ╚══════════════════════════════════════════════════════════╝
