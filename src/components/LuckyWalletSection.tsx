@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Gift, Trophy, Sparkles, Users, TrendingUp } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type LuckyWalletSelection = Tables<"lucky_wallet_selections">;
@@ -34,7 +33,7 @@ const LuckyWalletSection = () => {
           .from("lucky_wallet_selections")
           .select("*, tokens(symbol, name)")
           .order("selection_timestamp", { ascending: false })
-          .limit(5),
+          .limit(4),
         supabase
           .from("lucky_wallet_selections")
           .select("distribution_amount", { count: "exact" })
@@ -62,7 +61,6 @@ const LuckyWalletSection = () => {
 
     fetchLuckyWallets();
 
-    // Subscribe to realtime updates
     const channel = supabase
       .channel("lucky_wallet_updates")
       .on(
@@ -72,9 +70,7 @@ const LuckyWalletSection = () => {
           schema: "public",
           table: "lucky_wallet_selections"
         },
-        (payload) => {
-          fetchLuckyWallets();
-        }
+        () => fetchLuckyWallets()
       )
       .subscribe();
 
@@ -96,200 +92,115 @@ const LuckyWalletSection = () => {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${diffDays}d ago`;
+    if (diffMins < 1) return "now";
+    if (diffMins < 60) return `${diffMins}m`;
+    if (diffHours < 24) return `${diffHours}h`;
+    return `${diffDays}d`;
+  };
+
+  const handleShareTwitter = () => {
+    const text = "Join @M9_Protocol - an autonomous AI that creates and trades tokens on Solana. Get lucky and win rewards!";
+    const url = window.location.origin;
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+      "_blank"
+    );
   };
 
   if (loading) {
     return (
-      <div className="border-b-2 border-primary">
-        <div className="border-b border-primary/30 px-6 py-4 flex items-center gap-3">
-          <Gift className="h-4 w-4 text-primary" />
-          <h2 className="data-sm">LUCKY WALLET REWARDS</h2>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3">
-          <div className="lg:col-span-2 lg:border-r-2 border-primary p-6">
-            <Skeleton className="h-32 w-full" />
+      <section className="border-b-2 border-primary">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-0">
+          <div className="lg:col-span-3 lg:border-r border-primary/30 p-4">
+            <Skeleton className="h-16 w-full" />
           </div>
-          <div className="p-6">
-            <Skeleton className="h-32 w-full" />
+          <div className="p-4">
+            <Skeleton className="h-16 w-full" />
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
   return (
     <section className="border-b-2 border-primary">
-      <div className="border-b border-primary/30 px-6 py-4 flex items-center gap-3">
-        <Gift className="h-4 w-4 text-primary" />
-        <h2 className="data-sm">LUCKY WALLET REWARDS</h2>
-        <span className="ml-auto status-live" />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3">
-        {/* Latest Winner Spotlight */}
-        <div className="lg:col-span-2 lg:border-r-2 border-primary">
-          <div className="p-6 sm:p-8">
-            {latestWinner ? (
-              <div className="relative">
-                {/* Winner Badge */}
-                <div className="absolute -top-2 -left-2 bg-primary text-primary-foreground px-3 py-1 data-sm flex items-center gap-2">
-                  <Trophy className="h-3 w-3" />
-                  LATEST WINNER
+      <div className="grid grid-cols-1 lg:grid-cols-4">
+        {/* Latest Winner + Recent */}
+        <div className="lg:col-span-3 lg:border-r border-primary/30">
+          <div className="flex items-center border-b border-primary/30">
+            <div className="px-4 py-3 border-r border-primary/30">
+              <span className="data-sm text-muted-foreground">LUCKY WALLET</span>
+            </div>
+            {latestWinner && (
+              <>
+                <div className="px-4 py-3 border-r border-primary/30">
+                  <span className="data-sm text-muted-foreground mr-2">WINNER</span>
+                  <span className="data-sm font-mono glow-text">
+                    {formatAddress(latestWinner.wallet_address)}
+                  </span>
                 </div>
-
-                <div className="border-2 border-primary glow-border p-6 mt-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                      <p className="data-sm text-muted-foreground mb-2">
-                        WALLET ADDRESS
-                      </p>
-                      <p className="display-lg glow-text break-all font-mono">
-                        {formatAddress(latestWinner.wallet_address)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="data-sm text-muted-foreground mb-2">
-                        REWARD AMOUNT
-                      </p>
-                      <p className="display-lg glow-text tabular-nums">
-                        {Number(latestWinner.distribution_amount).toLocaleString()}{" "}
-                        <span className="data-sm text-muted-foreground">
-                          {latestWinner.tokens?.symbol || "TOKENS"}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-primary/30">
-                    <div>
-                      <p className="data-sm text-muted-foreground mb-1">TOKEN</p>
-                      <p className="data-md">
-                        {latestWinner.tokens?.symbol || "—"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="data-sm text-muted-foreground mb-1">
-                        ACTIVITY SCORE
-                      </p>
-                      <p className="data-md tabular-nums">
-                        {Number(latestWinner.activity_score).toFixed(0)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="data-sm text-muted-foreground mb-1">WHEN</p>
-                      <p className="data-md">
-                        {formatTimestamp(latestWinner.selection_timestamp)}
-                      </p>
-                    </div>
-                  </div>
+                <div className="px-4 py-3 border-r border-primary/30">
+                  <span className="data-sm text-muted-foreground mr-2">REWARD</span>
+                  <span className="data-sm tabular-nums">
+                    {Number(latestWinner.distribution_amount).toLocaleString()}
+                  </span>
                 </div>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-primary/30 p-8 text-center">
-                <Sparkles className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
-                <p className="display-lg mb-2">NO WINNERS YET</p>
-                <p className="text-sm text-muted-foreground">
-                  Be active in trading to become the next lucky wallet!
-                </p>
+                <div className="px-4 py-3 hidden sm:block">
+                  <span className="data-sm text-muted-foreground">
+                    {formatTimestamp(latestWinner.selection_timestamp)}
+                  </span>
+                </div>
+              </>
+            )}
+            {!latestWinner && (
+              <div className="px-4 py-3">
+                <span className="data-sm text-muted-foreground">NO WINNERS YET</span>
               </div>
             )}
           </div>
 
-          {/* Recent Winners List */}
+          {/* Recent Winners Row */}
           {recentWinners.length > 1 && (
-            <div className="border-t border-primary/30">
-              <div className="px-6 py-3 border-b border-primary/30">
-                <p className="data-sm text-muted-foreground">RECENT WINNERS</p>
+            <div className="flex items-center divide-x divide-primary/20 overflow-x-auto">
+              <div className="px-4 py-2 shrink-0">
+                <span className="text-xs text-muted-foreground">RECENT</span>
               </div>
-              <div className="divide-y divide-primary/20">
-                {recentWinners.slice(1, 5).map((winner) => (
-                  <div
-                    key={winner.id}
-                    className="px-6 py-3 flex items-center justify-between hover:bg-primary/5 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Gift className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <p className="data-sm font-mono">
-                          {formatAddress(winner.wallet_address)}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {winner.tokens?.symbol || "Token"} ·{" "}
-                          {formatTimestamp(winner.selection_timestamp)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="data-sm glow-text tabular-nums">
-                        +{Number(winner.distribution_amount).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {recentWinners.slice(1).map((winner) => (
+                <div key={winner.id} className="px-4 py-2 shrink-0">
+                  <span className="text-xs font-mono text-muted-foreground">
+                    {formatAddress(winner.wallet_address)}
+                  </span>
+                  <span className="text-xs text-primary ml-2">
+                    +{Number(winner.distribution_amount).toLocaleString()}
+                  </span>
+                </div>
+              ))}
             </div>
           )}
         </div>
 
-        {/* Stats & Info Panel */}
-        <div className="border-t-2 lg:border-t-0 border-primary">
-          {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-1 border-b border-primary/30">
-            <div className="border-r lg:border-r-0 border-primary/30 p-4 sm:p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-3 w-3 text-muted-foreground" />
-                <p className="data-sm text-muted-foreground">TOTAL DISTRIBUTED</p>
-              </div>
-              <p className="display-lg glow-text tabular-nums">
-                {totalDistributed.toLocaleString()}
-              </p>
+        {/* Stats + Share */}
+        <div className="border-t lg:border-t-0 border-primary/30">
+          <div className="grid grid-cols-2 lg:grid-cols-1">
+            <div className="p-4 border-r lg:border-r-0 border-b border-primary/30">
+              <p className="text-xs text-muted-foreground mb-1">DISTRIBUTED</p>
+              <p className="data-md tabular-nums">{totalDistributed.toLocaleString()}</p>
             </div>
-            <div className="p-4 sm:p-5 border-b lg:border-b-0 border-primary/30">
-              <div className="flex items-center gap-2 mb-2">
-                <Users className="h-3 w-3 text-muted-foreground" />
-                <p className="data-sm text-muted-foreground">TOTAL WINNERS</p>
-              </div>
-              <p className="display-lg tabular-nums">{totalWinners}</p>
+            <div className="p-4 border-b border-primary/30">
+              <p className="text-xs text-muted-foreground mb-1">WINNERS</p>
+              <p className="data-md tabular-nums">{totalWinners}</p>
             </div>
           </div>
-
-          {/* How to Win */}
-          <div className="p-6">
-            <h3 className="data-sm mb-4 flex items-center gap-2">
-              <Sparkles className="h-3 w-3" />
-              HOW TO GET LUCKY
-            </h3>
-            <div className="space-y-4 text-sm text-muted-foreground">
-              <div className="flex gap-3">
-                <span className="data-sm text-primary">01</span>
-                <p>Trade actively on the platform</p>
-              </div>
-              <div className="flex gap-3">
-                <span className="data-sm text-primary">02</span>
-                <p>Avoid whale behavior (&gt;10% supply)</p>
-              </div>
-              <div className="flex gap-3">
-                <span className="data-sm text-primary">03</span>
-                <p>No pump &amp; dump patterns</p>
-              </div>
-              <div className="flex gap-3">
-                <span className="data-sm text-primary">04</span>
-                <p>AI randomly selects winners from eligible wallets</p>
-              </div>
-            </div>
-
-            <div className="mt-6 p-4 bg-primary/5 border border-primary/20">
-              <p className="data-sm text-primary mb-1">⚡ NEXT DISTRIBUTION</p>
-              <p className="text-xs text-muted-foreground">
-                Lucky wallets are selected during each profit distribution event
-              </p>
-            </div>
+          <div className="p-4">
+            <p className="text-xs text-muted-foreground mb-2">SHARE FOR +10 ENTRIES</p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full text-xs"
+              onClick={handleShareTwitter}
+            >
+              SHARE ON X →
+            </Button>
           </div>
         </div>
       </div>

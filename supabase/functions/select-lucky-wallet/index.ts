@@ -20,56 +20,77 @@ serve(async (req) => {
 
     console.log('Selecting lucky wallet:', { token_id, distribution_amount });
 
-    // Get recent minters (last 50 wallet activities)
-    const { data: recentActivity, error: activityError } = await supabase
+    // Get ALL wallets that have interacted with the platform
+    // This includes minters, buyers, sellers - anyone who participated
+    const { data: allActivity, error: activityError } = await supabase
       .from('wallet_activity_log')
-      .select('wallet_address, timestamp')
-      .eq('token_id', token_id)
-      .in('activity_type', ['mint', 'buy'])
+      .select('wallet_address, timestamp, activity_type')
       .order('timestamp', { ascending: false })
-      .limit(50);
+      .limit(500);
 
     if (activityError) throw activityError;
 
-    if (!recentActivity || recentActivity.length === 0) {
+    // Also get wallets from invite_log (people who shared/invited)
+    const { data: inviteActivity } = await supabase
+      .from('invite_log')
+      .select('inviter_wallet, inviter_score')
+      .order('timestamp', { ascending: false })
+      .limit(200);
+
+    // Build wallet pool with base entries
+    const walletEntries = new Map<string, number>();
+    
+    // Everyone who interacted gets base entries
+    if (allActivity) {
+      allActivity.forEach((activity) => {
+        const currentEntries = walletEntries.get(activity.wallet_address) || 0;
+        // Base entry for any activity
+        walletEntries.set(activity.wallet_address, currentEntries + 1);
+      });
+    }
+
+    // Bonus entries for sharing/inviting (+10 per share)
+    if (inviteActivity) {
+      inviteActivity.forEach((invite) => {
+        const currentEntries = walletEntries.get(invite.inviter_wallet) || 0;
+        // +10 entries per invite/share
+        walletEntries.set(invite.inviter_wallet, currentEntries + 10);
+      });
+    }
+
+    // If no activity at all, return error
+    if (walletEntries.size === 0) {
       return new Response(
         JSON.stringify({ error: 'No eligible wallets found' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Calculate activity scores for each wallet
-    const walletScores = new Map<string, number>();
-    
-    recentActivity.forEach((activity, index) => {
-      const recencyScore = 50 - index; // More recent = higher score
-      const currentScore = walletScores.get(activity.wallet_address) || 0;
-      walletScores.set(activity.wallet_address, currentScore + recencyScore);
-    });
-
-    // Check DAO eligibility (exclude whales)
-    const walletAddresses = Array.from(walletScores.keys());
+    // Check DAO eligibility to exclude only extreme whales (optional filter)
+    const walletAddresses = Array.from(walletEntries.keys());
     const { data: daoRecords } = await supabase
       .from('dao_eligibility')
-      .select('wallet_address, is_eligible, whale_status')
-      .in('wallet_address', walletAddresses)
-      .eq('token_id', token_id);
+      .select('wallet_address, whale_status')
+      .in('wallet_address', walletAddresses);
 
-    // Filter out whales and ineligible wallets
+    // Only exclude extreme whales (>10% supply holders)
     const eligibleWallets = walletAddresses.filter(address => {
       const daoRecord = daoRecords?.find(r => r.wallet_address === address);
-      return !daoRecord || (daoRecord.is_eligible && !daoRecord.whale_status);
+      // Include everyone except flagged whales
+      return !daoRecord || !daoRecord.whale_status;
     });
 
     if (eligibleWallets.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'No eligible non-whale wallets found' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      // Fallback: if all are whales somehow, just pick from all
+      const allWallets = Array.from(walletEntries.keys());
+      const randomIndex = Math.floor(Math.random() * allWallets.length);
+      const selectedWallet = allWallets[randomIndex];
+      
+      return await recordSelection(supabase, selectedWallet, token_id, distribution_amount, 1, eligibleWallets.length);
     }
 
-    // Weighted random selection based on activity scores
-    const weights = eligibleWallets.map(addr => walletScores.get(addr) || 0);
+    // Weighted random selection based on entries
+    const weights = eligibleWallets.map(addr => walletEntries.get(addr) || 1);
     const totalWeight = weights.reduce((sum, w) => sum + w, 0);
     const random = Math.random() * totalWeight;
     
@@ -84,69 +105,9 @@ serve(async (req) => {
       }
     }
 
-    const activityScore = walletScores.get(selectedWallet) || 0;
+    const entries = walletEntries.get(selectedWallet) || 1;
 
-    // Log the lucky wallet selection
-    const { error: selectionError } = await supabase
-      .from('lucky_wallet_selections')
-      .insert({
-        wallet_address: selectedWallet,
-        token_id,
-        distribution_amount: parseFloat(distribution_amount),
-        is_recent_minter: true,
-        activity_score: activityScore
-      });
-
-    if (selectionError) throw selectionError;
-
-    // Log protocol activity
-    await supabase
-      .from('protocol_activity')
-      .insert({
-        activity_type: 'fee_collection',
-        token_id,
-        description: `Lucky wallet selected: ${selectedWallet.slice(0, 8)}...`,
-        metadata: {
-          wallet_address: selectedWallet,
-          distribution_amount,
-          activity_score: activityScore,
-          eligible_pool_size: eligibleWallets.length
-        }
-      });
-
-    // Create system log
-    const { data: token } = await supabase
-      .from('tokens')
-      .select('symbol')
-      .eq('id', token_id)
-      .single();
-
-    await supabase
-      .from('logs')
-      .insert({
-        action: `LUCKY_WALLET_SELECTED: ${token?.symbol}`,
-        token_id,
-        details: {
-          wallet: selectedWallet,
-          amount: distribution_amount,
-          activity_score: activityScore
-        }
-      });
-
-    console.log('Lucky wallet selected:', selectedWallet);
-
-    return new Response(
-      JSON.stringify({ 
-        success: true,
-        lucky_wallet: {
-          address: selectedWallet,
-          distribution_amount,
-          activity_score: activityScore,
-          eligible_pool_size: eligibleWallets.length
-        }
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return await recordSelection(supabase, selectedWallet, token_id, distribution_amount, entries, eligibleWallets.length);
 
   } catch (error) {
     console.error('Lucky wallet selection error:', error);
@@ -157,3 +118,74 @@ serve(async (req) => {
     );
   }
 });
+
+async function recordSelection(
+  supabase: any, 
+  selectedWallet: string, 
+  token_id: string, 
+  distribution_amount: number, 
+  activityScore: number,
+  poolSize: number
+) {
+  // Log the lucky wallet selection
+  const { error: selectionError } = await supabase
+    .from('lucky_wallet_selections')
+    .insert({
+      wallet_address: selectedWallet,
+      token_id,
+      distribution_amount: parseFloat(String(distribution_amount)),
+      is_recent_minter: false,
+      activity_score: activityScore
+    });
+
+  if (selectionError) throw selectionError;
+
+  // Log protocol activity
+  await supabase
+    .from('protocol_activity')
+    .insert({
+      activity_type: 'lucky_selection',
+      token_id,
+      description: `Lucky wallet: ${selectedWallet.slice(0, 8)}...`,
+      metadata: {
+        wallet_address: selectedWallet,
+        distribution_amount,
+        entries: activityScore,
+        eligible_pool_size: poolSize
+      }
+    });
+
+  // Create system log
+  const { data: token } = await supabase
+    .from('tokens')
+    .select('symbol')
+    .eq('id', token_id)
+    .single();
+
+  await supabase
+    .from('logs')
+    .insert({
+      action: `LUCKY_WALLET: ${token?.symbol || 'TOKEN'}`,
+      token_id,
+      details: {
+        wallet: selectedWallet,
+        amount: distribution_amount,
+        entries: activityScore
+      }
+    });
+
+  console.log('Lucky wallet selected:', selectedWallet);
+
+  return new Response(
+    JSON.stringify({ 
+      success: true,
+      lucky_wallet: {
+        address: selectedWallet,
+        distribution_amount,
+        entries: activityScore,
+        eligible_pool_size: poolSize
+      }
+    }),
+    { headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' } }
+  );
+}
