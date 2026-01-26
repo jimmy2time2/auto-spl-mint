@@ -1,34 +1,34 @@
 const AiMindTicker = () => {
   const thoughts = [
-    "ANALYZING_MARKET_CONDITIONS",
-    "CALCULATING_OPTIMAL_LAUNCH_TIME",
-    "GENERATING_TOKEN_METADATA",
-    "MONITORING_LIQUIDITY_POOLS",
-    "SELECTING_LUCKY_WALLETS",
-    "PROCESSING_FEE_DISTRIBUTION",
-    "SCANNING_SOLANA_NETWORK",
-    "OPTIMIZING_BONDING_CURVES",
-    "EVALUATING_TREASURY_BALANCE",
-    "QUEUING_NEXT_TOKEN_MINT"
+    "ANALYZING_MARKET",
+    "CALC_LAUNCH_TIME",
+    "GEN_TOKEN_META",
+    "SCAN_LIQUIDITY",
+    "SELECT_LUCKY",
+    "PROCESS_FEES",
+    "SCAN_NETWORK",
+    "OPT_CURVES",
+    "EVAL_TREASURY",
+    "QUEUE_MINT"
   ];
 
   return (
-      <div className="bg-black text-white border-y-2 border-black overflow-hidden py-2">
-        <div className="ticker-wrapper">
-          <div className="ticker-content text-[10px] font-mono tracking-widest uppercase font-bold">
-            {thoughts.map((thought, index) => (
-              <span key={index} className="ticker-item">
-                {'>'} {thought} <span className="mx-8">•</span>
-              </span>
-            ))}
-            {thoughts.map((thought, index) => (
-              <span key={`duplicate-${index}`} className="ticker-item">
-                {'>'} {thought} <span className="mx-8">•</span>
-              </span>
-            ))}
-          </div>
+    <div className="border-b border-border overflow-hidden">
+      <div className="ticker-wrapper">
+        <div className="ticker-content py-1">
+          {thoughts.map((thought, index) => (
+            <span key={index} className="ticker-item data-sm text-muted-foreground">
+              {'>'}{thought}<span className="mx-6 opacity-30">|</span>
+            </span>
+          ))}
+          {thoughts.map((thought, index) => (
+            <span key={`dup-${index}`} className="ticker-item data-sm text-muted-foreground">
+              {'>'}{thought}<span className="mx-6 opacity-30">|</span>
+            </span>
+          ))}
         </div>
       </div>
+    </div>
   );
 };
 
