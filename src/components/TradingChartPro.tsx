@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { createChart, ColorType, IChartApi, Time } from "lightweight-charts";
+import { createChart, ColorType, IChartApi, Time, LineSeries, AreaSeries } from "lightweight-charts";
 
 interface ChartDataPoint {
   time: string;
@@ -64,23 +64,21 @@ export const TradingChartPro = ({ data, tokenSymbol }: TradingChartProProps) => 
 
     chartRef.current = chart;
 
-    // Use line series as a simpler alternative (lightweight-charts v5 API)
-    const lineSeries = chart.addSeries({
-      type: 'Line',
-      color: '#22c55e',
-      lineWidth: 2,
-      priceFormat: { type: 'price', precision: 8, minMove: 0.00000001 },
-    } as any);
-
-    // Add area below line
-    const areaSeries = chart.addSeries({
-      type: 'Area',
+    // Add area series first (renders behind)
+    const areaSeries = chart.addSeries(AreaSeries, {
       topColor: 'rgba(34, 197, 94, 0.3)',
       bottomColor: 'rgba(34, 197, 94, 0.0)',
       lineColor: 'rgba(34, 197, 94, 0)',
-      lineWidth: 0,
+      lineWidth: 1,
       priceFormat: { type: 'price', precision: 8, minMove: 0.00000001 },
-    } as any);
+    });
+
+    // Add line series on top
+    const lineSeries = chart.addSeries(LineSeries, {
+      color: '#22c55e',
+      lineWidth: 2,
+      priceFormat: { type: 'price', precision: 8, minMove: 0.00000001 },
+    });
 
     if (data.length > 0) {
       const lineData = data.map(d => ({
