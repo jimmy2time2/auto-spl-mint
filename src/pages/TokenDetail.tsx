@@ -9,6 +9,7 @@ import { TradingChartPro } from "@/components/TradingChartPro";
 import { TradePanel } from "@/components/TradePanel";
 import { BondingCurveProgress } from "@/components/BondingCurveProgress";
 import { TopHoldersList } from "@/components/TopHoldersList";
+import { TokenComments } from "@/components/TokenComments";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -182,8 +183,14 @@ const TokenDetail = () => {
 
             {/* Description & Tabs */}
             <div className="p-4 border-b border-border">
-              <Tabs defaultValue="trades" className="w-full">
+              <Tabs defaultValue="comments" className="w-full">
                 <TabsList className="w-full justify-start gap-4 bg-transparent border-b border-border rounded-none h-auto p-0">
+                  <TabsTrigger 
+                    value="comments" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-xs font-bold uppercase"
+                  >
+                    Comments
+                  </TabsTrigger>
                   <TabsTrigger 
                     value="trades" 
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-xs font-bold uppercase"
@@ -203,6 +210,10 @@ const TokenDetail = () => {
                     Info
                   </TabsTrigger>
                 </TabsList>
+                
+                <TabsContent value="comments" className="mt-4">
+                  <TokenComments tokenId={token.id} />
+                </TabsContent>
                 
                 <TabsContent value="trades" className="mt-4">
                   <div className="text-center py-8 text-sm text-muted-foreground">
