@@ -920,6 +920,69 @@ export type Database = {
           },
         ]
       }
+      referral_links: {
+        Row: {
+          bonus_entries: number
+          created_at: string
+          id: string
+          last_share_at: string | null
+          last_visit_at: string | null
+          referral_code: string
+          share_count: number
+          visit_count: number
+          wallet_address: string
+        }
+        Insert: {
+          bonus_entries?: number
+          created_at?: string
+          id?: string
+          last_share_at?: string | null
+          last_visit_at?: string | null
+          referral_code: string
+          share_count?: number
+          visit_count?: number
+          wallet_address: string
+        }
+        Update: {
+          bonus_entries?: number
+          created_at?: string
+          id?: string
+          last_share_at?: string | null
+          last_visit_at?: string | null
+          referral_code?: string
+          share_count?: number
+          visit_count?: number
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      referral_visits: {
+        Row: {
+          converted: boolean
+          id: string
+          referral_code: string
+          visited_at: string
+          visitor_ip_hash: string
+          visitor_wallet: string | null
+        }
+        Insert: {
+          converted?: boolean
+          id?: string
+          referral_code: string
+          visited_at?: string
+          visitor_ip_hash: string
+          visitor_wallet?: string | null
+        }
+        Update: {
+          converted?: boolean
+          id?: string
+          referral_code?: string
+          visited_at?: string
+          visitor_ip_hash?: string
+          visitor_wallet?: string | null
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           fee_split_creator: number

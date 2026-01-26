@@ -12,6 +12,7 @@ import { OnboardingTour } from "@/components/OnboardingTour";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
+import { useReferralVisitTracker } from "@/hooks/useReferralVisitTracker";
 import { Link } from "react-router-dom";
 
 type Token = Tables<"tokens">;
@@ -20,6 +21,7 @@ type AiMood = Tables<"ai_mood_state">;
 
 const Dashboard = () => {
   useEngagementTracking();
+  useReferralVisitTracker();
   const [tokens, setTokens] = useState<Token[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [aiMood, setAiMood] = useState<AiMood | null>(null);
