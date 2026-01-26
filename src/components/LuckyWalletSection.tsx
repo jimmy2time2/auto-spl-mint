@@ -126,7 +126,7 @@ const LuckyWalletSection = () => {
 
   if (loading) {
     return (
-      <section className="border-b-2 border-primary">
+      <div className="border-b-2 lg:border-b-0 border-primary">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-0">
           <div className="lg:col-span-3 lg:border-r border-primary/30 p-4">
             <Skeleton className="h-12 w-full" />
@@ -135,13 +135,13 @@ const LuckyWalletSection = () => {
             <Skeleton className="h-12 w-full" />
           </div>
         </div>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className="border-b-2 border-primary">
-      <div className="grid grid-cols-1 lg:grid-cols-4">
+    <div className="border-b-2 lg:border-b-0 border-primary">
+      <div className="grid grid-cols-1 lg:grid-cols-4 h-full">
         {/* Latest Winner + Recent */}
         <div className="lg:col-span-3 lg:border-r border-primary/30">
           <div className="flex items-center border-b border-primary/30 overflow-x-auto">
@@ -253,7 +253,7 @@ const LuckyWalletSection = () => {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

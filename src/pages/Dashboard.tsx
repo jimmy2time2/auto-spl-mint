@@ -8,6 +8,7 @@ import LiveTokenFeed from "@/components/LiveTokenFeed";
 import TokenDiscovery from "@/components/TokenDiscovery";
 import CommunityChat from "@/components/CommunityChat";
 import LuckyWalletSection from "@/components/LuckyWalletSection";
+import TokenDistributionInfo from "@/components/TokenDistributionInfo";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
@@ -193,8 +194,13 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Lucky Wallet Section */}
-        <LuckyWalletSection />
+        {/* Lucky Wallet & Distribution */}
+        <section className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="lg:border-r-2 border-primary">
+            <LuckyWalletSection />
+          </div>
+          <TokenDistributionInfo />
+        </section>
 
         {/* Token Discovery */}
         <section className="border-b-2 border-primary">
