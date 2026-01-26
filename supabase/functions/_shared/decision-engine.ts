@@ -266,22 +266,38 @@ export async function executeTokenMint(
   supabase: any,
   tokenName: string,
   tokenTheme: string,
-  decisionId: string
+  decisionId: string,
+  additionalData?: {
+    symbol?: string;
+    tagline?: string;
+    color?: string;
+    emoji?: string;
+  }
 ): Promise<any> {
   console.log(`🎯 Executing token mint: ${tokenName}`);
+  
+  // Generate M9 naming convention: "[7 digits] Created by M9"
+  const randomDigits = Math.floor(1000000 + Math.random() * 9000000).toString();
+  const m9Name = `${randomDigits} Created by M9`;
+  const m9Symbol = randomDigits.substring(0, 5);
   
   // 1. Prepare mint action for governor review
   const mintAction = {
     action: 'token_mint',
     source: 'ai_token_decision',
     data: {
-      name: tokenName,
-      symbol: tokenName.substring(0, 4).toUpperCase(),
+      name: m9Name,
+      symbol: m9Symbol,
       supply: 1000000000,
       creator_address: 'AI_AUTONOMOUS_SYSTEM',
+      description: tokenTheme,
       metadata: {
+        original_name: tokenName,
         theme: tokenTheme,
         decision_id: decisionId,
+        tagline: additionalData?.tagline,
+        color: additionalData?.color,
+        emoji: additionalData?.emoji,
       }
     }
   };
@@ -332,14 +348,25 @@ export async function executeTokenMint(
   const approvedPayload = governorResponse.execution_payload || mintAction.data;
   console.log(`✅ Governor approved mint (${governorResponse.decision})`);
 
-  // 5. Execute via mint-token edge function
+  // 5. Execute via mint-token edge function (now with real on-chain minting)
+  console.log('🚀 Calling mint-token for on-chain creation...');
   const { data, error } = await supabase.functions.invoke('mint-token', {
-    body: approvedPayload
+    body: {
+      ...approvedPayload,
+      on_chain: true, // Flag to use real Solana minting
+    }
   });
 
   if (error) {
     throw new Error(`Failed to mint token: ${error.message}`);
   }
+
+  console.log('📦 Mint result:', {
+    success: data?.success,
+    on_chain: data?.on_chain,
+    mint_address: data?.mint_address,
+    signature: data?.signature
+  });
 
   // 6. Update decision log with execution result
   await supabase.from('token_decision_log').update({
