@@ -1344,6 +1344,13 @@ export type Database = {
         }
         Relationships: []
       }
+      invite_stats: {
+        Row: {
+          total_invites: number | null
+          unique_inviters: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_dao_eligibility: { Args: { wallet: string }; Returns: boolean }
