@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.track-referral]
 verify_jwt = false
+
+[functions.m9-heartbeat]
+verify_jwt = false
