@@ -97,6 +97,44 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_holdings: {
+        Row: {
+          amount: number
+          avg_price: number
+          cost_basis: number
+          created_at: string
+          id: string
+          token_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          avg_price?: number
+          cost_basis?: number
+          created_at?: string
+          id?: string
+          token_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          avg_price?: number
+          cost_basis?: number
+          created_at?: string
+          id?: string
+          token_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_holdings_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: true
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_mood_state: {
         Row: {
           created_at: string
@@ -707,6 +745,54 @@ export type Database = {
           },
         ]
       }
+      lucky_selection_proofs: {
+        Row: {
+          block_slot: number
+          blockhash: string
+          created_at: string
+          eligible_count: number
+          full_proof: Json
+          id: string
+          random_seed: string
+          reward_amount: number
+          selected_index: number
+          total_weight: number
+          verification_hash: string
+          weighted_value: number
+          winner: string
+        }
+        Insert: {
+          block_slot: number
+          blockhash: string
+          created_at?: string
+          eligible_count: number
+          full_proof?: Json
+          id?: string
+          random_seed: string
+          reward_amount: number
+          selected_index: number
+          total_weight?: number
+          verification_hash: string
+          weighted_value?: number
+          winner: string
+        }
+        Update: {
+          block_slot?: number
+          blockhash?: string
+          created_at?: string
+          eligible_count?: number
+          full_proof?: Json
+          id?: string
+          random_seed?: string
+          reward_amount?: number
+          selected_index?: number
+          total_weight?: number
+          verification_hash?: string
+          weighted_value?: number
+          winner?: string
+        }
+        Relationships: []
+      }
       lucky_wallet_selections: {
         Row: {
           activity_score: number
@@ -745,6 +831,122 @@ export type Database = {
           },
         ]
       }
+      m9_agent_cycles: {
+        Row: {
+          analysis_summary: Json
+          created_at: string
+          decisions: Json | null
+          decisions_made: number
+          duration_ms: number | null
+          error: string | null
+          id: string
+          portfolio_value: number | null
+        }
+        Insert: {
+          analysis_summary?: Json
+          created_at?: string
+          decisions?: Json | null
+          decisions_made?: number
+          duration_ms?: number | null
+          error?: string | null
+          id?: string
+          portfolio_value?: number | null
+        }
+        Update: {
+          analysis_summary?: Json
+          created_at?: string
+          decisions?: Json | null
+          decisions_made?: number
+          duration_ms?: number | null
+          error?: string | null
+          id?: string
+          portfolio_value?: number | null
+        }
+        Relationships: []
+      }
+      m9_decisions: {
+        Row: {
+          action: string
+          actual_profit: number | null
+          amount: number | null
+          confidence: number
+          executed: boolean
+          execution_result: Json | null
+          id: string
+          market_context: Json | null
+          outcome: string | null
+          price: number | null
+          reasoning: string
+          timestamp: string
+          token_id: string | null
+        }
+        Insert: {
+          action: string
+          actual_profit?: number | null
+          amount?: number | null
+          confidence: number
+          executed?: boolean
+          execution_result?: Json | null
+          id?: string
+          market_context?: Json | null
+          outcome?: string | null
+          price?: number | null
+          reasoning: string
+          timestamp?: string
+          token_id?: string | null
+        }
+        Update: {
+          action?: string
+          actual_profit?: number | null
+          amount?: number | null
+          confidence?: number
+          executed?: boolean
+          execution_result?: Json | null
+          id?: string
+          market_context?: Json | null
+          outcome?: string | null
+          price?: number | null
+          reasoning?: string
+          timestamp?: string
+          token_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "m9_decisions_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_analysis_log: {
+        Row: {
+          analysis: Json
+          created_at: string
+          id: string
+          metadata: Json | null
+          opportunities_count: number | null
+          sentiment: string | null
+        }
+        Insert: {
+          analysis?: Json
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          opportunities_count?: number | null
+          sentiment?: string | null
+        }
+        Update: {
+          analysis?: Json
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          opportunities_count?: number | null
+          sentiment?: string | null
+        }
+        Relationships: []
+      }
       market_sentiment: {
         Row: {
           confidence: number
@@ -778,6 +980,27 @@ export type Database = {
           timestamp?: string
           trending_tags?: string[] | null
           whale_activity_level?: string | null
+        }
+        Relationships: []
+      }
+      price_cache: {
+        Row: {
+          change_24h: number | null
+          price: number
+          symbol: string
+          updated_at: string
+        }
+        Insert: {
+          change_24h?: number | null
+          price: number
+          symbol: string
+          updated_at?: string
+        }
+        Update: {
+          change_24h?: number | null
+          price?: number
+          symbol?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -920,6 +1143,68 @@ export type Database = {
           },
         ]
       }
+      rate_limit_log: {
+        Row: {
+          action_type: string
+          id: string
+          timestamp: string
+          wallet_address: string
+        }
+        Insert: {
+          action_type: string
+          id?: string
+          timestamp?: string
+          wallet_address: string
+        }
+        Update: {
+          action_type?: string
+          id?: string
+          timestamp?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      realized_pnl_log: {
+        Row: {
+          amount_sold: number
+          cost_basis: number
+          id: string
+          metadata: Json | null
+          realized_pnl: number
+          sale_price: number
+          timestamp: string
+          token_id: string
+        }
+        Insert: {
+          amount_sold: number
+          cost_basis: number
+          id?: string
+          metadata?: Json | null
+          realized_pnl: number
+          sale_price: number
+          timestamp?: string
+          token_id: string
+        }
+        Update: {
+          amount_sold?: number
+          cost_basis?: number
+          id?: string
+          metadata?: Json | null
+          realized_pnl?: number
+          sale_price?: number
+          timestamp?: string
+          token_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "realized_pnl_log_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referral_links: {
         Row: {
           bonus_entries: number
@@ -980,6 +1265,36 @@ export type Database = {
           visited_at?: string
           visitor_ip_hash?: string
           visitor_wallet?: string | null
+        }
+        Relationships: []
+      }
+      security_events: {
+        Row: {
+          created_at: string
+          details: Json | null
+          event_type: string
+          id: string
+          resolved: boolean | null
+          severity: string
+          wallet_address: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          event_type: string
+          id?: string
+          resolved?: boolean | null
+          severity: string
+          wallet_address?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          event_type?: string
+          id?: string
+          resolved?: boolean | null
+          severity?: string
+          wallet_address?: string | null
         }
         Relationships: []
       }
@@ -1355,6 +1670,8 @@ export type Database = {
     Functions: {
       check_dao_eligibility: { Args: { wallet: string }; Returns: boolean }
       close_expired_proposals: { Args: never; Returns: undefined }
+      get_m9_total_pnl: { Args: never; Returns: number }
+      get_m9_win_rate: { Args: never; Returns: number }
     }
     Enums: {
       token_mood:
