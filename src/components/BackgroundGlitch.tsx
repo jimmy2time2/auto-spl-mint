@@ -1,131 +1,173 @@
-import { useEffect, useState, useCallback } from "react";
-
-interface GlitchState {
-  active: boolean;
-  type: 'shift' | 'flicker' | 'distort' | 'chromatic' | 'none';
-  intensity: number;
-}
+import { useEffect, useState, useCallback, useRef } from "react";
 
 const BackgroundGlitch = () => {
-  const [glitch, setGlitch] = useState<GlitchState>({ active: false, type: 'none', intensity: 0 });
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [glitchLines, setGlitchLines] = useState<Array<{ top: number; offset: number; opacity: number }>>([]);
+  const [isGlitching, setIsGlitching] = useState(false);
+  const lastMouseMove = useRef(Date.now());
 
-  const triggerGlitch = useCallback(() => {
-    const types: GlitchState['type'][] = ['shift', 'flicker', 'distort', 'chromatic'];
-    const selectedType = types[Math.floor(Math.random() * types.length)];
-    const intensity = 0.5 + Math.random() * 0.5;
+  // Track mouse movement
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      setMousePos({ x, y });
+      lastMouseMove.current = Date.now();
 
-    setGlitch({ active: true, type: selectedType, intensity });
+      // Trigger micro-glitch on fast mouse movement
+      const speed = Math.abs(e.movementX) + Math.abs(e.movementY);
+      if (speed > 50 && Math.random() > 0.7) {
+        triggerGlitch();
+      }
+    };
 
-    // Quick burst - real glitches are brief
-    const duration = 50 + Math.random() * 100;
-    setTimeout(() => {
-      setGlitch({ active: false, type: 'none', intensity: 0 });
-    }, duration);
-
-    // Sometimes do a double-tap glitch (more realistic)
-    if (Math.random() > 0.7) {
-      setTimeout(() => {
-        setGlitch({ active: true, type: selectedType, intensity: intensity * 0.6 });
-        setTimeout(() => {
-          setGlitch({ active: false, type: 'none', intensity: 0 });
-        }, 30 + Math.random() * 50);
-      }, duration + 30);
-    }
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  useEffect(() => {
-    // Natural timing - clusters of glitches then quiet periods
-    let timeoutId: NodeJS.Timeout;
+  // Trigger a glitch burst
+  const triggerGlitch = useCallback(() => {
+    setIsGlitching(true);
     
-    const scheduleNext = () => {
-      // Vary timing: sometimes quick succession, sometimes longer gaps
-      const baseDelay = Math.random() > 0.3 
-        ? 4000 + Math.random() * 8000  // Normal: 4-12 seconds
-        : 800 + Math.random() * 1500;   // Burst mode: 0.8-2.3 seconds
-      
-      timeoutId = setTimeout(() => {
-        if (Math.random() > 0.25) { // 75% chance to actually glitch
-          triggerGlitch();
-        }
-        scheduleNext();
-      }, baseDelay);
-    };
+    // Create random horizontal tear lines
+    const lines = Array.from({ length: 2 + Math.floor(Math.random() * 3) }, () => ({
+      top: Math.random() * 100,
+      offset: (Math.random() - 0.5) * 10,
+      opacity: 0.3 + Math.random() * 0.4,
+    }));
+    setGlitchLines(lines);
 
-    scheduleNext();
-    return () => clearTimeout(timeoutId);
+    setTimeout(() => {
+      setIsGlitching(false);
+      setGlitchLines([]);
+    }, 80 + Math.random() * 120);
+  }, []);
+
+  // Periodic random glitches
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Math.random() > 0.5) {
+        triggerGlitch();
+      }
+    }, 2000 + Math.random() * 3000);
+
+    return () => clearInterval(interval);
   }, [triggerGlitch]);
 
-  // Apply glitch effect to the entire page
-  useEffect(() => {
-    const root = document.documentElement;
-    
-    if (glitch.active) {
-      switch (glitch.type) {
-        case 'shift':
-          // Horizontal displacement like a CRT
-          root.style.transform = `translateX(${(Math.random() - 0.5) * 6 * glitch.intensity}px)`;
-          root.style.transition = 'none';
-          break;
-        case 'flicker':
-          // Brief brightness/opacity flicker
-          root.style.filter = `brightness(${0.85 + Math.random() * 0.3})`;
-          break;
-        case 'distort':
-          // Slight skew distortion
-          root.style.transform = `skewX(${(Math.random() - 0.5) * 0.5 * glitch.intensity}deg)`;
-          root.style.transition = 'none';
-          break;
-        case 'chromatic':
-          // We'll handle this with CSS class
-          root.classList.add('glitch-chromatic');
-          break;
-      }
-    } else {
-      root.style.transform = '';
-      root.style.filter = '';
-      root.style.transition = '';
-      root.classList.remove('glitch-chromatic');
-    }
-
-    return () => {
-      root.style.transform = '';
-      root.style.filter = '';
-      root.style.transition = '';
-      root.classList.remove('glitch-chromatic');
-    };
-  }, [glitch]);
+  // Calculate subtle parallax offset based on mouse
+  const parallaxX = mousePos.x * 3;
+  const parallaxY = mousePos.y * 2;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[100]" aria-hidden="true">
-      {/* Scanline overlay - always present, subtle */}
-      <div className="absolute inset-0 bg-scanlines opacity-[0.03]" />
-      
-      {/* Horizontal tear line - appears during glitch */}
-      {glitch.active && glitch.type === 'shift' && (
-        <div 
-          className="absolute left-0 right-0 h-[2px] bg-primary/50"
+    <div className="fixed inset-0 pointer-events-none z-[50] overflow-hidden" aria-hidden="true">
+      {/* Ambient floating grid that responds to mouse */}
+      <div 
+        className="absolute inset-0 opacity-[0.04] transition-transform duration-300 ease-out"
+        style={{
+          backgroundImage: `
+            linear-gradient(hsl(var(--primary) / 0.15) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(var(--primary) / 0.15) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px',
+          transform: `translate(${parallaxX}px, ${parallaxY}px)`,
+        }}
+      />
+
+      {/* Subtle vignette that follows cursor */}
+      <div 
+        className="absolute inset-0 transition-opacity duration-500"
+        style={{
+          background: `radial-gradient(
+            circle at ${50 + mousePos.x * 10}% ${50 + mousePos.y * 10}%,
+            transparent 20%,
+            hsl(var(--background) / 0.3) 80%
+          )`,
+        }}
+      />
+
+      {/* Horizontal glitch lines */}
+      {glitchLines.map((line, i) => (
+        <div
+          key={i}
+          className="absolute left-0 right-0 h-[2px] bg-primary transition-none"
           style={{
-            top: `${20 + Math.random() * 60}%`,
-            boxShadow: '0 0 8px 1px hsl(var(--primary) / 0.4)',
+            top: `${line.top}%`,
+            transform: `translateX(${line.offset}px)`,
+            opacity: line.opacity,
+            boxShadow: `0 0 10px 2px hsl(var(--primary) / 0.4)`,
+          }}
+        />
+      ))}
+
+      {/* RGB split overlay during glitch */}
+      {isGlitching && (
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(
+              90deg,
+              hsl(0 100% 50% / 0.03) 0%,
+              transparent 10%,
+              transparent 90%,
+              hsl(180 100% 50% / 0.03) 100%
+            )`,
           }}
         />
       )}
 
-      {/* Static noise burst */}
-      {glitch.active && (
+      {/* Floating corner brackets that respond to mouse */}
+      <div 
+        className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-primary/20 transition-transform duration-200"
+        style={{ transform: `translate(${-parallaxX * 0.5}px, ${-parallaxY * 0.5}px)` }}
+      />
+      <div 
+        className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-primary/20 transition-transform duration-200"
+        style={{ transform: `translate(${parallaxX * 0.5}px, ${-parallaxY * 0.5}px)` }}
+      />
+      <div 
+        className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-primary/20 transition-transform duration-200"
+        style={{ transform: `translate(${-parallaxX * 0.5}px, ${parallaxY * 0.5}px)` }}
+      />
+      <div 
+        className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-primary/20 transition-transform duration-200"
+        style={{ transform: `translate(${parallaxX * 0.5}px, ${parallaxY * 0.5}px)` }}
+      />
+
+      {/* Scanning line that moves with mouse Y */}
+      <div 
+        className="absolute left-0 right-0 h-[1px] bg-primary/20 transition-all duration-150"
+        style={{
+          top: `${50 + mousePos.y * 30}%`,
+          boxShadow: '0 0 20px 3px hsl(var(--primary) / 0.15)',
+        }}
+      />
+
+      {/* Data streams on edges */}
+      <div className="absolute right-0 top-0 bottom-0 w-[1px] overflow-hidden opacity-30">
         <div 
-          className="absolute inset-0 opacity-[0.04] mix-blend-overlay"
+          className="h-[200%] w-full bg-gradient-to-b from-transparent via-primary to-transparent"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            animation: 'data-stream 3s linear infinite',
           }}
         />
-      )}
+      </div>
+      <div className="absolute left-0 top-0 bottom-0 w-[1px] overflow-hidden opacity-20">
+        <div 
+          className="h-[200%] w-full bg-gradient-to-b from-transparent via-primary to-transparent"
+          style={{
+            animation: 'data-stream 5s linear infinite',
+            animationDelay: '-2s',
+          }}
+        />
+      </div>
 
-      {/* Persistent but subtle corner brackets */}
-      <div className="absolute top-3 left-3 w-6 h-6 border-l border-t border-primary/10" />
-      <div className="absolute top-3 right-3 w-6 h-6 border-r border-t border-primary/10" />
-      <div className="absolute bottom-3 left-3 w-6 h-6 border-l border-b border-primary/10" />
-      <div className="absolute bottom-3 right-3 w-6 h-6 border-r border-b border-primary/10" />
+      {/* Subtle noise texture */}
+      <div 
+        className="absolute inset-0 opacity-[0.015] mix-blend-overlay"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        }}
+      />
     </div>
   );
 };
