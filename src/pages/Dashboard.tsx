@@ -81,6 +81,7 @@ const Dashboard = () => {
       <div className="scanlines" />
       <OnboardingTour />
       <Navigation />
+      <AiMindTicker />
       
       <main className="w-full">
         {/* Hero Section */}
