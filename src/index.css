@@ -457,6 +457,56 @@
     border-radius: 0;
     animation: power-pulse 2s ease-in-out infinite;
   }
+
+  /* Page transition scan animation */
+  @keyframes scan {
+    0% { top: -10%; }
+    100% { top: 110%; }
+  }
+
+  .animate-scan {
+    animation: scan 0.4s linear;
+  }
+
+  /* Background glitch animations */
+  @keyframes grid-pulse {
+    0%, 100% { opacity: 0.02; }
+    50% { opacity: 0.04; }
+  }
+
+  .animate-grid-pulse {
+    animation: grid-pulse 4s ease-in-out infinite;
+  }
+
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(hsl(var(--primary) / 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--primary) / 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  @keyframes data-stream {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+
+  .animate-data-stream {
+    animation: data-stream 2s linear infinite;
+  }
+
+  .animate-data-stream-slow {
+    animation: data-stream 4s linear infinite;
+    animation-delay: 1s;
+  }
+
+  /* Neon color utilities */
+  .bg-neon-cyan {
+    background-color: hsl(var(--neon-cyan));
+  }
+
+  .text-neon-cyan {
+    color: hsl(var(--neon-cyan));
+  }
 }
 
 /* Solana Wallet Adapter Overrides */
