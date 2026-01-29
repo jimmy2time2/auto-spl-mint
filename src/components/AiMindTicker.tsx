@@ -101,7 +101,7 @@ const AiMindTicker = () => {
       });
       newHints.push({
         id: "intensity",
-        text: `INTENSITY: ${(moodData.mood_intensity * 100).toFixed(0)}%`,
+        text: `INTENSITY: ${moodData.mood_intensity.toFixed(0)}%`,
         type: "signal"
       });
     }
