@@ -9,84 +9,84 @@
 
 @layer base {
   :root {
-    /* Default: Neon Lime on Black */
+    /* Kik Green Theme - #61CB2B (HSL: 100 78% 48%) */
     --background: 0 0% 4%;             /* Near black */
-    --foreground: 72 100% 50%;         /* Neon lime #BFFF00 */
+    --foreground: 100 78% 48%;         /* Kik green #61CB2B */
     --card: 0 0% 6%;
-    --card-foreground: 72 100% 50%;
+    --card-foreground: 100 78% 48%;
     --popover: 0 0% 6%;
-    --popover-foreground: 72 100% 50%;
-    --primary: 72 100% 50%;            /* Neon lime */
-    --primary-foreground: 0 0% 0%;     /* Black text on lime */
+    --popover-foreground: 100 78% 48%;
+    --primary: 100 78% 48%;            /* Kik green */
+    --primary-foreground: 0 0% 0%;     /* Black text on green */
     --secondary: 0 0% 10%;
-    --secondary-foreground: 72 100% 50%;
+    --secondary-foreground: 100 78% 48%;
     --muted: 0 0% 12%;
-    --muted-foreground: 72 50% 40%;    /* Dimmed lime */
-    --accent: 72 100% 50%;
+    --muted-foreground: 100 40% 35%;   /* Dimmed green */
+    --accent: 100 78% 48%;
     --accent-foreground: 0 0% 0%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 72 100% 50%;             /* Lime borders */
+    --border: 100 78% 48%;             /* Green borders */
     --input: 0 0% 10%;
-    --ring: 72 100% 50%;
+    --ring: 100 78% 48%;
     --radius: 0rem;
 
     /* Terminal specific tokens */
-    --terminal-grid: 72 40% 15%;
-    --success: 120 100% 50%;
+    --terminal-grid: 100 40% 15%;
+    --success: 100 78% 48%;
     --warning: 45 100% 50%;
     --info: 200 100% 50%;
     
-    /* Y2K accent colors */
+    /* Accent colors */
     --neon-pink: 330 100% 50%;
     --neon-cyan: 180 100% 50%;
     --neon-orange: 30 100% 50%;
   }
 
-  /* Inverted theme: Black on Neon Lime */
+  /* Inverted theme: Black on Kik Green */
   .theme-inverted {
-    --background: 72 100% 50%;         /* Neon lime background */
+    --background: 100 78% 48%;         /* Kik green background */
     --foreground: 0 0% 0%;             /* Black text */
-    --card: 72 90% 55%;
+    --card: 100 70% 55%;
     --card-foreground: 0 0% 0%;
-    --popover: 72 90% 55%;
+    --popover: 100 70% 55%;
     --popover-foreground: 0 0% 0%;
     --primary: 0 0% 0%;                /* Black primary */
-    --primary-foreground: 72 100% 50%; /* Lime text on black */
-    --secondary: 72 80% 60%;
+    --primary-foreground: 100 78% 48%; /* Green text on black */
+    --secondary: 100 60% 60%;
     --secondary-foreground: 0 0% 0%;
-    --muted: 72 70% 65%;
+    --muted: 100 50% 65%;
     --muted-foreground: 0 0% 20%;      /* Dimmed black */
     --accent: 0 0% 0%;
-    --accent-foreground: 72 100% 50%;
+    --accent-foreground: 100 78% 48%;
     --destructive: 0 72% 40%;
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 0%;                 /* Black borders */
-    --input: 72 80% 60%;
+    --input: 100 60% 60%;
     --ring: 0 0% 0%;
     --terminal-grid: 0 0% 20%;
   }
 
   .dark {
-    /* Same as root - always dark theme */
+    /* Same as root - always dark Kik theme */
     --background: 0 0% 4%;
-    --foreground: 72 100% 50%;
+    --foreground: 100 78% 48%;
     --card: 0 0% 6%;
-    --card-foreground: 72 100% 50%;
+    --card-foreground: 100 78% 48%;
     --popover: 0 0% 6%;
-    --popover-foreground: 72 100% 50%;
-    --primary: 72 100% 50%;
+    --popover-foreground: 100 78% 48%;
+    --primary: 100 78% 48%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 10%;
-    --secondary-foreground: 72 100% 50%;
+    --secondary-foreground: 100 78% 48%;
     --muted: 0 0% 12%;
-    --muted-foreground: 72 50% 40%;
-    --accent: 72 100% 50%;
+    --muted-foreground: 100 40% 35%;
+    --accent: 100 78% 48%;
     --accent-foreground: 0 0% 0%;
-    --border: 72 100% 50%;
+    --border: 100 78% 48%;
     --input: 0 0% 10%;
-    --ring: 72 100% 50%;
-    --terminal-grid: 72 40% 15%;
+    --ring: 100 78% 48%;
+    --terminal-grid: 100 40% 15%;
   }
 }
 
@@ -375,11 +375,11 @@
 
   /* Glow effects - refined and subtle */
   .glow-text {
-    text-shadow: 0 0 8px hsl(72 100% 50% / 0.5);
+    text-shadow: 0 0 8px hsl(100 78% 48% / 0.5);
   }
 
   .glow-border {
-    box-shadow: 0 0 8px hsl(72 100% 50% / 0.15);
+    box-shadow: 0 0 8px hsl(100 78% 48% / 0.15);
   }
 
   /* Power icon pulse - subtle */
