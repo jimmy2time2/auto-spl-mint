@@ -148,47 +148,50 @@ const LuckyWalletSection = () => {
   return (
     <div className="h-full flex flex-col">
       {/* Header - matches TokenDistributionInfo */}
-      <div className="flex items-center border-b border-primary/30 overflow-x-auto">
-        <div className="px-4 py-3 border-r border-primary/30 shrink-0">
-          <span className="data-sm text-muted-foreground">LUCKY WALLET</span>
+      <div className="flex items-center border-b border-primary/30 overflow-x-auto scrollbar-hide">
+        <div className="px-3 sm:px-4 py-2 sm:py-3 border-r border-primary/30 shrink-0">
+          <span className="data-sm text-muted-foreground">LUCKY</span>
         </div>
         {latestWinner ? (
           <>
-            <div className="px-4 py-3 border-r border-primary/30 shrink-0">
-              <span className="data-sm font-mono glow-text">
+            <div className="px-3 sm:px-4 py-2 sm:py-3 border-r border-primary/30 shrink-0 min-w-0">
+              <span className="data-sm font-mono glow-text truncate block max-w-[120px] sm:max-w-none">
                 {formatAddress(latestWinner.wallet_address)}
               </span>
             </div>
-            <div className="px-4 py-3 shrink-0">
+            <div className="px-3 sm:px-4 py-2 sm:py-3 shrink-0">
               <span className="text-xs text-muted-foreground">
                 {formatTimestamp(latestWinner.selection_timestamp)}
               </span>
             </div>
           </>
         ) : (
-          <div className="px-4 py-3 shrink-0">
+          <div className="px-3 sm:px-4 py-2 sm:py-3 shrink-0">
             <span className="text-xs text-muted-foreground">NO WINNERS YET</span>
           </div>
         )}
       </div>
 
       {/* Content area - recent winners */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-3 sm:p-4">
         {recentWinners.length > 0 ? (
           <div className="space-y-2">
             {recentWinners.map((winner) => (
-              <div key={winner.id} className="flex items-center gap-3">
-                <span className="text-xs font-mono text-muted-foreground w-24 truncate">
+              <div key={winner.id} className="flex items-center gap-2 sm:gap-3">
+                <span className="text-[10px] sm:text-xs font-mono text-muted-foreground w-16 sm:w-24 truncate shrink-0">
                   {formatAddress(winner.wallet_address)}
                 </span>
-                <div className="flex-1 h-1.5 bg-muted/30 relative overflow-hidden">
+                <div className="flex-1 h-1.5 bg-muted/30 relative overflow-hidden min-w-0">
                   <div 
                     className="absolute inset-y-0 left-0 bg-primary/60"
                     style={{ width: `${Math.min(100, (Number(winner.distribution_amount) / 1000) * 100)}%` }}
                   />
                 </div>
-                <span className="text-xs tabular-nums glow-text w-16 text-right">
-                  +{Number(winner.distribution_amount).toLocaleString()}
+                <span className="text-[10px] sm:text-xs tabular-nums glow-text w-12 sm:w-16 text-right shrink-0">
+                  +{Number(winner.distribution_amount) >= 1000 
+                    ? `${(Number(winner.distribution_amount) / 1000).toFixed(1)}K` 
+                    : Number(winner.distribution_amount).toLocaleString()
+                  }
                 </span>
               </div>
             ))}
@@ -201,40 +204,45 @@ const LuckyWalletSection = () => {
       {/* Footer stats - matches TokenDistributionInfo structure */}
       <div className="border-t border-primary/30">
         <div className="grid grid-cols-2">
-          <div className="p-3 border-r border-primary/30">
-            <p className="text-xs text-muted-foreground mb-1">
-              {connected ? 'YOUR ENTRIES' : 'DISTRIBUTED'}
+          <div className="p-2 sm:p-3 border-r border-primary/30">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">
+              {connected ? 'ENTRIES' : 'DIST'}
             </p>
-            <p className="data-sm tabular-nums glow-text">
-              {connected && stats ? stats.bonus_entries : totalDistributed.toLocaleString()}
+            <p className="data-sm tabular-nums glow-text truncate">
+              {connected && stats 
+                ? stats.bonus_entries 
+                : totalDistributed >= 1000 
+                  ? `${(totalDistributed / 1000).toFixed(1)}K` 
+                  : totalDistributed.toLocaleString()
+              }
             </p>
           </div>
-          <div className="p-3">
+          <div className="p-2 sm:p-3">
             {connected && referralCode ? (
               <div className="space-y-1">
                 <div className="flex items-center gap-1">
-                  <span className="text-xs text-muted-foreground">REF:</span>
-                  <span className="text-xs font-mono">{referralCode}</span>
+                  <span className="text-[10px] text-muted-foreground">REF:</span>
+                  <span className="text-[10px] font-mono truncate">{referralCode}</span>
                   <button 
                     onClick={copyReferralLink}
-                    className="text-xs text-primary hover:underline ml-auto"
+                    className="text-[10px] text-primary hover:underline ml-auto shrink-0"
                   >
-                    {copied ? 'COPIED' : 'COPY'}
+                    {copied ? '✓' : 'COPY'}
                   </button>
                 </div>
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="w-full text-xs h-6"
+                  className="w-full text-[10px] h-6"
                   onClick={handleShare}
                 >
-                  SHARE → +10
+                  SHARE +10
                 </Button>
               </div>
             ) : (
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground mb-1">
-                  {connected ? 'LOADING...' : 'TOTAL WINNERS'}
+                <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">
+                  {connected ? 'LOADING...' : 'WINNERS'}
                 </p>
                 <p className="data-sm tabular-nums">
                   {connected ? '—' : totalWinners}

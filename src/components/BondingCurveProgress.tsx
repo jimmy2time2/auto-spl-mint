@@ -12,11 +12,16 @@ export const BondingCurveProgress = ({
   const progress = Math.min((currentSol / targetSol) * 100, 100);
   const remaining = targetSol - currentSol;
 
+  const formatValue = (value: number) => {
+    if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`;
+    return `$${value.toFixed(0)}`;
+  };
+
   return (
     <div className="border border-border p-3">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-bold uppercase">Bonding Curve Progress</span>
-        <span className="text-xs font-bold tabular-nums">{progress.toFixed(1)}%</span>
+      <div className="flex items-center justify-between mb-2 gap-2">
+        <span className="text-[10px] sm:text-xs font-bold uppercase truncate">Bonding Curve</span>
+        <span className="text-xs font-bold tabular-nums shrink-0">{progress.toFixed(1)}%</span>
       </div>
       
       <div className="h-2 bg-muted rounded-none overflow-hidden mb-2">
@@ -31,9 +36,9 @@ export const BondingCurveProgress = ({
           Coin has graduated!
         </div>
       ) : (
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <span>{currentSol.toFixed(2)} SOL in bonding curve</span>
-          <span>${(remaining * 150).toFixed(0)} to graduate</span>
+        <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground gap-2">
+          <span className="truncate">{currentSol.toFixed(2)} SOL in curve</span>
+          <span className="shrink-0">{formatValue(remaining * 150)} to grad</span>
         </div>
       )}
     </div>

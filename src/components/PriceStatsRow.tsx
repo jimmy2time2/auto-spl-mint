@@ -28,31 +28,37 @@ export const PriceStatsRow = ({
     return `$${value.toFixed(2)}`;
   };
 
+  const formatPrice = (value: number) => {
+    if (value < 0.000001) return `$${value.toExponential(2)}`;
+    if (value < 0.01) return `$${value.toFixed(6)}`;
+    return `$${value.toFixed(4)}`;
+  };
+
   return (
-    <div className="grid grid-cols-5 border-b border-border">
-      <div className="p-3 text-center border-r border-border">
-        <div className="text-xs text-muted-foreground uppercase mb-1">Vol 24h</div>
-        <div className="text-sm font-bold tabular-nums">{formatVolume(volume24h)}</div>
+    <div className="grid grid-cols-3 sm:grid-cols-5 border-b border-border">
+      <div className="p-2 sm:p-3 text-center border-r border-border">
+        <div className="text-[10px] sm:text-xs text-muted-foreground uppercase mb-1">Vol 24h</div>
+        <div className="text-xs sm:text-sm font-bold tabular-nums truncate">{formatVolume(volume24h)}</div>
       </div>
-      <div className="p-3 text-center border-r border-border">
-        <div className="text-xs text-muted-foreground uppercase mb-1">Price</div>
-        <div className="text-sm font-bold tabular-nums">${price.toFixed(8)}</div>
+      <div className="p-2 sm:p-3 text-center border-r border-border">
+        <div className="text-[10px] sm:text-xs text-muted-foreground uppercase mb-1">Price</div>
+        <div className="text-xs sm:text-sm font-bold tabular-nums truncate">{formatPrice(price)}</div>
       </div>
-      <div className="p-3 text-center border-r border-border">
-        <div className="text-xs text-muted-foreground uppercase mb-1">5m</div>
-        <div className={`text-sm font-bold tabular-nums ${getChangeClass(change5m)}`}>
+      <div className="p-2 sm:p-3 text-center border-r border-border hidden sm:block">
+        <div className="text-[10px] sm:text-xs text-muted-foreground uppercase mb-1">5m</div>
+        <div className={`text-xs sm:text-sm font-bold tabular-nums ${getChangeClass(change5m)}`}>
           {formatChange(change5m)}
         </div>
       </div>
-      <div className="p-3 text-center border-r border-border">
-        <div className="text-xs text-muted-foreground uppercase mb-1">1h</div>
-        <div className={`text-sm font-bold tabular-nums ${getChangeClass(change1h)}`}>
+      <div className="p-2 sm:p-3 text-center border-r border-border hidden sm:block">
+        <div className="text-[10px] sm:text-xs text-muted-foreground uppercase mb-1">1h</div>
+        <div className={`text-xs sm:text-sm font-bold tabular-nums ${getChangeClass(change1h)}`}>
           {formatChange(change1h)}
         </div>
       </div>
-      <div className="p-3 text-center">
-        <div className="text-xs text-muted-foreground uppercase mb-1">6h</div>
-        <div className={`text-sm font-bold tabular-nums ${getChangeClass(change6h)}`}>
+      <div className="p-2 sm:p-3 text-center">
+        <div className="text-[10px] sm:text-xs text-muted-foreground uppercase mb-1">6h</div>
+        <div className={`text-xs sm:text-sm font-bold tabular-nums ${getChangeClass(change6h)}`}>
           {formatChange(change6h)}
         </div>
       </div>

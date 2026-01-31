@@ -150,16 +150,23 @@ const Dashboard = () => {
             <LiveTokenFeed />
           </div>
           <div className="grid grid-cols-3 lg:grid-cols-1 border-t lg:border-t-0 border-primary/30">
-            <div className="border-b border-r lg:border-r-0 border-primary/30 p-4 sm:p-5">
-              <p className="data-sm text-muted-foreground mb-1">24H VOLUME</p>
-              <p className="display-lg tabular-nums glow-text">${totalVolume.toLocaleString()}</p>
+            <div className="border-b border-r lg:border-r-0 border-primary/30 p-3 sm:p-5">
+              <p className="data-sm text-muted-foreground mb-1">24H VOL</p>
+              <p className="display-lg tabular-nums glow-text truncate">
+                {totalVolume >= 1000000 
+                  ? `$${(totalVolume / 1000000).toFixed(1)}M`
+                  : totalVolume >= 1000 
+                    ? `$${(totalVolume / 1000).toFixed(1)}K`
+                    : `$${totalVolume.toFixed(0)}`
+                }
+              </p>
             </div>
-            <div className="border-b border-r lg:border-r-0 border-primary/30 p-4 sm:p-5">
-              <p className="data-sm text-muted-foreground mb-1">ACTIVE TRADERS</p>
+            <div className="border-b border-r lg:border-r-0 border-primary/30 p-3 sm:p-5">
+              <p className="data-sm text-muted-foreground mb-1">TRADERS</p>
               <p className="display-lg tabular-nums">—</p>
             </div>
-            <div className="p-4 sm:p-5 border-b lg:border-b-0 border-primary/30">
-              <p className="data-sm text-muted-foreground mb-1">AVG TOKEN AGE</p>
+            <div className="p-3 sm:p-5 border-b lg:border-b-0 border-primary/30">
+              <p className="data-sm text-muted-foreground mb-1">AVG AGE</p>
               <p className="display-lg tabular-nums">—</p>
             </div>
           </div>

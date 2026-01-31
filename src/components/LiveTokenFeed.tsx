@@ -90,34 +90,37 @@ const LiveTokenFeed = () => {
 
   return (
     <div className="h-full">
-      <div className="border-b border-primary/30 px-4 py-3 flex items-center justify-between">
+      <div className="border-b border-primary/30 px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="status-live" />
           <span className="data-sm">LIVE FEED</span>
         </div>
-        <span className="data-sm text-muted-foreground">RECORDING</span>
+        <span className="data-sm text-muted-foreground hidden sm:block">RECORDING</span>
       </div>
       
       <div 
         ref={containerRef}
-        className="h-48 overflow-y-auto p-4 font-mono text-xs space-y-2"
+        className="h-48 overflow-y-auto p-3 sm:p-4 font-mono text-[10px] sm:text-xs space-y-2"
       >
         {items.map((item, idx) => (
           <div 
             key={item.id} 
-            className={`flex items-start gap-3 ${
+            className={`flex items-start gap-2 sm:gap-3 ${
               item.type === 'launch' ? 'text-primary' : 'text-muted-foreground'
             } ${idx === items.length - 1 ? 'animate-fade-in' : ''}`}
           >
-            <span className="tabular-nums opacity-50 shrink-0">
+            <span className="tabular-nums opacity-50 shrink-0 hidden sm:inline">
               {formatTime(item.timestamp)}
             </span>
+            <span className="tabular-nums opacity-50 shrink-0 sm:hidden">
+              {item.timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+            </span>
             {item.tokenId ? (
-              <Link to={`/token/${item.tokenId}`} className="hover:underline">
+              <Link to={`/token/${item.tokenId}`} className="hover:underline truncate min-w-0">
                 {item.message}
               </Link>
             ) : (
-              <span>{item.message}</span>
+              <span className="truncate min-w-0">{item.message}</span>
             )}
             {item.change !== undefined && (
               <span className={`ml-auto shrink-0 ${item.change >= 0 ? 'text-primary' : 'text-destructive'}`}>

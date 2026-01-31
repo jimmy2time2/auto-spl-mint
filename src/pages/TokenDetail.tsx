@@ -158,7 +158,7 @@ const TokenDetail = () => {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr,320px]">
           {/* Left Column - Chart & Info */}
-          <div className="border-r border-border">
+          <div className="lg:border-r border-border">
             {/* Market Cap */}
             <MarketCapDisplay
               marketCap={marketCap}
@@ -182,30 +182,30 @@ const TokenDetail = () => {
             />
 
             {/* Description & Tabs */}
-            <div className="p-4 border-b border-border">
+            <div className="p-3 sm:p-4 border-b border-border">
               <Tabs defaultValue="comments" className="w-full">
-                <TabsList className="w-full justify-start gap-4 bg-transparent border-b border-border rounded-none h-auto p-0">
+                <TabsList className="w-full justify-start gap-2 sm:gap-4 bg-transparent border-b border-border rounded-none h-auto p-0 overflow-x-auto">
                   <TabsTrigger 
                     value="comments" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-xs font-bold uppercase"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-[10px] sm:text-xs font-bold uppercase shrink-0"
                   >
                     Comments
                   </TabsTrigger>
                   <TabsTrigger 
                     value="trades" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-xs font-bold uppercase"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-[10px] sm:text-xs font-bold uppercase shrink-0"
                   >
                     Trades
                   </TabsTrigger>
                   <TabsTrigger 
                     value="holders" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-xs font-bold uppercase"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-[10px] sm:text-xs font-bold uppercase shrink-0"
                   >
                     Holders
                   </TabsTrigger>
                   <TabsTrigger 
                     value="info" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-xs font-bold uppercase"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-0 pb-2 bg-transparent text-[10px] sm:text-xs font-bold uppercase shrink-0"
                   >
                     Info
                   </TabsTrigger>
@@ -224,9 +224,9 @@ const TokenDetail = () => {
                 <TabsContent value="holders" className="mt-4">
                   <div className="space-y-2">
                     {mockHolders.map((holder, i) => (
-                      <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                        <span className="font-mono text-xs">{holder.address}</span>
-                        <span className="text-xs font-bold tabular-nums">{holder.percentage}%</span>
+                      <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0 gap-2">
+                        <span className="font-mono text-xs truncate min-w-0">{holder.address}</span>
+                        <span className="text-xs font-bold tabular-nums shrink-0">{holder.percentage}%</span>
                       </div>
                     ))}
                   </div>
@@ -234,21 +234,21 @@ const TokenDetail = () => {
                 
                 <TabsContent value="info" className="mt-4">
                   <div className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Supply</span>
-                      <span className="font-mono tabular-nums">{Number(token.supply).toLocaleString()}</span>
+                    <div className="flex justify-between gap-2">
+                      <span className="text-muted-foreground shrink-0">Supply</span>
+                      <span className="font-mono tabular-nums truncate">{Number(token.supply).toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Holders</span>
+                    <div className="flex justify-between gap-2">
+                      <span className="text-muted-foreground shrink-0">Holders</span>
                       <span className="font-mono tabular-nums">{token.holders}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Liquidity</span>
+                    <div className="flex justify-between gap-2">
+                      <span className="text-muted-foreground shrink-0">Liquidity</span>
                       <span className="font-mono tabular-nums">{Number(token.liquidity)} SOL</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Launch</span>
-                      <span className="font-mono text-xs">{new Date(token.launch_timestamp).toLocaleString()}</span>
+                    <div className="flex justify-between gap-2">
+                      <span className="text-muted-foreground shrink-0">Launch</span>
+                      <span className="font-mono text-xs truncate">{new Date(token.launch_timestamp).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </TabsContent>
@@ -257,7 +257,7 @@ const TokenDetail = () => {
           </div>
 
           {/* Right Column - Trade Panel & Info */}
-          <div className="space-y-4 p-4">
+          <div className="space-y-4 p-3 sm:p-4">
             {/* Trade Panel */}
             <TradePanel
               tokenId={token.id}
