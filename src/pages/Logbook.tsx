@@ -158,12 +158,14 @@ const Logbook = () => {
 
     if (heartbeatLogs) {
       heartbeatLogs.forEach((log: any) => {
+        const intervalHours = typeof log.interval_hours === 'number' ? log.interval_hours.toFixed(1) : log.interval_hours;
+        const entropyPct = typeof log.entropy_factor === 'number' ? (log.entropy_factor * 100).toFixed(0) : '—';
         logs.push({
           id: log.id,
           timestamp: log.timestamp,
           type: 'heartbeat',
           title: `AI WAKE ${log.decision_triggered ? '→ DECISION' : '→ IDLE'}`,
-          description: `Interval: ${log.interval_hours}h | Entropy: ${(log.entropy_factor * 100).toFixed(0)}%${log.decision_result ? ` | Result: ${log.decision_result}` : ''}`,
+          description: `Interval: ${intervalHours}h | Entropy: ${entropyPct}%${log.decision_result ? ` | ${log.decision_result}` : ''}`,
           symbol: '♥',
           metadata: log
         });
@@ -223,9 +225,9 @@ const Logbook = () => {
         <p className="data-sm text-muted-foreground">MARKET SIGNALS</p>
         <div className="grid grid-cols-2 gap-2">
           {Object.entries(signals).map(([key, value]) => (
-            <div key={key} className="border border-primary/30 p-2">
-              <p className="data-sm text-muted-foreground">{key.replace(/_/g, ' ').toUpperCase()}</p>
-              <p className="data-sm">
+            <div key={key} className="border border-primary/30 p-2 min-w-0 overflow-hidden">
+              <p className="data-sm text-muted-foreground truncate">{key.replace(/_/g, ' ').toUpperCase()}</p>
+              <p className="data-sm tabular-nums truncate">
                 {typeof value === 'number' ? value.toFixed(2) : String(value)}
               </p>
             </div>
@@ -274,25 +276,33 @@ const Logbook = () => {
 
         {/* Heartbeat specific details */}
         {type === 'heartbeat' && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="border border-primary/30 p-3 text-center">
-              <p className="display-lg">{metadata.interval_hours}h</p>
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            <div className="border border-primary/30 p-2 sm:p-3 text-center min-w-0">
+              <p className="text-lg sm:text-xl font-bold tabular-nums truncate">
+                {typeof metadata.interval_hours === 'number' ? metadata.interval_hours.toFixed(1) : metadata.interval_hours}h
+              </p>
               <p className="data-sm text-muted-foreground">INTERVAL</p>
             </div>
-            <div className="border border-primary/30 p-3 text-center">
-              <p className="display-lg">{(metadata.entropy_factor * 100).toFixed(0)}%</p>
+            <div className="border border-primary/30 p-2 sm:p-3 text-center min-w-0">
+              <p className="text-lg sm:text-xl font-bold tabular-nums truncate">
+                {typeof metadata.entropy_factor === 'number' ? (metadata.entropy_factor * 100).toFixed(0) : '—'}%
+              </p>
               <p className="data-sm text-muted-foreground">ENTROPY</p>
             </div>
-            {metadata.market_activity_score !== null && (
-              <div className="border border-primary/30 p-3 text-center">
-                <p className="display-lg">{metadata.market_activity_score?.toFixed(1) || '—'}</p>
+            {metadata.market_activity_score !== null && metadata.market_activity_score !== undefined && (
+              <div className="border border-primary/30 p-2 sm:p-3 text-center min-w-0">
+                <p className="text-lg sm:text-xl font-bold tabular-nums truncate">
+                  {typeof metadata.market_activity_score === 'number' ? metadata.market_activity_score.toFixed(1) : '—'}
+                </p>
                 <p className="data-sm text-muted-foreground">ACTIVITY</p>
               </div>
             )}
-            {metadata.time_of_day_factor !== null && (
-              <div className="border border-primary/30 p-3 text-center">
-                <p className="display-lg">{metadata.time_of_day_factor?.toFixed(2) || '—'}</p>
-                <p className="data-sm text-muted-foreground">TIME FACTOR</p>
+            {metadata.time_of_day_factor !== null && metadata.time_of_day_factor !== undefined && (
+              <div className="border border-primary/30 p-2 sm:p-3 text-center min-w-0">
+                <p className="text-lg sm:text-xl font-bold tabular-nums truncate">
+                  {typeof metadata.time_of_day_factor === 'number' ? metadata.time_of_day_factor.toFixed(2) : '—'}
+                </p>
+                <p className="data-sm text-muted-foreground">TIME</p>
               </div>
             )}
           </div>
@@ -424,20 +434,21 @@ const Logbook = () => {
         {/* Log Section */}
         <section className="border-b-2 border-primary">
           {/* Tab Navigation */}
-          <div className="flex border-b border-primary/30 overflow-x-auto">
+          <div className="flex border-b border-primary/30 overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => (
               <button
                 key={tab.value}
                 onClick={() => setActiveTab(tab.value)}
                 className={cn(
-                  "flex-1 min-w-[100px] px-4 py-3 data-sm transition-colors flex items-center justify-center gap-2",
+                  "flex-shrink-0 px-3 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-xs transition-colors flex items-center justify-center gap-1 sm:gap-2 whitespace-nowrap",
                   activeTab === tab.value
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-primary/10"
                 )}
               >
                 {getTypeIcon(tab.value)}
-                <span>{tab.label}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.label.slice(0, 3)}</span>
                 <span className="opacity-60">({tab.count})</span>
               </button>
             ))}
@@ -456,12 +467,12 @@ const Logbook = () => {
                 {filteredLogs.map((log) => (
                   <div 
                     key={log.id} 
-                    className="p-6 hover:bg-primary/5 transition-colors cursor-pointer"
+                    className="p-3 sm:p-4 md:p-6 hover:bg-primary/5 transition-colors cursor-pointer"
                     onClick={() => toggleExpand(log.id)}
                   >
-                    <div className="flex items-start gap-4">
-                      {/* Symbol */}
-                      <div className="w-10 h-10 border border-primary/30 flex items-center justify-center shrink-0">
+                    <div className="flex items-start gap-2 sm:gap-4">
+                      {/* Symbol - hidden on mobile for space */}
+                      <div className="hidden sm:flex w-10 h-10 border border-primary/30 items-center justify-center shrink-0">
                         <span className={cn(
                           "text-xl",
                           log.type === 'heartbeat' && "text-red-400"
@@ -470,12 +481,13 @@ const Logbook = () => {
                       
                       {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <div className="flex items-center gap-3 flex-wrap">
+                        <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2">
+                          <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0">
                             {getDecisionBadge(log.decision)}
-                            <Badge variant="outline" className="gap-1">
+                            <Badge variant="outline" className="gap-1 text-[10px] sm:text-xs">
                               {getTypeIcon(log.type)}
-                              {log.type.replace('_', ' ').toUpperCase()}
+                              <span className="hidden sm:inline">{log.type.replace('_', ' ').toUpperCase()}</span>
+                              <span className="sm:hidden">{log.type.split('_')[0].toUpperCase()}</span>
                             </Badge>
                           </div>
                           <span className="text-muted-foreground shrink-0">
@@ -483,36 +495,36 @@ const Logbook = () => {
                           </span>
                         </div>
                         
-                        <h3 className="display-lg mb-1">{log.title}</h3>
+                        <h3 className="text-sm sm:text-base font-bold uppercase break-words">{log.title}</h3>
                         
                         <p className={cn(
-                          "text-sm text-muted-foreground mb-3",
+                          "text-xs sm:text-sm text-muted-foreground mb-3 break-words",
                           !expandedEntries.has(log.id) && "line-clamp-2"
                         )}>
                           {log.description}
                         </p>
                         
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                          <div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                          <div className="min-w-0">
                             <p className="data-sm text-muted-foreground mb-1">TIME</p>
                             <div className="flex items-center gap-1.5">
-                              <Clock className="h-3 w-3 text-muted-foreground" />
-                              <p className="data-sm">{format(new Date(log.timestamp), 'MMM dd HH:mm:ss')}</p>
+                              <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                              <p className="data-sm tabular-nums truncate">{format(new Date(log.timestamp), 'MMM dd HH:mm')}</p>
                             </div>
                           </div>
                           
                           {log.confidence !== undefined && (
-                            <div>
+                            <div className="min-w-0">
                               <p className="data-sm text-muted-foreground mb-1">CONFIDENCE</p>
                               <div className="flex items-center gap-2">
-                                <Progress value={log.confidence * 100} className="h-2 flex-1 max-w-[80px]" />
-                                <span className="data-sm">{(log.confidence * 100).toFixed(0)}%</span>
+                                <Progress value={log.confidence * 100} className="h-2 flex-1 max-w-[60px] sm:max-w-[80px]" />
+                                <span className="data-sm tabular-nums">{(log.confidence * 100).toFixed(0)}%</span>
                               </div>
                             </div>
                           )}
                           
                           {log.metadata?.guardrails_triggered?.length > 0 && (
-                            <div>
+                            <div className="min-w-0">
                               <p className="data-sm text-muted-foreground mb-1">GUARDRAILS</p>
                               <p className="data-sm text-red-400">{log.metadata.guardrails_triggered.length} triggered</p>
                             </div>
