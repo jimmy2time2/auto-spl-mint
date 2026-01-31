@@ -53,26 +53,26 @@ export const TokenHeader = ({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border-b border-border">
-      <div className="flex items-start gap-4">
+    <div className="flex flex-col gap-3 p-3 sm:p-4 border-b border-border">
+      <div className="flex items-start gap-3 sm:gap-4">
         <Link 
           to="/explorer" 
-          className="p-2 hover:bg-muted transition-colors border border-border"
+          className="p-2 hover:bg-muted transition-colors border border-border shrink-0"
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
         
         {/* QR Code as profile picture */}
-        {tokenId && <TokenQRCode tokenId={tokenId} size={56} tokenName={`$${symbol}`} />}
+        {tokenId && <TokenQRCode tokenId={tokenId} size={48} tokenName={`$${symbol}`} className="shrink-0 hidden sm:block" />}
         
-        <div>
-          <h1 className="text-lg sm:text-xl font-bold">{name}</h1>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-base sm:text-xl font-bold truncate">{name}</h1>
+          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground flex-wrap">
             <span className="font-mono">${symbol}</span>
             {creatorAddress && (
               <>
-                <span className="opacity-50">by</span>
-                <span className="font-mono text-xs">{formatAddress(creatorAddress)}</span>
+                <span className="opacity-50 hidden sm:inline">by</span>
+                <span className="font-mono text-xs hidden sm:inline">{formatAddress(creatorAddress)}</span>
               </>
             )}
             <span className="opacity-50">·</span>
@@ -86,19 +86,19 @@ export const TokenHeader = ({
           variant="outline" 
           size="sm" 
           onClick={shareToken}
-          className="h-8 px-3 text-xs font-bold uppercase"
+          className="h-8 px-2 sm:px-3 text-[10px] sm:text-xs font-bold uppercase"
         >
-          <Share2 className="h-3.5 w-3.5 mr-1.5" />
-          Share
+          <Share2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+          <span className="hidden sm:inline">Share</span>
         </Button>
         {mintAddress && (
           <Button 
             variant="outline" 
             size="sm" 
             onClick={copyAddress}
-            className="h-8 px-3 text-xs font-mono"
+            className="h-8 px-2 sm:px-3 text-[10px] sm:text-xs font-mono"
           >
-            <Copy className="h-3.5 w-3.5 mr-1.5" />
+            <Copy className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
             {formatAddress(mintAddress)}
           </Button>
         )}

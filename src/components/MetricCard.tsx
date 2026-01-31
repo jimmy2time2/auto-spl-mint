@@ -8,30 +8,30 @@ interface MetricCardProps {
 
 const MetricCard = ({ label, value, unit, trend, subtitle }: MetricCardProps) => {
   return (
-    <div className="bg-card border border-border rounded-2xl p-6 relative overflow-hidden group hover:border-primary/30 transition-all">
+    <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 relative overflow-hidden group hover:border-primary/30 transition-all">
       {/* Decorative dots */}
-      <div className="absolute top-4 right-4 flex gap-1">
+      <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex gap-1">
         <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
         <div className="w-1 h-1 rounded-full bg-muted-foreground/20" />
         <div className="w-1 h-1 rounded-full bg-muted-foreground/10" />
       </div>
 
-      <div className="space-y-3">
-        <div className="metric-label">{label}</div>
+      <div className="space-y-2 sm:space-y-3">
+        <div className="metric-label truncate">{label}</div>
         
-        <div className="flex items-baseline gap-2">
-          <div className="metric-display text-5xl text-metric-primary">
+        <div className="flex items-baseline gap-1 sm:gap-2 min-w-0">
+          <div className="metric-display text-3xl sm:text-5xl text-metric-primary truncate">
             {value}
           </div>
           {unit && (
-            <div className="metric-label text-metric-secondary pb-1">
+            <div className="metric-label text-metric-secondary pb-1 shrink-0">
               {unit}
             </div>
           )}
         </div>
 
         {subtitle && (
-          <div className="metric-label text-muted-foreground/60">
+          <div className="metric-label text-muted-foreground/60 truncate">
             {subtitle}
           </div>
         )}

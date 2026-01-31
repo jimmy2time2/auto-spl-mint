@@ -68,16 +68,16 @@ const Wallet = () => {
         ) : (
           <>
             {/* Stats */}
-            <div className="grid grid-cols-3 border-b border-border">
-              <div className="border-r border-border p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 border-b border-border">
+              <div className="border-b sm:border-b-0 sm:border-r border-border p-3 sm:p-4">
                 <div className="data-sm text-muted-foreground mb-1">ADDRESS</div>
                 <div className="text-xs font-mono truncate">{publicKey?.toString()}</div>
               </div>
-              <div className="border-r border-border p-4 text-center">
+              <div className="border-b sm:border-b-0 sm:border-r border-border p-3 sm:p-4 text-center">
                 <div className="data-sm text-muted-foreground mb-1">TRADES</div>
                 <div className="data-lg">{activities.length}</div>
               </div>
-              <div className="p-4 text-center">
+              <div className="p-3 sm:p-4 text-center">
                 <div className="data-sm text-muted-foreground mb-1">STATUS</div>
                 <div className="flex items-center justify-center gap-2">
                   <span className="status-dot status-active"></span>

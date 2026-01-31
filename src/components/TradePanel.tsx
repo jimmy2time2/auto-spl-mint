@@ -123,7 +123,7 @@ export const TradePanel = ({ tokenId, tokenSymbol, currentPrice, onTradeComplete
         </div>
 
         {/* Preset amounts */}
-        <div className="flex gap-2">
+        <div className="grid grid-cols-4 gap-1 sm:gap-2">
           {presetAmounts.map((preset) => (
             <button
               key={preset}
@@ -131,7 +131,7 @@ export const TradePanel = ({ tokenId, tokenSymbol, currentPrice, onTradeComplete
                 const val = preset === 'Max' ? '10' : preset.replace(' SOL', '');
                 setAmount(val);
               }}
-              className="flex-1 px-2 py-1.5 text-[10px] font-bold uppercase border border-border hover:bg-muted transition-colors"
+              className="px-1 sm:px-2 py-1.5 text-[9px] sm:text-[10px] font-bold uppercase border border-border hover:bg-muted transition-colors truncate"
             >
               {preset}
             </button>
