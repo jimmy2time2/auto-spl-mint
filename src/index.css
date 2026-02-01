@@ -9,31 +9,31 @@
 
 @layer base {
   :root {
-    /* Kik Green Theme - #61CB2B (HSL: 100 78% 48%) */
+    /* Neon Yellow-Green Theme - Chartreuse/Lime (HSL: 75 100% 50%) */
     --background: 0 0% 4%;             /* Near black */
-    --foreground: 100 78% 48%;         /* Kik green #61CB2B */
+    --foreground: 75 100% 50%;         /* Neon yellow-green */
     --card: 0 0% 6%;
-    --card-foreground: 100 78% 48%;
+    --card-foreground: 75 100% 50%;
     --popover: 0 0% 6%;
-    --popover-foreground: 100 78% 48%;
-    --primary: 100 78% 48%;            /* Kik green */
+    --popover-foreground: 75 100% 50%;
+    --primary: 75 100% 50%;            /* Neon yellow-green */
     --primary-foreground: 0 0% 0%;     /* Black text on green */
     --secondary: 0 0% 10%;
-    --secondary-foreground: 100 78% 48%;
+    --secondary-foreground: 75 100% 50%;
     --muted: 0 0% 12%;
-    --muted-foreground: 100 40% 35%;   /* Dimmed green */
-    --accent: 100 78% 48%;
+    --muted-foreground: 75 50% 35%;    /* Dimmed yellow-green */
+    --accent: 75 100% 50%;
     --accent-foreground: 0 0% 0%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 100 78% 48%;             /* Green borders */
+    --border: 75 100% 50%;             /* Yellow-green borders */
     --input: 0 0% 10%;
-    --ring: 100 78% 48%;
+    --ring: 75 100% 50%;
     --radius: 0rem;
 
     /* Terminal specific tokens */
-    --terminal-grid: 100 40% 15%;
-    --success: 100 78% 48%;
+    --terminal-grid: 75 50% 15%;
+    --success: 75 100% 50%;
     --warning: 45 100% 50%;
     --info: 200 100% 50%;
     
@@ -43,50 +43,50 @@
     --neon-orange: 30 100% 50%;
   }
 
-  /* Inverted theme: Black on Kik Green */
+  /* Inverted theme: Black on Neon Yellow-Green */
   .theme-inverted {
-    --background: 100 78% 48%;         /* Kik green background */
+    --background: 75 100% 50%;         /* Yellow-green background */
     --foreground: 0 0% 0%;             /* Black text */
-    --card: 100 70% 55%;
+    --card: 75 90% 55%;
     --card-foreground: 0 0% 0%;
-    --popover: 100 70% 55%;
+    --popover: 75 90% 55%;
     --popover-foreground: 0 0% 0%;
     --primary: 0 0% 0%;                /* Black primary */
-    --primary-foreground: 100 78% 48%; /* Green text on black */
-    --secondary: 100 60% 60%;
+    --primary-foreground: 75 100% 50%; /* Yellow-green text on black */
+    --secondary: 75 80% 60%;
     --secondary-foreground: 0 0% 0%;
-    --muted: 100 50% 65%;
+    --muted: 75 70% 65%;
     --muted-foreground: 0 0% 20%;      /* Dimmed black */
     --accent: 0 0% 0%;
-    --accent-foreground: 100 78% 48%;
+    --accent-foreground: 75 100% 50%;
     --destructive: 0 72% 40%;
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 0%;                 /* Black borders */
-    --input: 100 60% 60%;
+    --input: 75 80% 60%;
     --ring: 0 0% 0%;
     --terminal-grid: 0 0% 20%;
   }
 
   .dark {
-    /* Same as root - always dark Kik theme */
+    /* Same as root - always dark neon yellow-green theme */
     --background: 0 0% 4%;
-    --foreground: 100 78% 48%;
+    --foreground: 75 100% 50%;
     --card: 0 0% 6%;
-    --card-foreground: 100 78% 48%;
+    --card-foreground: 75 100% 50%;
     --popover: 0 0% 6%;
-    --popover-foreground: 100 78% 48%;
-    --primary: 100 78% 48%;
+    --popover-foreground: 75 100% 50%;
+    --primary: 75 100% 50%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 10%;
-    --secondary-foreground: 100 78% 48%;
+    --secondary-foreground: 75 100% 50%;
     --muted: 0 0% 12%;
-    --muted-foreground: 100 40% 35%;
-    --accent: 100 78% 48%;
+    --muted-foreground: 75 50% 35%;
+    --accent: 75 100% 50%;
     --accent-foreground: 0 0% 0%;
-    --border: 100 78% 48%;
+    --border: 75 100% 50%;
     --input: 0 0% 10%;
-    --ring: 100 78% 48%;
-    --terminal-grid: 100 40% 15%;
+    --ring: 75 100% 50%;
+    --terminal-grid: 75 50% 15%;
   }
 }
 
@@ -375,11 +375,11 @@
 
   /* Glow effects - refined and subtle */
   .glow-text {
-    text-shadow: 0 0 8px hsl(100 78% 48% / 0.5);
+    text-shadow: 0 0 8px hsl(75 100% 50% / 0.5);
   }
 
   .glow-border {
-    box-shadow: 0 0 8px hsl(100 78% 48% / 0.15);
+    box-shadow: 0 0 8px hsl(75 100% 50% / 0.15);
   }
 
   /* Power icon pulse - subtle */
