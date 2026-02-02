@@ -154,7 +154,7 @@ const Dashboard = () => {
             {/* Hero Content */}
             <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12 relative">
               {/* M9 Octopus Logo - Top Right Corner - CRT Glitch Animation */}
-              <div className="absolute -top-2 -right-2 sm:top-0 sm:right-0 z-10 logo-glitch-container">
+              <div className="absolute -top-6 -right-6 sm:-top-8 sm:-right-8 lg:-top-12 lg:-right-12 z-10 logo-glitch-container">
                 {/* Main logo */}
                 <div 
                   className="w-44 sm:w-52 lg:w-64 aspect-square bg-primary theme-inverted:bg-foreground theme-inverted:scale-110 logo-glitch-main"
