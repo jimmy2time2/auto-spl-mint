@@ -35,9 +35,9 @@ const QRCodeModal = ({ isOpen, onClose, tokenId, tokenName }: QRCodeModalProps) 
     return () => observer.disconnect();
   }, []);
   
-  // Theme-aware colors
-  const bgColor = isInverted ? '#BFFF00' : '#0A0A0A';
-  const fgColor = isInverted ? '#0A0A0A' : '#BFFF00';
+  // Theme-aware colors - Electric Yellow (HSL 55 100% 50%)
+  const bgColor = isInverted ? '#FFE500' : '#0A0A0A';
+  const fgColor = isInverted ? '#0A0A0A' : '#FFE500';
   
   const qrSize = 280;
   const logoSize = qrSize * 0.22;
