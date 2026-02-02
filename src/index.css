@@ -9,84 +9,83 @@
 
 @layer base {
   :root {
-    /* Neon Yellow-Green Theme - Chartreuse/Lime (HSL: 75 100% 50%) */
+    /* Neon Yellow Theme - Electric Yellow-Lime (HSL: 65 100% 50%) */
     --background: 0 0% 4%;             /* Near black */
-    --foreground: 75 100% 50%;         /* Neon yellow-green */
+    --foreground: 65 100% 50%;         /* Neon yellow-lime */
     --card: 0 0% 6%;
-    --card-foreground: 75 100% 50%;
+    --card-foreground: 65 100% 50%;
     --popover: 0 0% 6%;
-    --popover-foreground: 75 100% 50%;
-    --primary: 75 100% 50%;            /* Neon yellow-green */
-    --primary-foreground: 0 0% 0%;     /* Black text on green */
+    --popover-foreground: 65 100% 50%;
+    --primary: 65 100% 50%;            /* Neon yellow-lime */
+    --primary-foreground: 0 0% 0%;     /* Black text on yellow */
     --secondary: 0 0% 10%;
-    --secondary-foreground: 75 100% 50%;
+    --secondary-foreground: 65 100% 50%;
     --muted: 0 0% 12%;
-    --muted-foreground: 75 50% 35%;    /* Dimmed yellow-green */
-    --accent: 75 100% 50%;
+    --muted-foreground: 65 50% 35%;    /* Dimmed yellow-lime */
+    --accent: 65 100% 50%;
     --accent-foreground: 0 0% 0%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 75 100% 50%;             /* Yellow-green borders */
+    --border: 65 100% 50%;             /* Yellow-lime borders */
     --input: 0 0% 10%;
-    --ring: 75 100% 50%;
+    --ring: 65 100% 50%;
     --radius: 0rem;
 
     /* Terminal specific tokens */
-    --terminal-grid: 75 50% 15%;
-    --success: 75 100% 50%;
+    --terminal-grid: 65 50% 15%;
+    --success: 65 100% 50%;
     --warning: 45 100% 50%;
     --info: 200 100% 50%;
     
-    /* Accent colors */
-    --neon-pink: 330 100% 50%;
-    --neon-cyan: 180 100% 50%;
+    /* Additional neon accents */
+    --neon-pink: 320 100% 50%;
     --neon-orange: 30 100% 50%;
   }
 
-  /* Inverted theme: Black on Neon Yellow-Green */
+  /* Inverted theme: Black on Neon Yellow */
   .theme-inverted {
-    --background: 75 100% 50%;         /* Yellow-green background */
+    --background: 65 100% 50%;         /* Yellow-lime background */
     --foreground: 0 0% 0%;             /* Black text */
-    --card: 75 90% 55%;
+    --card: 65 90% 55%;
     --card-foreground: 0 0% 0%;
-    --popover: 75 90% 55%;
+    --popover: 65 90% 55%;
     --popover-foreground: 0 0% 0%;
     --primary: 0 0% 0%;                /* Black primary */
-    --primary-foreground: 75 100% 50%; /* Yellow-green text on black */
-    --secondary: 75 80% 60%;
+    --primary-foreground: 65 100% 50%; /* Yellow-lime text on black */
+    --secondary: 65 80% 60%;
     --secondary-foreground: 0 0% 0%;
-    --muted: 75 70% 65%;
+    --muted: 65 70% 65%;
     --muted-foreground: 0 0% 20%;      /* Dimmed black */
     --accent: 0 0% 0%;
-    --accent-foreground: 75 100% 50%;
+    --accent-foreground: 65 100% 50%;
     --destructive: 0 72% 40%;
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 0%;                 /* Black borders */
-    --input: 75 80% 60%;
+    --input: 65 80% 60%;
     --ring: 0 0% 0%;
     --terminal-grid: 0 0% 20%;
   }
 
   .dark {
-    /* Same as root - always dark neon yellow-green theme */
+    /* Same as root - always dark neon yellow theme */
     --background: 0 0% 4%;
-    --foreground: 75 100% 50%;
+    --foreground: 65 100% 50%;
     --card: 0 0% 6%;
-    --card-foreground: 75 100% 50%;
+    --card-foreground: 65 100% 50%;
     --popover: 0 0% 6%;
-    --popover-foreground: 75 100% 50%;
-    --primary: 75 100% 50%;
+    --popover-foreground: 65 100% 50%;
+    --primary: 65 100% 50%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 10%;
-    --secondary-foreground: 75 100% 50%;
+    --secondary-foreground: 65 100% 50%;
     --muted: 0 0% 12%;
-    --muted-foreground: 75 50% 35%;
-    --accent: 75 100% 50%;
+    --muted-foreground: 65 50% 35%;
+    --accent: 65 100% 50%;
     --accent-foreground: 0 0% 0%;
-    --border: 75 100% 50%;
+    --border: 65 100% 50%;
     --input: 0 0% 10%;
-    --ring: 75 100% 50%;
-    --terminal-grid: 75 50% 15%;
+    --ring: 65 100% 50%;
+    --terminal-grid: 65 50% 15%;
   }
 }
 
@@ -375,11 +374,11 @@
 
   /* Glow effects - refined and subtle */
   .glow-text {
-    text-shadow: 0 0 8px hsl(75 100% 50% / 0.5);
+    text-shadow: 0 0 8px hsl(65 100% 50% / 0.5);
   }
 
   .glow-border {
-    box-shadow: 0 0 8px hsl(75 100% 50% / 0.15);
+    box-shadow: 0 0 8px hsl(65 100% 50% / 0.15);
   }
 
   /* Power icon pulse - subtle */
