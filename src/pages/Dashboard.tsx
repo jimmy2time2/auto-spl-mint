@@ -149,19 +149,19 @@ const Dashboard = () => {
       
       <main className="w-full">
         {/* Hero Section */}
-        <section className="border-b-2 border-primary">
+        <section className="border-b-2 border-primary relative">
+          {/* M9 Octopus Logo - Top Right Corner of Hero Box */}
+          <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8 z-10">
+            <img 
+              src={m9OctopusLogo} 
+              alt="M9 Octopus" 
+              className="opacity-90 hover:opacity-100 transition-all [filter:invert(83%)_sepia(60%)_saturate(1000%)_hue-rotate(10deg)_brightness(105%)] theme-inverted:[filter:none] theme-inverted:scale-110"
+            />
+          </div>
+          
           <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero Content */}
-            <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12 relative">
-              {/* M9 Octopus Logo */}
-              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8">
-                <img 
-                  src={m9OctopusLogo} 
-                  alt="M9 Octopus" 
-                  className="opacity-90 hover:opacity-100 transition-all [filter:invert(83%)_sepia(60%)_saturate(1000%)_hue-rotate(10deg)_brightness(105%)] theme-inverted:[filter:none] theme-inverted:scale-110"
-                />
-              </div>
-              
+            <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12">
               <div className="max-w-2xl">
                 <p className="data-sm text-muted-foreground mb-4">
                   AUTONOMOUS TOKEN PROTOCOL
