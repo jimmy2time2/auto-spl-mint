@@ -158,7 +158,7 @@ const Dashboard = () => {
                 <img 
                   src={m9OctopusLogo} 
                   alt="M9 Octopus" 
-                  className="w-36 sm:w-40 lg:w-48 h-auto opacity-90 hover:opacity-100 transition-all [filter:invert(90%)_sepia(100%)_saturate(1000%)_hue-rotate(15deg)_brightness(105%)] theme-inverted:[filter:none] theme-inverted:scale-110"
+                  className="w-36 sm:w-40 lg:w-48 h-auto opacity-90 hover:opacity-100 transition-all [filter:invert(90%)_sepia(100%)_saturate(1000%)_hue-rotate(15deg)_brightness(105%)] theme-inverted:[filter:invert(90%)_sepia(100%)_saturate(1000%)_hue-rotate(15deg)_brightness(105%)] theme-inverted:scale-110"
                 />
               </div>
               <div className="max-w-2xl">
