@@ -153,13 +153,15 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero Content */}
             <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12 relative">
-              {/* M9 Octopus Logo - Top Right Corner */}
+              {/* M9 Octopus Logo - Top Right Corner with CRT Effect */}
               <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
-                <img 
-                  src={m9OctopusLogo} 
-                  alt="M9 Octopus" 
-                  className="w-36 sm:w-40 lg:w-48 h-auto opacity-90 hover:opacity-100 transition-all [filter:brightness(0)_saturate(100%)_invert(89%)_sepia(63%)_saturate(1000%)_hue-rotate(1deg)_brightness(106%)_contrast(103%)] theme-inverted:[filter:none] theme-inverted:scale-110"
-                />
+                <div className="logo-crt-effect w-36 sm:w-40 lg:w-48 theme-inverted:scale-110">
+                  <img 
+                    src={m9OctopusLogo} 
+                    alt="M9 Octopus" 
+                    className="w-full h-auto"
+                  />
+                </div>
               </div>
               <div className="max-w-2xl">
                 <p className="data-sm text-muted-foreground mb-4">
