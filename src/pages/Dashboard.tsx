@@ -151,11 +151,11 @@ const Dashboard = () => {
         {/* Hero Section */}
         <section className="border-b-2 border-primary relative">
           {/* M9 Octopus Logo - Top Right Corner of Hero Box */}
-          <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8 z-10">
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10">
             <img 
               src={m9OctopusLogo} 
               alt="M9 Octopus" 
-              className="opacity-90 hover:opacity-100 transition-all [filter:invert(83%)_sepia(60%)_saturate(1000%)_hue-rotate(10deg)_brightness(105%)] theme-inverted:[filter:none] theme-inverted:scale-110"
+              className="w-8 h-8 sm:w-10 sm:h-10 opacity-90 hover:opacity-100 transition-all [filter:invert(83%)_sepia(60%)_saturate(1000%)_hue-rotate(10deg)_brightness(105%)] theme-inverted:[filter:none] theme-inverted:scale-110"
             />
           </div>
           
