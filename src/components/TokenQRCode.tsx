@@ -47,9 +47,9 @@ const TokenQRCode = ({
     return () => observer.disconnect();
   }, []);
   
-  // Theme-aware colors
-  const bgColor = isInverted ? '#BFFF00' : '#0A0A0A';
-  const fgColor = isInverted ? '#0A0A0A' : '#BFFF00';
+  // Theme-aware colors - Electric Yellow (HSL 55 100% 50%)
+  const bgColor = isInverted ? '#FFE500' : '#0A0A0A';
+  const fgColor = isInverted ? '#0A0A0A' : '#FFE500';
   
   // Calculate logo size (28% of QR code)
   const logoSize = Math.max(size * 0.28, 14);
