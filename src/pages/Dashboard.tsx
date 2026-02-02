@@ -15,6 +15,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 import { useReferralVisitTracker } from "@/hooks/useReferralVisitTracker";
 import { Link } from "react-router-dom";
+import m9RabbitLogo from "@/assets/m9-rabbit-logo.png";
 
 type Token = Tables<"tokens">;
 type Settings = Tables<"settings">;
@@ -88,7 +89,16 @@ const Dashboard = () => {
         <section className="border-b-2 border-primary">
           <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero Content */}
-            <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12">
+            <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12 relative">
+              {/* M9 Cyber Rabbit Logo */}
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8">
+                <img 
+                  src={m9RabbitLogo} 
+                  alt="M9 Cyber Rabbit" 
+                  className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 opacity-80 hover:opacity-100 transition-opacity"
+                />
+              </div>
+              
               <div className="max-w-2xl">
                 <p className="data-sm text-muted-foreground mb-4">
                   AUTONOMOUS TOKEN PROTOCOL
