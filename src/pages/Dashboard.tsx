@@ -149,19 +149,18 @@ const Dashboard = () => {
       
       <main className="w-full">
         {/* Hero Section */}
-        <section className="border-b-2 border-primary relative">
-          {/* M9 Octopus Logo - Top Right Corner of Hero Box */}
-          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10">
-            <img 
-              src={m9OctopusLogo} 
-              alt="M9 Octopus" 
-              className="w-8 h-8 sm:w-10 sm:h-10 opacity-90 hover:opacity-100 transition-all [filter:invert(83%)_sepia(60%)_saturate(1000%)_hue-rotate(10deg)_brightness(105%)] theme-inverted:[filter:none] theme-inverted:scale-110"
-            />
-          </div>
-          
+        <section className="border-b-2 border-primary">
           <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero Content */}
-            <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12">
+            <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12 relative">
+              {/* M9 Octopus Logo - Top Right Corner */}
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
+                <img 
+                  src={m9OctopusLogo} 
+                  alt="M9 Octopus" 
+                  className="w-16 h-16 sm:w-20 sm:h-20 opacity-90 hover:opacity-100 transition-all [filter:invert(83%)_sepia(60%)_saturate(1000%)_hue-rotate(10deg)_brightness(105%)] theme-inverted:[filter:none] theme-inverted:scale-110"
+                />
+              </div>
               <div className="max-w-2xl">
                 <p className="data-sm text-muted-foreground mb-4">
                   AUTONOMOUS TOKEN PROTOCOL
