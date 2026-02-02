@@ -153,10 +153,11 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero Content */}
             <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12 relative">
-              {/* M9 Octopus Logo - Top Right Corner - Using CSS mask for exact color matching */}
-              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
+              {/* M9 Octopus Logo - Top Right Corner - CRT Glitch Animation */}
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 logo-glitch-container">
+                {/* Main logo */}
                 <div 
-                  className="w-36 sm:w-40 lg:w-48 aspect-square opacity-90 hover:opacity-100 transition-all bg-primary theme-inverted:bg-foreground theme-inverted:scale-110"
+                  className="w-36 sm:w-40 lg:w-48 aspect-square bg-primary theme-inverted:bg-foreground theme-inverted:scale-110 logo-glitch-main"
                   style={{
                     maskImage: `url(${m9OctopusLogo})`,
                     maskSize: 'contain',
@@ -168,6 +169,33 @@ const Dashboard = () => {
                     WebkitMaskPosition: 'center',
                   }}
                   aria-label="M9 Octopus"
+                />
+                {/* Chromatic aberration layers */}
+                <div 
+                  className="absolute inset-0 w-36 sm:w-40 lg:w-48 aspect-square bg-[hsl(320,100%,50%)] opacity-0 logo-glitch-red mix-blend-screen"
+                  style={{
+                    maskImage: `url(${m9OctopusLogo})`,
+                    maskSize: 'contain',
+                    maskRepeat: 'no-repeat',
+                    maskPosition: 'center',
+                    WebkitMaskImage: `url(${m9OctopusLogo})`,
+                    WebkitMaskSize: 'contain',
+                    WebkitMaskRepeat: 'no-repeat',
+                    WebkitMaskPosition: 'center',
+                  }}
+                />
+                <div 
+                  className="absolute inset-0 w-36 sm:w-40 lg:w-48 aspect-square bg-[hsl(180,100%,50%)] opacity-0 logo-glitch-cyan mix-blend-screen"
+                  style={{
+                    maskImage: `url(${m9OctopusLogo})`,
+                    maskSize: 'contain',
+                    maskRepeat: 'no-repeat',
+                    maskPosition: 'center',
+                    WebkitMaskImage: `url(${m9OctopusLogo})`,
+                    WebkitMaskSize: 'contain',
+                    WebkitMaskRepeat: 'no-repeat',
+                    WebkitMaskPosition: 'center',
+                  }}
                 />
               </div>
               <div className="max-w-2xl">
