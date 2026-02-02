@@ -451,75 +451,36 @@
     animation: flicker 8s infinite;
   }
 
-  /* Logo CRT/TV Glitch Animation */
+  /* Logo Glitch Animation - applied directly to img */
   @keyframes logo-glitch {
     0%, 90%, 100% {
       transform: translate(0);
-      filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(106%) contrast(103%);
+      filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(106%) contrast(103%) drop-shadow(0 0 4px hsl(55 100% 50% / 0.4));
     }
     91% {
       transform: translate(-2px, 1px);
-      filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(150%) contrast(103%);
+      filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(150%) contrast(103%) drop-shadow(0 0 8px hsl(55 100% 50% / 0.7));
     }
     92% {
       transform: translate(2px, -1px);
-      filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(80%) contrast(103%);
+      filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(70%) contrast(103%);
     }
     93% {
       transform: translate(0);
-      filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(120%) contrast(103%);
+      filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(120%) contrast(103%) drop-shadow(0 0 6px hsl(55 100% 50% / 0.5));
     }
     94%, 95% {
       transform: translate(1px, 0);
-      filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(106%) contrast(103%);
-    }
-  }
-
-  @keyframes logo-scanline {
-    0% { background-position: 0 0; }
-    100% { background-position: 0 100%; }
-  }
-
-  @keyframes logo-glow-pulse {
-    0%, 100% { 
       filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(106%) contrast(103%) drop-shadow(0 0 4px hsl(55 100% 50% / 0.4));
     }
-    50% { 
-      filter: brightness(0) saturate(100%) invert(89%) sepia(63%) saturate(1000%) hue-rotate(1deg) brightness(115%) contrast(103%) drop-shadow(0 0 12px hsl(55 100% 50% / 0.7));
-    }
   }
 
-  .logo-crt-effect {
-    position: relative;
-    animation: logo-glitch 4s infinite, logo-glow-pulse 3s ease-in-out infinite;
+  .logo-glitch-anim {
+    animation: logo-glitch 4s infinite;
   }
 
-  .logo-crt-effect::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 2px,
-      hsl(55 100% 50% / 0.03) 2px,
-      hsl(55 100% 50% / 0.03) 4px
-    );
-    pointer-events: none;
-    animation: logo-scanline 2s linear infinite;
-  }
-
-  .logo-crt-effect::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 50%, hsl(0 0% 0% / 0.15) 100%);
-    pointer-events: none;
-  }
-
-  /* Inverted theme logo - no animation filter, just black */
-  .theme-inverted .logo-crt-effect {
-    filter: none !important;
+  /* Inverted theme - keep glitch motion but no color filter */
+  .theme-inverted .logo-glitch-anim {
     animation: logo-glitch-inverted 4s infinite;
   }
 
@@ -530,15 +491,15 @@
     }
     91% {
       transform: translate(-2px, 1px);
-      opacity: 0.9;
+      opacity: 0.85;
     }
     92% {
       transform: translate(2px, -1px);
-      opacity: 0.7;
+      opacity: 0.6;
     }
     93% {
       transform: translate(0);
-      opacity: 0.95;
+      opacity: 0.9;
     }
     94%, 95% {
       transform: translate(1px, 0);
