@@ -158,7 +158,12 @@ const Dashboard = () => {
                 <img 
                   src={m9OctopusLogo} 
                   alt="M9 Octopus" 
-                  className="w-44 sm:w-52 lg:w-64 h-auto logo-glitch-anim logo-hover-glow cursor-pointer theme-inverted:[filter:none] theme-inverted:scale-110"
+                  className="w-44 sm:w-52 lg:w-64 h-auto logo-glitch-anim logo-hover-glow logo-click-glitch cursor-pointer theme-inverted:[filter:none] theme-inverted:scale-110"
+                  onClick={(e) => {
+                    const el = e.currentTarget;
+                    el.classList.add('glitch-burst-active');
+                    setTimeout(() => el.classList.remove('glitch-burst-active'), 500);
+                  }}
                 />
               </div>
               <div className="max-w-2xl">
