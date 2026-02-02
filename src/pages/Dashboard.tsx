@@ -158,7 +158,7 @@ const Dashboard = () => {
                 <img 
                   src={m9OctopusLogo} 
                   alt="M9 Octopus" 
-                  className="w-44 sm:w-52 lg:w-64 h-auto logo-glitch-anim theme-inverted:[filter:none] theme-inverted:scale-110"
+                  className="w-44 sm:w-52 lg:w-64 h-auto logo-glitch-anim logo-hover-glow cursor-pointer theme-inverted:[filter:none] theme-inverted:scale-110"
                 />
               </div>
               <div className="max-w-2xl">
