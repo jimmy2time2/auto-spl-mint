@@ -154,7 +154,7 @@ const Dashboard = () => {
             {/* Hero Content */}
             <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12 relative">
               {/* M9 Octopus Logo - Top Right Corner */}
-              <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
+              <div className="absolute top-0 right-0 z-10">
                 <img 
                   src={m9OctopusLogo} 
                   alt="M9 Octopus" 
