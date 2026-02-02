@@ -153,15 +153,13 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero Content */}
             <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12 relative">
-              {/* M9 Octopus Logo - Top Right Corner with CRT Effect */}
+              {/* M9 Octopus Logo - Top Right Corner */}
               <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
-                <div className="logo-crt-effect w-36 sm:w-40 lg:w-48 theme-inverted:scale-110">
-                  <img 
-                    src={m9OctopusLogo} 
-                    alt="M9 Octopus" 
-                    className="w-full h-auto"
-                  />
-                </div>
+                <img 
+                  src={m9OctopusLogo} 
+                  alt="M9 Octopus" 
+                  className="w-36 sm:w-40 lg:w-48 h-auto logo-glitch-anim theme-inverted:[filter:none] theme-inverted:scale-110"
+                />
               </div>
               <div className="max-w-2xl">
                 <p className="data-sm text-muted-foreground mb-4">
