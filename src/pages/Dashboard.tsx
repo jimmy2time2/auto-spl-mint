@@ -153,49 +153,12 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero Content */}
             <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12 relative">
-              {/* M9 Octopus Logo - Top Right Corner - CRT Glitch Animation */}
-              <div className="absolute top-0 right-0 z-10 logo-glitch-container">
-                {/* Main logo */}
-                <div 
-                  className="w-44 sm:w-52 lg:w-64 aspect-square bg-primary theme-inverted:bg-foreground theme-inverted:scale-110 logo-glitch-main"
-                  style={{
-                    maskImage: `url(${m9OctopusLogo})`,
-                    maskSize: 'contain',
-                    maskRepeat: 'no-repeat',
-                    maskPosition: 'center',
-                    WebkitMaskImage: `url(${m9OctopusLogo})`,
-                    WebkitMaskSize: 'contain',
-                    WebkitMaskRepeat: 'no-repeat',
-                    WebkitMaskPosition: 'center',
-                  }}
-                  aria-label="M9 Octopus"
-                />
-                {/* Chromatic aberration layers */}
-                <div 
-                  className="absolute inset-0 w-44 sm:w-52 lg:w-64 aspect-square bg-[hsl(320,100%,50%)] opacity-0 logo-glitch-red mix-blend-screen"
-                  style={{
-                    maskImage: `url(${m9OctopusLogo})`,
-                    maskSize: 'contain',
-                    maskRepeat: 'no-repeat',
-                    maskPosition: 'center',
-                    WebkitMaskImage: `url(${m9OctopusLogo})`,
-                    WebkitMaskSize: 'contain',
-                    WebkitMaskRepeat: 'no-repeat',
-                    WebkitMaskPosition: 'center',
-                  }}
-                />
-                <div 
-                  className="absolute inset-0 w-44 sm:w-52 lg:w-64 aspect-square bg-[hsl(180,100%,50%)] opacity-0 logo-glitch-cyan mix-blend-screen"
-                  style={{
-                    maskImage: `url(${m9OctopusLogo})`,
-                    maskSize: 'contain',
-                    maskRepeat: 'no-repeat',
-                    maskPosition: 'center',
-                    WebkitMaskImage: `url(${m9OctopusLogo})`,
-                    WebkitMaskSize: 'contain',
-                    WebkitMaskRepeat: 'no-repeat',
-                    WebkitMaskPosition: 'center',
-                  }}
+              {/* M9 Octopus Logo - Top Right Corner */}
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
+                <img 
+                  src={m9OctopusLogo} 
+                  alt="M9 Octopus" 
+                  className="w-36 sm:w-40 lg:w-48 h-auto opacity-90 hover:opacity-100 transition-all [filter:brightness(0)_saturate(100%)_invert(89%)_sepia(63%)_saturate(1000%)_hue-rotate(1deg)_brightness(106%)_contrast(103%)] theme-inverted:[filter:none] theme-inverted:scale-110"
                 />
               </div>
               <div className="max-w-2xl">
