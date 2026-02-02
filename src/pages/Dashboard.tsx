@@ -3,23 +3,73 @@ import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import CountdownTimer from "@/components/CountdownTimer";
 import AiMindTicker from "@/components/AiMindTicker";
-import AsciiDivider from "@/components/AsciiDivider";
 import LiveTokenFeed from "@/components/LiveTokenFeed";
-import TokenDiscovery from "@/components/TokenDiscovery";
 import CommunityChat from "@/components/CommunityChat";
 import LuckyWalletSection from "@/components/LuckyWalletSection";
 import TokenDistributionInfo from "@/components/TokenDistributionInfo";
 import { OnboardingTour } from "@/components/OnboardingTour";
-import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import ExplorerPanel from "@/components/panels/ExplorerPanel";
+import DAOPanel from "@/components/panels/DAOPanel";
+import LeaderboardPanel from "@/components/panels/LeaderboardPanel";
+import LogbookPanel from "@/components/panels/LogbookPanel";
+import WalletPanel from "@/components/panels/WalletPanel";
 import type { Tables } from "@/integrations/supabase/types";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 import { useReferralVisitTracker } from "@/hooks/useReferralVisitTracker";
-import { Link } from "react-router-dom";
+import { ChevronDown, Search, Vote, Trophy, BookOpen, Wallet } from "lucide-react";
+import { cn } from "@/lib/utils";
 import m9RabbitLogo from "@/assets/m9-rabbit-logo.png";
 
 type Token = Tables<"tokens">;
 type Settings = Tables<"settings">;
 type AiMood = Tables<"ai_mood_state">;
+
+interface CollapsibleSectionProps {
+  id: string;
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  openSections: Set<string>;
+  toggleSection: (id: string) => void;
+}
+
+const CollapsibleSection = ({ 
+  id, 
+  title, 
+  icon, 
+  children, 
+  openSections, 
+  toggleSection 
+}: CollapsibleSectionProps) => {
+  const isOpen = openSections.has(id);
+  
+  return (
+    <Collapsible open={isOpen} onOpenChange={() => toggleSection(id)}>
+      <CollapsibleTrigger className="w-full">
+        <div className={cn(
+          "flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-primary transition-colors",
+          isOpen ? "bg-primary/10" : "hover:bg-primary/5"
+        )}>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-primary">{icon}</span>
+            <h2 className="data-sm sm:text-base font-bold">{title}</h2>
+          </div>
+          <ChevronDown className={cn(
+            "h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground transition-transform duration-200",
+            isOpen && "rotate-180"
+          )} />
+        </div>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="border-b-2 border-primary">
+          {children}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
 
 const Dashboard = () => {
   useEngagementTracking();
@@ -32,6 +82,19 @@ const Dashboard = () => {
   const [totalTokens, setTotalTokens] = useState(0);
   const [loading, setLoading] = useState(true);
   const [totalVolume, setTotalVolume] = useState(0);
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set(['explorer']));
+
+  const toggleSection = (id: string) => {
+    setOpenSections(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,15 +175,6 @@ const Dashboard = () => {
                   It decides when to create tokens, what to name them, and when to launch. 
                   No human control. Trade its creations before everyone else.
                 </p>
-                
-                <div className="flex flex-wrap gap-3">
-                  <Button asChild className="h-11 data-sm px-6 glow-border">
-                    <Link to="/trade">START TRADING</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="h-11 data-sm px-6">
-                    <Link to="/explorer">EXPLORE TOKENS</Link>
-                  </Button>
-                </div>
               </div>
             </div>
             
@@ -222,40 +276,64 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Token Discovery */}
-        <section className="border-b-2 border-primary">
-          <TokenDiscovery />
-        </section>
+        {/* Collapsible Panels */}
+        <CollapsibleSection
+          id="explorer"
+          title="EXPLORE TOKENS"
+          icon={<Search className="h-4 w-4 sm:h-5 sm:w-5" />}
+          openSections={openSections}
+          toggleSection={toggleSection}
+        >
+          <ExplorerPanel />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          id="dao"
+          title="DAO GOVERNANCE"
+          icon={<Vote className="h-4 w-4 sm:h-5 sm:w-5" />}
+          openSections={openSections}
+          toggleSection={toggleSection}
+        >
+          <DAOPanel />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          id="leaderboard"
+          title="LEADERBOARDS"
+          icon={<Trophy className="h-4 w-4 sm:h-5 sm:w-5" />}
+          openSections={openSections}
+          toggleSection={toggleSection}
+        >
+          <LeaderboardPanel />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          id="logbook"
+          title="AI LOGBOOK"
+          icon={<BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />}
+          openSections={openSections}
+          toggleSection={toggleSection}
+        >
+          <LogbookPanel />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          id="wallet"
+          title="YOUR WALLET"
+          icon={<Wallet className="h-4 w-4 sm:h-5 sm:w-5" />}
+          openSections={openSections}
+          toggleSection={toggleSection}
+        >
+          <WalletPanel />
+        </CollapsibleSection>
 
         {/* Community Chat */}
         <section className="border-b-2 border-primary">
-          <div className="grid grid-cols-1 lg:grid-cols-3">
-            <div className="lg:col-span-2 lg:border-r-2 border-primary h-[400px]">
-              <CommunityChat />
-            </div>
-            <div className="border-t-2 lg:border-t-0 border-primary">
-              <div className="border-b border-primary/30 px-6 py-4">
-                <h2 className="data-sm">DAO GOVERNANCE</h2>
-              </div>
-              <div className="p-6">
-                <p className="text-sm text-muted-foreground mb-4">
-                  Participate in M9 governance. Vote on proposals and shape the protocol's future.
-                </p>
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between items-center">
-                    <span className="data-sm text-muted-foreground">Active Proposals</span>
-                    <span className="data-sm">—</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="data-sm text-muted-foreground">Treasury</span>
-                    <span className="data-sm glow-text">—</span>
-                  </div>
-                </div>
-                <Button asChild className="w-full">
-                  <Link to="/dao">VIEW DAO</Link>
-                </Button>
-              </div>
-            </div>
+          <div className="border-b border-primary/30 px-6 py-4">
+            <h2 className="data-sm">COMMUNITY</h2>
+          </div>
+          <div className="h-[350px]">
+            <CommunityChat />
           </div>
         </section>
 
