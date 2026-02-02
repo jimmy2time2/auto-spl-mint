@@ -8,12 +8,7 @@ import Scanlines from "./components/Scanlines";
 import BackgroundGlitch from "./components/BackgroundGlitch";
 import PageTransition from "./components/PageTransition";
 import Dashboard from "./pages/Dashboard";
-import Explorer from "./pages/Explorer";
 import TokenDetail from "./pages/TokenDetail";
-import Leaderboard from "./pages/Leaderboard";
-import Wallet from "./pages/Wallet";
-import Logbook from "./pages/Logbook";
-import DAO from "./pages/DAO";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,12 +20,7 @@ const AppRoutes = () => {
     <PageTransition key={location.pathname}>
       <Routes location={location}>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/explorer" element={<Explorer />} />
         <Route path="/token/:id" element={<TokenDetail />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/wallet" element={<Wallet />} />
-        <Route path="/logbook" element={<Logbook />} />
-        <Route path="/dao" element={<DAO />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
