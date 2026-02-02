@@ -153,12 +153,12 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3">
             {/* Hero Content */}
             <div className="lg:col-span-2 lg:border-r-2 border-primary p-6 sm:p-8 lg:p-12 relative">
-              {/* M9 Cyber Rabbit Logo */}
+              {/* M9 Octopus Logo */}
               <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8">
                 <img 
                   src={m9OctopusLogo} 
                   alt="M9 Octopus" 
-                  className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 opacity-80 hover:opacity-100 transition-opacity"
+                  className="opacity-90 hover:opacity-100 transition-all theme-inverted:invert theme-inverted:scale-110"
                 />
               </div>
               
