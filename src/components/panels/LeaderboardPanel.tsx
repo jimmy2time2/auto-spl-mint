@@ -90,19 +90,19 @@ const LeaderboardPanel = () => {
             value="lucky" 
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-3 py-2 text-[10px]"
           >
-            🍀 LUCKY
+            ○ LUCKY
           </TabsTrigger>
           <TabsTrigger 
             value="traders" 
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-3 py-2 text-[10px]"
           >
-            📊 TRADERS
+            ◑ TRADERS
           </TabsTrigger>
           <TabsTrigger 
             value="gainers" 
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-3 py-2 text-[10px]"
           >
-            🚀 GAINERS
+            → GAINERS
           </TabsTrigger>
         </TabsList>
 
@@ -114,7 +114,7 @@ const LeaderboardPanel = () => {
             <div className="divide-y divide-primary/30">
               {wallets.map((wallet, index) => {
                 const rank = index + 1;
-                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+                const medal = rank === 1 ? '●' : rank === 2 ? '◐' : rank === 3 ? '○' : '';
                 
                 return (
                   <div key={wallet.id} className={`flex items-center justify-between p-3 ${rank <= 3 ? 'bg-muted/50' : ''}`}>
@@ -135,7 +135,7 @@ const LeaderboardPanel = () => {
           <div className="divide-y divide-primary/30">
             {topTraders.map((trader, index) => {
               const rank = index + 1;
-              const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+              const medal = rank === 1 ? '●' : rank === 2 ? '◐' : rank === 3 ? '○' : '';
               
               return (
                 <div key={trader.wallet} className={`flex items-center justify-between p-3 ${rank <= 3 ? 'bg-muted/50' : ''}`}>
@@ -168,7 +168,7 @@ const LeaderboardPanel = () => {
                 return (
                   <div key={token.id} className={`flex items-center justify-between p-3 ${rank <= 3 ? 'bg-muted/50' : ''}`}>
                     <div className="flex items-center gap-2">
-                      <span className="data-sm w-6">{rank === 1 ? '🚀' : rank === 2 ? '📈' : rank === 3 ? '💹' : rank}</span>
+                      <span className="data-sm w-6">{rank === 1 ? '●' : rank === 2 ? '◐' : rank === 3 ? '○' : rank}</span>
                       <span className="data-sm font-bold">${token.symbol}</span>
                     </div>
                     <span className={`data-sm tabular-nums ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
