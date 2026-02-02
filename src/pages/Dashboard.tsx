@@ -19,7 +19,7 @@ import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 import { useReferralVisitTracker } from "@/hooks/useReferralVisitTracker";
 import { ChevronDown, Search, Vote, Trophy, BookOpen, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
-import m9RabbitLogo from "@/assets/m9-rabbit-logo.png";
+import m9OctopusLogo from "@/assets/m9-octopus-logo.png";
 
 type Token = Tables<"tokens">;
 type Settings = Tables<"settings">;
@@ -156,8 +156,8 @@ const Dashboard = () => {
               {/* M9 Cyber Rabbit Logo */}
               <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8">
                 <img 
-                  src={m9RabbitLogo} 
-                  alt="M9 Cyber Rabbit" 
+                  src={m9OctopusLogo} 
+                  alt="M9 Octopus" 
                   className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 opacity-80 hover:opacity-100 transition-opacity"
                 />
               </div>
