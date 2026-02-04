@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import CountdownTimer from "@/components/CountdownTimer";
@@ -83,6 +83,30 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [totalVolume, setTotalVolume] = useState(0);
   const [openSections, setOpenSections] = useState<Set<string>>(new Set(['explorer']));
+  const [isLaunchImminent, setIsLaunchImminent] = useState(false);
+  const logoRef = useRef<HTMLImageElement>(null);
+
+  // Trigger glitch burst when launch is imminent (under 30 seconds)
+  useEffect(() => {
+    if (isPaused) return;
+
+    const checkLaunchProximity = () => {
+      const now = Date.now();
+      const timeToLaunch = nextLaunch.getTime() - now;
+      const isImminent = timeToLaunch > 0 && timeToLaunch <= 30000; // 30 seconds
+      
+      if (isImminent && !isLaunchImminent) {
+        setIsLaunchImminent(true);
+      } else if (!isImminent && isLaunchImminent) {
+        setIsLaunchImminent(false);
+      }
+    };
+
+    const interval = setInterval(checkLaunchProximity, 1000);
+    checkLaunchProximity(); // Initial check
+
+    return () => clearInterval(interval);
+  }, [nextLaunch, isPaused, isLaunchImminent]);
 
   const toggleSection = (id: string) => {
     setOpenSections(prev => {
@@ -156,14 +180,10 @@ const Dashboard = () => {
               {/* M9 Octopus Logo - Top Right Corner */}
               <div className="absolute top-0 right-0 z-10">
                 <img 
+                  ref={logoRef}
                   src={m9OctopusLogo} 
                   alt="M9 Octopus" 
-                  className="w-44 sm:w-52 lg:w-64 h-auto logo-glitch-anim logo-hover-glow logo-click-glitch cursor-pointer theme-inverted:[filter:none] theme-inverted:scale-110"
-                  onClick={(e) => {
-                    const el = e.currentTarget;
-                    el.classList.add('glitch-burst-active');
-                    setTimeout(() => el.classList.remove('glitch-burst-active'), 500);
-                  }}
+                  className={`w-44 sm:w-52 lg:w-64 h-auto logo-glitch-anim theme-inverted:[filter:none] theme-inverted:scale-110 ${isLaunchImminent ? 'glitch-burst-active' : ''}`}
                 />
               </div>
               <div className="max-w-2xl">
