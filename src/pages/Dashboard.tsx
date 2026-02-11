@@ -4,10 +4,8 @@ import Navigation from "@/components/Navigation";
 import CountdownTimer from "@/components/CountdownTimer";
 import AiMindTicker from "@/components/AiMindTicker";
 import LiveTokenFeed from "@/components/LiveTokenFeed";
-import CommunityChat from "@/components/CommunityChat";
 import LuckyWalletSection from "@/components/LuckyWalletSection";
 import TokenDistributionInfo from "@/components/TokenDistributionInfo";
-import { OnboardingTour } from "@/components/OnboardingTour";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import ExplorerPanel from "@/components/panels/ExplorerPanel";
 import DAOPanel from "@/components/panels/DAOPanel";
@@ -77,7 +75,7 @@ const Dashboard = () => {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [aiMood, setAiMood] = useState<AiMood | null>(null);
-  const [nextLaunch, setNextLaunch] = useState(new Date(Date.now() + 2 * 60 * 60 * 1000));
+  const [nextLaunch, setNextLaunch] = useState<Date | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [totalTokens, setTotalTokens] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -88,7 +86,7 @@ const Dashboard = () => {
 
   // Trigger glitch burst when launch is imminent (under 30 seconds)
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || !nextLaunch) return;
 
     const checkLaunchProximity = () => {
       const now = Date.now();
@@ -103,7 +101,7 @@ const Dashboard = () => {
     };
 
     const interval = setInterval(checkLaunchProximity, 1000);
-    checkLaunchProximity(); // Initial check
+    checkLaunchProximity();
 
     return () => clearInterval(interval);
   }, [nextLaunch, isPaused, isLaunchImminent]);
@@ -167,7 +165,6 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="scanlines" />
-      <OnboardingTour />
       <Navigation />
       <AiMindTicker />
       
@@ -207,7 +204,11 @@ const Dashboard = () => {
               <div className="border-b border-r lg:border-r-0 border-primary/30 p-4 sm:p-5">
                 <p className="data-sm text-muted-foreground mb-2">NEXT LAUNCH</p>
                 <div className="display-lg glow-text">
-                  <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
+                  {nextLaunch ? (
+                    <CountdownTimer targetDate={nextLaunch} isPaused={isPaused} />
+                  ) : (
+                    <span className="text-muted-foreground">AWAITING</span>
+                  )}
                 </div>
               </div>
               
@@ -253,36 +254,6 @@ const Dashboard = () => {
               <p className="data-sm text-muted-foreground mb-1">TOTAL HOLDERS</p>
               <p className="display-lg tabular-nums glow-text">
                 {tokens.reduce((sum, t) => sum + t.holders, 0)}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* How It Works */}
-        <section className="border-b-2 border-primary">
-          <div className="border-b border-primary/30 px-6 py-4">
-            <h2 className="data-sm">HOW IT WORKS</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3">
-            <div className="sm:border-r border-primary/30 border-b sm:border-b-0 p-6">
-              <p className="data-sm text-muted-foreground mb-3">01</p>
-              <h3 className="display-lg mb-3">AI DECIDES</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                The AI analyzes market conditions, picks a theme, and creates a new token autonomously.
-              </p>
-            </div>
-            <div className="sm:border-r border-primary/30 border-b sm:border-b-0 p-6">
-              <p className="data-sm text-muted-foreground mb-3">02</p>
-              <h3 className="display-lg mb-3">YOU TRADE</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Trade early. Buy launches, ride momentum, or time your exits. Your strategy.
-              </p>
-            </div>
-            <div className="p-6">
-              <p className="data-sm text-muted-foreground mb-3">03</p>
-              <h3 className="display-lg mb-3">EARN REWARDS</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Active wallets receive random airdrops. The AI picks its favorites.
               </p>
             </div>
           </div>
@@ -348,16 +319,6 @@ const Dashboard = () => {
         >
           <WalletPanel />
         </CollapsibleSection>
-
-        {/* Community Chat */}
-        <section className="border-b-2 border-primary">
-          <div className="border-b border-primary/30 px-6 py-4">
-            <h2 className="data-sm">COMMUNITY</h2>
-          </div>
-          <div className="h-[350px]">
-            <CommunityChat />
-          </div>
-        </section>
 
         {/* Footer */}
         <footer className="p-6 sm:p-8 text-center">
