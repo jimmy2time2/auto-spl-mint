@@ -9,19 +9,15 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Token = Tables<"tokens">;
 type SortField = 'launch_timestamp' | 'price' | 'volume_24h' | 'holders' | 'liquidity';
-type FilterType = 'all' | 'new' | 'trending' | 'gainers';
 
-interface TokenWithMetrics extends Token {
-  priceChange24h: number;
+interface TokenWithFlags extends Token {
   isNew: boolean;
-  isHot: boolean;
 }
 
 const ExplorerPanel = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortField>("launch_timestamp");
-  const [filter, setFilter] = useState<FilterType>("all");
-  const [tokens, setTokens] = useState<TokenWithMetrics[]>([]);
+  const [tokens, setTokens] = useState<TokenWithFlags[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -45,75 +41,23 @@ const ExplorerPanel = () => {
       const { data, count } = await query;
 
       if (data) {
-        const enriched: TokenWithMetrics[] = data.map((token) => {
-          const priceChange = (Math.random() - 0.3) * 80;
+        const enriched: TokenWithFlags[] = data.map((token) => {
           const isNew = new Date(token.launch_timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000);
-          const isHot = Number(token.volume_24h) > 5000 || priceChange > 30;
-          
-          return {
-            ...token,
-            priceChange24h: priceChange,
-            isNew,
-            isHot,
-          };
+          return { ...token, isNew };
         });
-
-        let filtered = enriched;
-        switch (filter) {
-          case 'new':
-            filtered = enriched.filter(t => t.isNew);
-            break;
-          case 'trending':
-            filtered = enriched.filter(t => t.isHot);
-            break;
-          case 'gainers':
-            filtered = enriched.filter(t => t.priceChange24h > 0).sort((a, b) => b.priceChange24h - a.priceChange24h);
-            break;
-        }
-
-        setTokens(filtered);
+        setTokens(enriched);
       }
       if (count !== null) setTotalCount(count);
       setLoading(false);
     };
 
     fetchTokens();
-  }, [searchTerm, sortBy, filter, page]);
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toFixed(2);
-  };
-
-  const formatAge = (timestamp: string) => {
-    const diff = Date.now() - new Date(timestamp).getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(hours / 24);
-    
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    return 'just now';
-  };
+  }, [searchTerm, sortBy, page]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   return (
     <div>
-      {/* Filter Tabs */}
-      <div className="border-b border-primary/30 p-2 flex gap-1 overflow-x-auto">
-        {(['all', 'new', 'trending', 'gainers'] as FilterType[]).map((f) => (
-          <Button
-            key={f}
-            variant={filter === f ? 'default' : 'outline'}
-            onClick={() => setFilter(f)}
-            className="h-7 px-2 text-[10px] whitespace-nowrap flex-shrink-0"
-          >
-            {f.toUpperCase()}
-          </Button>
-        ))}
-      </div>
-
       {/* Search */}
       <div className="p-2">
         <Input
@@ -181,10 +125,11 @@ const ExplorerPanel = () => {
                   </div>
                   <div className="text-right">
                     <div className="data-sm font-bold tabular-nums">${Number(token.price).toFixed(6)}</div>
-                    <div className={`text-[10px] font-bold tabular-nums ${
-                      token.priceChange24h >= 0 ? 'text-primary' : 'text-destructive'
-                    }`}>
-                      {token.priceChange24h >= 0 ? '+' : ''}{token.priceChange24h.toFixed(1)}%
+                    <div className="text-[10px] text-muted-foreground tabular-nums">
+                      VOL: {Number(token.volume_24h) >= 1000
+                        ? `$${(Number(token.volume_24h) / 1000).toFixed(1)}K`
+                        : `$${Number(token.volume_24h).toFixed(0)}`
+                      }
                     </div>
                   </div>
                 </div>
