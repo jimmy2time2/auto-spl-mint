@@ -237,7 +237,7 @@ const Dashboard = () => {
           <div className="lg:col-span-2 lg:border-r-2 border-primary">
             <LiveTokenFeed />
           </div>
-          <div className="grid grid-cols-3 lg:grid-cols-1 border-t lg:border-t-0 border-primary/30">
+          <div className="grid grid-cols-2 lg:grid-cols-1 border-t lg:border-t-0 border-primary/30">
             <div className="border-b border-r lg:border-r-0 border-primary/30 p-3 sm:p-5">
               <p className="data-sm text-muted-foreground mb-1">24H VOL</p>
               <p className="display-lg tabular-nums glow-text truncate">
@@ -249,13 +249,11 @@ const Dashboard = () => {
                 }
               </p>
             </div>
-            <div className="border-b border-r lg:border-r-0 border-primary/30 p-3 sm:p-5">
-              <p className="data-sm text-muted-foreground mb-1">TRADERS</p>
-              <p className="display-lg tabular-nums">—</p>
-            </div>
             <div className="p-3 sm:p-5 border-b lg:border-b-0 border-primary/30">
-              <p className="data-sm text-muted-foreground mb-1">AVG AGE</p>
-              <p className="display-lg tabular-nums">—</p>
+              <p className="data-sm text-muted-foreground mb-1">TOTAL HOLDERS</p>
+              <p className="display-lg tabular-nums glow-text">
+                {tokens.reduce((sum, t) => sum + t.holders, 0)}
+              </p>
             </div>
           </div>
         </section>
