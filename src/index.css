@@ -497,8 +497,8 @@
       logo-glitch-burst 8s ease-in-out infinite;
   }
 
-  /* Inverted theme - keep animations but no color filter */
-  .theme-inverted .logo-glitch-anim {
+  /* Inverted theme - force black logo with separate class */
+  .logo-glitch-anim-inverted {
     animation: 
       logo-pulse-inverted 3s ease-in-out infinite,
       logo-glitch-burst-inverted 8s ease-in-out infinite;
@@ -506,11 +506,11 @@
 
   @keyframes logo-pulse-inverted {
     0%, 100% {
-      filter: none;
+      filter: brightness(0);
       opacity: 1;
     }
     50% {
-      filter: drop-shadow(0 0 6px hsl(0 0% 0% / 0.3));
+      filter: brightness(0) drop-shadow(0 0 6px hsl(0 0% 0% / 0.3));
       opacity: 0.95;
     }
   }
@@ -518,26 +518,32 @@
   @keyframes logo-glitch-burst-inverted {
     0%, 85%, 100% {
       transform: translate(0);
+      filter: brightness(0);
       opacity: 1;
     }
     86% {
       transform: translate(-3px, 1px);
+      filter: brightness(0);
       opacity: 0.6;
     }
     88% {
       transform: translate(3px, -1px);
+      filter: brightness(0);
       opacity: 0.4;
     }
     90% {
       transform: translate(-1px, 0);
+      filter: brightness(0);
       opacity: 0.7;
     }
     92% {
       transform: translate(2px, 1px);
+      filter: brightness(0);
       opacity: 0.5;
     }
     94% {
       transform: translate(0);
+      filter: brightness(0);
       opacity: 0.8;
     }
   }
@@ -592,26 +598,32 @@
   @keyframes launch-glitch-burst-inverted {
     0%, 100% {
       transform: translate(0) scale(1);
+      filter: brightness(0);
       opacity: 1;
     }
     15% {
       transform: translate(-4px, 2px) scale(1.05) skewX(-3deg);
+      filter: brightness(0);
       opacity: 0.5;
     }
     30% {
       transform: translate(4px, -2px) scale(0.97) skewX(3deg);
+      filter: brightness(0);
       opacity: 0.2;
     }
     50% {
       transform: translate(-2px, 1px) scale(1.03);
+      filter: brightness(0);
       opacity: 0.7;
     }
     70% {
       transform: translate(2px, -1px) scale(0.98) skewX(2deg);
+      filter: brightness(0);
       opacity: 0.4;
     }
     85% {
       transform: translate(-1px, 0) scale(1.02);
+      filter: brightness(0);
       opacity: 0.8;
     }
   }
