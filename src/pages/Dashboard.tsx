@@ -82,7 +82,19 @@ const Dashboard = () => {
   const [totalVolume, setTotalVolume] = useState(0);
   const [openSections, setOpenSections] = useState<Set<string>>(new Set(['explorer']));
   const [isLaunchImminent, setIsLaunchImminent] = useState(false);
+  const [isInvertedTheme, setIsInvertedTheme] = useState(false);
   const logoRef = useRef<HTMLImageElement>(null);
+
+  // Track theme changes
+  useEffect(() => {
+    const checkTheme = () => {
+      setIsInvertedTheme(document.documentElement.classList.contains('theme-inverted'));
+    };
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   // Trigger glitch burst when launch is imminent (under 30 seconds)
   useEffect(() => {
@@ -180,7 +192,7 @@ const Dashboard = () => {
                   ref={logoRef}
                   src={m9OctopusLogo} 
                   alt="M9 Octopus" 
-                  className={`w-44 sm:w-52 lg:w-64 h-auto logo-glitch-anim theme-inverted:[filter:none] theme-inverted:scale-110 ${isLaunchImminent ? 'glitch-burst-active' : ''}`}
+                  className={`w-44 sm:w-52 lg:w-64 h-auto ${isInvertedTheme ? 'logo-glitch-anim-inverted' : 'logo-glitch-anim'} ${isInvertedTheme ? 'scale-110' : ''} ${isLaunchImminent ? 'glitch-burst-active' : ''}`}
                 />
               </div>
               <div className="max-w-2xl">
