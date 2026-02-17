@@ -12,10 +12,11 @@ import DAOPanel from "@/components/panels/DAOPanel";
 import LeaderboardPanel from "@/components/panels/LeaderboardPanel";
 import LogbookPanel from "@/components/panels/LogbookPanel";
 import WalletPanel from "@/components/panels/WalletPanel";
+import CommunityPanel from "@/components/panels/CommunityPanel";
 import type { Tables } from "@/integrations/supabase/types";
 import { useEngagementTracking } from "@/hooks/useEngagementTracking";
 import { useReferralVisitTracker } from "@/hooks/useReferralVisitTracker";
-import { ChevronDown, Search, Vote, Trophy, BookOpen, Wallet } from "lucide-react";
+import { ChevronDown, Search, Vote, Trophy, BookOpen, Wallet, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import m9OctopusLogo from "@/assets/m9-octopus-logo.png";
 
@@ -330,6 +331,16 @@ const Dashboard = () => {
           toggleSection={toggleSection}
         >
           <WalletPanel />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          id="community"
+          title="COMMUNITY CHAT"
+          icon={<MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" />}
+          openSections={openSections}
+          toggleSection={toggleSection}
+        >
+          <CommunityPanel />
         </CollapsibleSection>
 
         {/* Footer */}
