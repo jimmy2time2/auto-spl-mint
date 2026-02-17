@@ -215,6 +215,33 @@ export type Database = {
           },
         ]
       }
+      community_messages: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          media_type: string | null
+          media_url: string | null
+          wallet_address: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          media_type?: string | null
+          media_url?: string | null
+          wallet_address: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          media_type?: string | null
+          media_url?: string | null
+          wallet_address?: string
+        }
+        Relationships: []
+      }
       creator_wallet_profits: {
         Row: {
           amount: number
