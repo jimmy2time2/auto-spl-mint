@@ -333,17 +333,15 @@ const Dashboard = () => {
           <WalletPanel />
         </CollapsibleSection>
 
-        <div className="md:max-w-md">
-          <CollapsibleSection
-            id="community"
-            title="COMMUNITY CHAT"
-            icon={<MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" />}
-            openSections={openSections}
-            toggleSection={toggleSection}
-          >
-            <CommunityPanel />
-          </CollapsibleSection>
-        </div>
+        <CollapsibleSection
+          id="community"
+          title="COMMUNITY CHAT"
+          icon={<MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" />}
+          openSections={openSections}
+          toggleSection={toggleSection}
+        >
+          <CommunityPanel />
+        </CollapsibleSection>
 
         {/* Footer */}
         <footer className="p-6 sm:p-8 text-center">
