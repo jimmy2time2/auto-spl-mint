@@ -258,7 +258,7 @@ const CommunityPanel = () => {
 
   // ── Main chat ─────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col h-[600px] relative">
+    <div className="flex flex-col h-[450px] relative">
       {/* Image lightbox */}
       {expandedImg && (
         <div
