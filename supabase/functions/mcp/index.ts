@@ -156,7 +156,8 @@ var protocol_stats_default = defineTool4({
     if (error) throw new ToolError4(error.message);
     const tokens = data ?? [];
     const sum = (pick) => tokens.reduce((acc, t) => acc + Number(pick(t) || 0), 0);
-    const latest = tokens.map((t) => t.created_at).sort().at(-1);
+    const sortedDates = tokens.map((t) => String(t.created_at)).sort();
+    const latest = sortedDates.length ? sortedDates[sortedDates.length - 1] : void 0;
     const stats = {
       total_tokens: tokens.length,
       total_volume_24h: sum((t) => t.volume_24h),

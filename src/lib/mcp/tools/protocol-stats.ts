@@ -20,10 +20,9 @@ export default defineTool({
     const sum = (pick: (t: (typeof tokens)[number]) => number) =>
       tokens.reduce((acc, t) => acc + Number(pick(t) || 0), 0);
 
-    const latest = tokens
-      .map((t) => t.created_at)
-      .sort()
-      .at(-1);
+    const sortedDates = tokens.map((t) => String(t.created_at)).sort();
+    const latest = sortedDates.length ? sortedDates[sortedDates.length - 1] : undefined;
+
 
     const stats = {
       total_tokens: tokens.length,
