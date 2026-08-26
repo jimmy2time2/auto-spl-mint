@@ -14,9 +14,20 @@
 import { MindGovernor } from './ai/MindGovernor';
 import { calculateDistribution } from './economy/distribution';
 
+// This file runs under Node (via CRON / npm scripts), not in the browser bundle.
+// Local shims keep it typecheckable without pulling in @types/node.
+declare const process: {
+  argv: string[];
+  env: Record<string, string | undefined>;
+  exit: (code?: number) => never;
+};
+declare const require: { main?: unknown };
+declare const module: unknown;
+
 const isDryRun = process.argv.includes('--dry-run');
 const showHint = process.argv.includes('--hint');
 const showMood = process.argv.includes('--mood');
+
 
 async function main() {
   console.log('🧠 Mind9 Governor - Autonomous Token System');
