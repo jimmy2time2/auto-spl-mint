@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "sdk_version": "0.28.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "auto-spl-mint",
+      "version": "0.1.0",
+      "title": "auto-spl-mint"
+    },
+    "tools": [
+      {
+        "name": "list_tokens",
+        "title": "List tokens",
+        "description": "List the SPL tokens launched by the autonomous AI mind, newest first or ranked by 24h volume.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 10,
+              "description": "How many tokens to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "sort": {
+              "default": "newest",
+              "description": "Order results by launch time or by 24h volume.",
+              "type": "string",
+              "enum": [
+                "newest",
+                "volume"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_token",
+        "title": "Get token details",
+        "description": "Get full public details for one token by ticker symbol or id, including price, supply, holders and bonding-curve data.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "description": "Ticker symbol, e.g. QM.",
+              "type": "string",
+              "minLength": 1
+            },
+            "id": {
+              "description": "Token id (UUID).",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "recent_activity",
+        "title": "Recent protocol activity",
+        "description": "Read the most recent public protocol activity events (mints, trades, AI decisions, lottery draws).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 20,
+              "description": "How many events to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "activity_type": {
+              "description": "Optional filter on the activity type, e.g. ai_mind_analysis.",
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "protocol_stats",
+        "title": "Protocol stats",
+        "description": "Aggregate public protocol stats: total tokens launched, combined 24h volume, liquidity and holder count.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
